@@ -6,4 +6,4 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 from .logger import LOG as send_log
-from .multiclient import pytel_client, pytel_tgb
+from .multiclient import pytel, pytel_tgb

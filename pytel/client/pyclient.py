@@ -15,9 +15,12 @@ from typing import (
     Coroutine,
     Callable,
 )
-from pyrogram import Client, __version__, filters
+from pyrogram import Client, __version__
+from pyrogram.filters import Filter
 from pyrogram.handlers import MessageHandler
+from pyrogram.types import Message
 from pytgcalls import GroupCallFactory
+from .config import PREFIX
 from .logger import send_log
 
 
@@ -111,14 +114,26 @@ class PytelClient(Client):
     def running_in_loop(self, func: Coroutine[Any, Any, None]) -> Any:
         return self.loop.run_until_complete(func)
 
-    def py_message(self, filters=filters.Filter, group=-1):
+    def cmd(
+        self,
+        filters=Filter,
+        group: Optional[int] = 0,
+        prefixes: Optional[str] = PREFIX,
+        *args,
+        **kwargs,
+    ) -> Callable:
+        kwargs["func"] = kwargs.get("func")
+        kwargs["prefixes"] = kwargs.get("prefixes")
+
         def decorator(func: Callable):
-            for _ in self._client:
-                try:
-                    _.add_handler(MessageHandler(func, filters), group)
-                except BaseException as excp:
-                    self.send_log(__name__).error(excp)
-            return func
+            async def papper(self, writter: Message) -> Callable:
+                for _ in self._client:
+                    try:
+                        _.add_handler(MessageHandler(func, filters), group)
+                    except BaseException as excp:
+                        self.send_log(__name__).error(excp)
+
+            return papper
 
         return decorator
 
@@ -129,7 +144,6 @@ class PytelClient(Client):
             await self.join_chat("@kastaid")
             await self.join_chat("@Teman_Random")
             await self.join_chat("@LPM_Linux")
-            await self.join_chat("@xrestricted")
             await self.join_chat("@dirtysoulvvv")
         except BaseException:
             pass

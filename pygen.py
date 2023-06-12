@@ -73,7 +73,7 @@ def session():
             ss = pytel.export_session_string()
             pytel.send_message(
                 "me",
-                f"`{ss}`\n\nAbove is your Pyrogram Session String for pytel. **DO NOT SHARE it.**",
+                f"`{ss}`\n\nAbove is your Pyrogram Session String for pytel.\n**DO NOT SHARE it.**",
             )
             print("Session has been sent to your saved messages!")
             exit(0)
@@ -86,7 +86,7 @@ def main():
     clear_screen()
     print(PYTEL)
     try:
-        type_of_ss = str(input("\npytel using pyrogram session.\n\nDo you want to generate?\n\nEnter choice (Y/n) :  "))
+        type_of_ss = str(input("\npytel using pyrogram session.\n\nDo you want to generate?\n\nEnter choice(Y/n) :  "))
     except Exception as excp:
         print(excp)
         exit(0)

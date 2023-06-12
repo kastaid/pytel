@@ -93,9 +93,9 @@ pytel_5 = (
     else None
 )
 
-pytel_client = PytelClient(name="all_client")
+pytel = PytelClient(name="all_client")
 
 pytelist = [_ for _ in [pytel_1, pytel_2, pytel_3, pytel_4, pytel_5] if _]
 
 for _ in pytelist:
-    pytel_client._client.append(_)
+    pytel._client.append(_)

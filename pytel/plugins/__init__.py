@@ -4,3 +4,6 @@
 # This file is a part of < https://github.com/kastaid/pytel/ >
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
+
+from pyrogram.enums import ParseMode
+from pytel import pytel, start_time
