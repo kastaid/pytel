@@ -1,0 +1,24 @@
+[init]
+        defaultBranch = main
+[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+        sparsecheckout = false
+[advice]
+        addignoredfile = false
+        setupstreamfailure = false
+[remote "origin"]
+        url = https://github.com/kastaid/pytel.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+[rebase]
+        autoStash = true
+[branch "main"]
+        remote = origin
+        merge = refs/heads/main
+[pull]
+        ff = only
+[receive]
+        denyNonFastForwards = true
+        fsckObjects = true
