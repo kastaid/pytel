@@ -5,15 +5,22 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from typing import Optional
 from os import getenv as gets
+from typing import Optional
 from dotenv import find_dotenv, load_dotenv
 
-load_dotenv(find_dotenv('config.env'))
+load_dotenv(find_dotenv("config.env"))
 
 
-class PYTEL_CONFIG(object):
-    API_ID: Optional[int] = gets('API_ID', '')
-    API_HASH: Optional[str] = gets('API_HASH', '')
-    SESSION: Optional[str] = gets('SESSION', '')
-    TGB_TOKEN: Optional[str] = gets('TGB_TOKEN', '')
+API_ID: Optional[int] = gets("API_ID", "")
+API_HASH: Optional[str] = gets("API_HASH", "")
+SESSION1: Optional[str] = gets("SESSION", "")
+TGB_TOKEN: Optional[str] = gets("TGB_TOKEN", "")
+LOGCHAT_ID: Optional[int] = gets("LOGCHAT_ID", "")
+PREFIX: Optional[str] = gets("PREFIX", "")
+
+# Multi Client
+SESSION2: Optional[str] = gets("SESSION2", "")
+SESSION3: Optional[str] = gets("SESSION3", "")
+SESSION4: Optional[str] = gets("SESSION4", "")
+SESSION5: Optional[str] = gets("SESSION5", "")
