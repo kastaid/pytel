@@ -14,7 +14,7 @@ load_dotenv(find_dotenv("config.env"))
 
 API_ID: Optional[int] = gets("API_ID", "")
 API_HASH: Optional[str] = gets("API_HASH", "")
-SESSION1: Optional[str] = gets("SESSION", "")
+SESSION1: Optional[str] = gets("SESSION1", "")
 TGB_TOKEN: Optional[str] = gets("TGB_TOKEN", "")
 LOGCHAT_ID: Optional[int] = gets("LOGCHAT_ID", "")
 PREFIX: Optional[str] = gets("PREFIX", "")
