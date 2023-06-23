@@ -170,8 +170,5 @@ cache/
 *.mp4
 *.mp3
 *.png
-*.jpg
+#*.jpg
 *.ogg
-
-# ignore
-!help.py
