@@ -34,10 +34,12 @@ prettyjson = f"{nocache} -m scripts.prettyjson"
 
 def run_cmd(cmd) -> None:
     try:
-        proc = run(shlex.split(cmd), shell=False)
+        proc = run(shlex.split(cmd), shell=False, check=True)
         if proc.returncode != 0:
             print(f"Exit code {proc.returncode}")
             sys.exit(1)
+        else:
+            return proc.stdout
     except BaseException:
         sys.exit(1)
 

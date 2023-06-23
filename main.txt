@@ -1,7 +1,11 @@
 requests
-pathlib==1.0.1
 aiofiles==23.1.0
 aiohttp==3.8.4
+loguru==0.7.0
+motor==3.1.2
+pathlib==1.0.1
+python-dotenv==1.0.0
 pyrogram==2.0.106
 pytgcalls==3.0.0.dev24
-loguru==0.7.0
+tgcrypto==1.2.5
+uvloop==0.17.0

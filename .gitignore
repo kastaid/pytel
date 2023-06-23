@@ -161,5 +161,17 @@ cython_debug/
 
 # pytel
 !sample.env
+cache/
 *.session
 *.session-journal
+
+# pytel media
+*.m4a
+*.mp4
+*.mp3
+*.png
+*.jpg
+*.ogg
+
+# ignore
+!help.py
