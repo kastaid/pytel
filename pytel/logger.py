@@ -35,7 +35,7 @@ pylog.add(
     stderr,
     format="{time:YY/MM/DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}",
     level="INFO",
-    colorize=False,
+    colorize=True,
 )
 pylog.opt(lazy=True, colors=True)
 

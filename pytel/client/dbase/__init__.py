@@ -5,4 +5,4 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from .core import *
+from .dbLogger import check_logger, add_logger, del_logger

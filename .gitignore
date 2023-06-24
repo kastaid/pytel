@@ -164,11 +164,12 @@ cython_debug/
 cache/
 *.session
 *.session-journal
+*.db
 
 # pytel media
 *.m4a
 *.mp4
 *.mp3
 *.png
-#*.jpg
+*.jpg
 *.ogg

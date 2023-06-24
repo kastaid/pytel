@@ -5,21 +5,14 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from . import (
-    Client,
-    Message,
-    px,
-    pytel,
-    plugins_helper,
-    filters,
-)
+from . import px, pytel, plugins_helper
 
 
-@pytel.instruction(filters.command("help", px) & filters.me)
-async def _help(client: Client, message: Message):
+@pytel.instruction("help", self_only=True)
+async def _help(client, message):
     await message.edit("Tester")
 
 
 plugins_helper["help"] = {
-    "{px}help [plugin_name]/[reply]": "Get common/plugin/command help by filling the plugin name or reply single word or message that contains plugin name.",
+    f"{px}help [plugin_name]/[reply]": "Get common/plugin/command help by filling the plugin name or reply single word or message that contains plugin name.",
 }

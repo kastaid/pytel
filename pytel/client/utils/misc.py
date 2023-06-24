@@ -5,7 +5,10 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from typing import Union
+import asyncio
+from subprocess import SubprocessError
+from typing import Union, Optional
+from pytel.logger import pylog as send_log
 
 
 def time_formatter(ms: Union[int, float]) -> str:
@@ -21,3 +24,20 @@ def time_formatter(ms: Union[int, float]) -> str:
         + ((str(seconds) + "s, ") if seconds else "")
     )
     return tmp and tmp[:-2] or "0s"
+
+
+async def RunningCommand(
+    cmd: Optional[str],
+) -> (bytes, bytes):
+    try:
+        process = await asyncio.create_subprocess_shell(
+            cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await process.communicate()
+        err = stderr.decode().strip()
+        out = stdout.decode().strip()
+        return out, err
+    except SubprocessError as excp:
+        send_log.error(excp)

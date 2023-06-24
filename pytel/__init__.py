@@ -101,13 +101,12 @@ else:
     pytel = None
 
 
-dirs = "cache/"
-for _ in dirs:
-    if not (Rooters / _).exists():
-        (Rooters / _).mkdir(parents=True, exist_ok=True)
-    else:
-        for f in (Rooters / _).rglob("*"):
-            if f.is_dir():
-                rmtree(f)
-            else:
-                f.unlink(missing_ok=True)
+dirs = "cache"
+if not (Rooters / dirs).exists():
+    (Rooters / dirs).mkdir(parents=True, exist_ok=True)
+else:
+    for f in (Rooters / dirs).rglob("*"):
+        if f.is_dir():
+            rmtree(f)
+        else:
+            f.unlink(missing_ok=True)

@@ -9,7 +9,7 @@ from asyncio import sleep
 from importlib import import_module as import_plugins
 from pathlib import Path
 from sys import exit
-from time import time
+from time import time, sleep as sl
 from typing import Tuple, List
 from pyrogram import idle
 from uvloop import install
@@ -54,9 +54,9 @@ def load_plugins():
             import_plugins("pytel.plugins." + plugin)
             if plugin not in _:
                 send_log.success("[+]" + plugin)
-                await sleep(0.3)
+                sl(0.3)
         except Exception as excp:
-            send_log.error(f"[-] {plugin} : {excp} ")
+            send_log.exception(f"[-] {plugin} : {excp} ")
     loaded_time = time_formatter((time() - loads) * 1000)
     loaded_msg = ">> Loaded plugins: {}, Commands: {}\nTotal {}, Time for {}".format(
         plugins_helper.count,
@@ -75,8 +75,8 @@ async def runner():
             await _.start()
             await _.notify_login()
             await auto_pilots(_)
-        except BaseException as exc:
-            send_log.error(exc)
+        except Exception as exc:
+            send_log.exception(exc)
     load_plugins()
     await sleep(1.5)
     _.copyright_stamp(_copyright=f"{__copyright__}", _license=f"{__license__}")

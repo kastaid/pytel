@@ -5,23 +5,33 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from typing import Optional
-from motor.motor_asyncio import AsyncIOMotorClient as DB
-from ...config import MONGO_URI
+from sys import exit
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker
+from ...config import DB_URI
 from ...logger import pylog as send_log
 
-try:
-    mongo = DB(MONGO_URI)
-    db = mongo.premium
-    users_db = db.users
-    log_group = db.loggroup
-except BaseException as excp:
-    send_log.warning(excp)
+DB: str = DB_URI.replace("postgres:", "postgresql:") if "postgres://" in DB_URI else DB_URI
 
 
-async def set_group(user_id: Optional[int], logger_id: Optional[int]):
-    await log_group.users.update_one(
-        {"user_id": user_id},
-        {"$set": {"LOGCHAT_ID": logger_id}},
-        upsert=True,
+def start() -> scoped_session:
+    machine = create_engine(DB)
+    BASE.metadata.bind = machine
+    BASE.metadata.create_all(machine)
+    return scoped_session(
+        sessionmaker(
+            bind=machine,
+            autoflush=False,
+            autocommit=False,
+            expire_on_commit=False,
+        ),
     )
+
+
+try:
+    BASE = declarative_base()
+    SESSION = start()
+except Exception as excp:
+    send_log.exception(excp)
+    exit(1)
