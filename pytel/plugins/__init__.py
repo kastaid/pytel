@@ -8,14 +8,9 @@
 from pyrogram.enums import ParseMode
 from pyrogram.raw.all import layer
 from pyrogram.raw.functions import Ping
-from .. import (
-    start_time,
-    pytel,
-    pytel_tgb,
-    __license__,
-)
+from pytel import pytel, pytel_tgb
+from .. import start_time, __license__
 from ..client import plugins_helper, time_formatter
 from ..config import PREFIX as px
 from ..logger import pylog as send_log
-
-DEVS = None
+from ..client.utils import developer

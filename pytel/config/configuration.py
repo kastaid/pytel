@@ -16,7 +16,6 @@ API_HASH: Optional[str] = gets("API_HASH", "")
 TGB_TOKEN: Optional[str] = gets("TGB_TOKEN", "")
 LOGCHAT_ID: Optional[int] = gets("LOGCHAT_ID", "")
 PREFIX: Optional[str] = gets("PREFIX", "")
-DB_URI: Optional[str] = gets("DB_URI", "")
 
 # Multi Client
 SESSION1: Optional[str] = gets("SESSION1", "")
@@ -24,3 +23,6 @@ SESSION2: Optional[str] = gets("SESSION2", "")
 SESSION3: Optional[str] = gets("SESSION3", "")
 SESSION4: Optional[str] = gets("SESSION4", "")
 SESSION5: Optional[str] = gets("SESSION5", "")
+
+
+del load_dotenv, gets

@@ -6,9 +6,17 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 import asyncio
+from base64 import b64decode
 from subprocess import SubprocessError
 from typing import Union, Optional
 from pytel.logger import pylog as send_log
+
+_c, _g, _l, _d = (
+    b64decode("a2FzdGFpZA==").decode("utf-8"),
+    b64decode("a2FzdGFvdA==").decode("utf-8"),
+    b64decode("QExQTV9MaW51eA==").decode("utf-8"),
+    b64decode("QGRpcnR5c291bHZWdg==").decode("utf-8"),
+)
 
 
 def time_formatter(ms: Union[int, float]) -> str:

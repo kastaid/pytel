@@ -5,7 +5,5 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from .autopilots import auto_pilots
-from .dbase import *
-from .pyclient import PytelClient, loopers
+from .pyclient import loopers, PytelClient
 from .utils import plugins_helper, time_formatter

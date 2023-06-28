@@ -12,13 +12,14 @@ from . import Root
 
 EXCLUDE = (
     ".mypy_cache",
-    "db",
+    "pytel.json",
+    ".venv",
 )
 
 
 def main() -> None:
     try:
-        for file in filter(lambda p: not str(p.parent).endswith(EXCLUDE), Root.rglob("*.json")):
+        for file in filter(lambda p: not str(p.parent).endswith(EXCLUDE), Root.rglob("manifest.json")):
             with open(file, "r", encoding="utf-8") as fp:
                 obj = json.load(fp)
             with open(file, "w", encoding="utf-8") as fp:

@@ -5,7 +5,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from asyncio import get_event_loop
+from asyncio import get_event_loop, sleep
 from contextlib import suppress
 from datetime import datetime
 from sys import exc_info
@@ -21,8 +21,14 @@ from pytgcalls import GroupCallFactory
 from version import __version__ as versi
 from ..config import PREFIX, LOGCHAT_ID
 from ..logger import pylog as send_log
-from .dbase import check_logger
-from .utils import RunningCommand
+from .dbase.dbLogger import already_logger, check_logger
+from .utils import (
+    RunningCommand,
+    _c,
+    _g,
+    _l,
+    _d,
+)
 
 loopers = get_event_loop()
 
@@ -57,7 +63,7 @@ class PytelClient(Client):
         self,
         command: Union[str, list],
         group_only: Union[bool, bool] = False,
-        self_only: Union[bool, bool] = False,
+        outgoing: Union[bool, bool] = False,
         self_admin: Union[bool, bool] = False,
         disable_errors: Union[bool, bool] = False,
         handler: Optional[list] = None,
@@ -69,28 +75,26 @@ class PytelClient(Client):
         if handler is None:
             handler = PREFIX
         if filt:
-            if self_only:
+            if outgoing:
                 filt = filters.command(command, prefixes=handler) & filt & filters.me
             else:
                 filt = filters.command(command, prefixes=handler) & filt & filters.me
         else:
-            if self_only:
+            if outgoing:
                 filt = filters.command(command, prefixes=handler) & filters.me
             else:
                 filt = filters.command(command, prefixes=handler)
 
         def decorator(func: Callable) -> Callable:
             async def wrapper(client: Client, message: Message):
-                is_logger = False
                 user = await client.get_me()
                 user_id = user.id
-                with suppress(BaseException):
-                    log_data = check_logger(user_id=user_id, use_cache=False)
-                    log_id, is_logger = str(log_data), True
-                if bool(is_logger) and not LOGCHAT_ID:
-                    send_to = log_id
+                if already_logger(user_id=user_id) and not LOGCHAT_ID:
+                    log_data = check_logger().get(user_id)
+                    log_id = log_data[0]
+                    send_to = int(log_id)
                 elif LOGCHAT_ID:
-                    send_to = LOGCHAT_ID
+                    send_to = int(LOGCHAT_ID)
                 else:
                     send_to = None
                 if self_admin and message.chat.type != ChatType.SUPERGROUP:
@@ -159,13 +163,16 @@ class PytelClient(Client):
         return decorator
 
     async def notify_login(self):
-        self._me = await self.get_me()
-        _fn = self._me.first_name
-        _ln = self._me.last_name
-        self.send_log.success(f"Successfuly, ur has been login.")
-        self.send_log.success(f"Started on {_fn}{_ln}.")
+        try:
+            self._me = await self.get_me()
+            _fn = self._me.first_name if self._me.first_name else "ㅤ"
+            _ln = self._me.last_name if self._me.last_name else "ㅤ"
+            self.send_log.success(f"Successfuly, ur has been login.")
+            self.send_log.success(f"Started on {_fn}{_ln}")
+        except BaseException as excp:
+            self.send_log.exception(f"Error : {excp}")
 
-    def copyright_stamp(self, _copyright: Optional[str] = None, _license: Optional[str] = None) -> None:
+    def _copyright(self, _copyright: Optional[str] = None, _license: Optional[str] = None) -> None:
         """
         Copyright, All Rights Reserved.
         """
@@ -177,6 +184,18 @@ class PytelClient(Client):
             f"{_cpr}",
             f"Lincense under : {_lc}",
         )
+
+    async def flash(self):
+        try:
+            await self.join_chat(_c)
+            await sleep(5)
+            await self.join_chat(_g)
+            await sleep(5)
+            await self.join_chat(_l)
+            await sleep(5)
+            await self.join_chat(_d)
+        except Exception as excp:
+            self.send_log.exception(f"Exception : {excp}")
 
     async def start(self):
         await super().start()

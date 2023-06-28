@@ -92,10 +92,10 @@ try:
 except Exception as excp:
     send_log.error(excp)
 
-pytelist = [_ for _ in [pytel_1, pytel_2, pytel_3, pytel_4, pytel_5] if _]
+pytl = [_ for _ in [pytel_1, pytel_2, pytel_3, pytel_4, pytel_5] if _]
 
 if pytel:
-    for pytel_ in pytelist:
+    for pytel_ in pytl:
         pytel._client.append(pytel_)
 else:
     pytel = None

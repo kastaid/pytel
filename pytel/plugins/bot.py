@@ -29,7 +29,7 @@ from . import (
 )
 
 
-@pytel.instruction("ping", self_only=True)
+@pytel.instruction("ping", outgoing=True)
 async def ping(client, message):
     start_t = time()
     r = await message.reply("...")
@@ -48,7 +48,7 @@ async def ping(client, message):
     await message.delete()
 
 
-@pytel.instruction(["alive", "on"], self_only=True)
+@pytel.instruction(["alive", "on"], outgoing=True)
 async def alive(client, message):
     LAYER = layer
     my_uptime = time_formatter((time() - start_time) * 1000)

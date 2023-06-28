@@ -164,7 +164,9 @@ cython_debug/
 cache/
 *.session
 *.session-journal
-*.db
+
+# database ( local )
+pytel.json
 
 # pytel media
 *.m4a

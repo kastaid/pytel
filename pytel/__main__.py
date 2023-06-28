@@ -13,19 +13,15 @@ from time import time, sleep as sl
 from typing import Tuple, List
 from pyrogram import idle
 from uvloop import install
-from pytel import (
-    pytelist,
-    pytel_tgb,
-    send_log,
+from . import (
     __license__,
     __copyright__,
+    pytl,
+    pytel_tgb,
 )
-from .client import (
-    auto_pilots,
-    plugins_helper,
-    loopers,
-    time_formatter,
-)
+from .client import plugins_helper, loopers, time_formatter
+from .client.autopilots import auto_pilots
+from .logger import pylog as send_log
 
 Plugins: Path = Path(__file__).parent
 
@@ -70,16 +66,18 @@ def load_plugins():
 async def runner():
     await pytel_tgb.start()
     send_log.info("Starting-up PYTEL")
-    for _ in pytelist:
+    for _ in pytl:
         try:
             await _.start()
             await _.notify_login()
             await auto_pilots(_)
+            await sleep(2)
         except Exception as exc:
             send_log.exception(exc)
     load_plugins()
     await sleep(1.5)
-    _.copyright_stamp(_copyright=f"{__copyright__}", _license=f"{__license__}")
+    await _.flash()
+    _._copyright(_copyright=f"{__copyright__}", _license=f"{__license__}")
     await idle()
 
 

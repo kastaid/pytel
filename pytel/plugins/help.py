@@ -8,7 +8,7 @@
 from . import px, pytel, plugins_helper
 
 
-@pytel.instruction("help", self_only=True)
+@pytel.instruction("help", outgoing=True)
 async def _help(client, message):
     await message.edit("Tester")
 

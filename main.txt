@@ -1,3 +1,6 @@
+wheel
+setuptools
+frozenlist
 requests
 rsa
 aiofiles==23.1.0
@@ -9,6 +12,6 @@ pathlib==1.0.1
 python-dotenv==1.0.0
 pyrogram==2.0.106
 pytgcalls==3.0.0.dev24
-sqlalchemy==2.0.17
+localdb.json==1.0
 tgcrypto==1.2.5
 uvloop==0.17.0
