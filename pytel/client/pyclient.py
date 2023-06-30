@@ -10,14 +10,18 @@ from contextlib import suppress
 from datetime import datetime
 from sys import exc_info
 from traceback import format_exc as fmex
-from typing import Optional, Union, Callable
+from typing import (
+    Optional,
+    Union,
+    Callable,
+    List,
+)
 from pyrogram import Client, __version__, filters
 from pyrogram.enums import ParseMode, ChatMemberStatus, ChatType
 from pyrogram.filters import Filter
 from pyrogram.handlers import MessageHandler
 from pyrogram.raw.all import layer
 from pyrogram.types import Message
-from pytgcalls import GroupCallFactory
 from version import __version__ as versi
 from ..config import PREFIX, LOGCHAT_ID
 from ..logger import pylog as send_log
@@ -28,6 +32,7 @@ from .utils import (
     _g,
     _l,
     _d,
+    tz,
 )
 
 loopers = get_event_loop()
@@ -55,25 +60,27 @@ class PytelClient(Client):
         kwargs["ipv6"] = False
 
         super().__init__(**kwargs)
+        with suppress(BaseException):
+            from pytgcalls import GroupCallFactory
         self.group_call = GroupCallFactory(self).get_group_call()
         self.send_log = send_log
         self.loop = loopers
 
     def instruction(
         self,
-        command: Union[str, list],
+        command: Union[str, List[str]],
         group_only: Union[bool, bool] = False,
         outgoing: Union[bool, bool] = False,
         self_admin: Union[bool, bool] = False,
         disable_errors: Union[bool, bool] = False,
-        handler: Optional[list] = None,
+        handler: Union[str, List[str]] = None,
         filt: Union[Filter, Filter] = None,
         group: Optional[int] = 0,
         *args,
         **kwargs,
     ) -> Callable:
         if handler is None:
-            handler = PREFIX
+            handler = PREFIX if PREFIX else "."
         if filt:
             if outgoing:
                 filt = filters.command(command, prefixes=handler) & filt & filters.me
@@ -113,7 +120,7 @@ class PytelClient(Client):
                 except Exception as excp:
                     if not disable_errors:
                         send_log.error(excp)
-                        date = datetime.now().strftime("%d/%m/%Y %I:%M:%S %p")
+                        date = datetime.now(tz).strftime("%d/%m/%Y %I:%M:%S %p")
                         format_text = "<code>====</code> ⚠️ <u>Attention</u> ⚠️ <code>====</code>"
                         format_text += "\nPytel is having Problems."
                         format_text += "\n( <u>Please report issue to</u> @kastaot )"
@@ -124,12 +131,9 @@ class PytelClient(Client):
                         format_text += "\n\n<b>🚨 Error text:</b> <code>" + str(exc_info()[1]) + "</code>"
                         format_text += "\n\n<code>======</code> <u>History Commit</u> <code>======</code>"
                         format_text += "\n\n<b>Last 5 Commit:</b> \n"
-                        (
-                            stdout,
-                            stderr,
-                        ) = await RunningCommand('git log --pretty=format:"%an: %s" -3')
-                        result = stdout + stderr
-                        format_text += "<code>" + result + "</code>"
+                        stdout, stderr = RunningCommand('git log --pretty=format:"%an: %s" -3')
+                        result = str(stdout) + str(stderr)
+                        format_text += "<code>" + str(result) + "</code>"
                         with suppress(BaseException):
                             if send_to:
                                 respond_text = (

@@ -2,9 +2,16 @@ wheel
 setuptools
 frozenlist
 requests
-rsa
+
+# --- setup ---
+
+-r dev.txt
+
+# --- (bdist) ---
+
 aiofiles==23.1.0
 aiohttp==3.8.4
+beautifulsoup4==4.12.2
 cachetools==5.3.1
 GitPython==3.1.31
 loguru==0.7.0
@@ -12,6 +19,8 @@ pathlib==1.0.1
 python-dotenv==1.0.0
 pyrogram==2.0.106
 pytgcalls==3.0.0.dev24
+Pytanggalmerah
 localdb.json==1.0
+lxml==4.9.2
 tgcrypto==1.2.5
 uvloop==0.17.0

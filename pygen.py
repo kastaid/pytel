@@ -6,6 +6,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 import os
+from sys import exit
 from time import sleep
 
 PYTEL = r"""

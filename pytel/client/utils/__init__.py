@@ -5,9 +5,11 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
+from ._lyrics import LyricsEngine as LE
 from .helper import plugins_helper
 from .misc import (
     time_formatter,
+    tz,
     RunningCommand,
     _c,
     _g,

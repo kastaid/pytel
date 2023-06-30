@@ -5,17 +5,22 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-import asyncio
 from base64 import b64decode
-from subprocess import SubprocessError
+from subprocess import SubprocessError, run
 from typing import Union, Optional
+from pytz import timezone
+from pytel.config import TimeZone
 from pytel.logger import pylog as send_log
 
-_c, _g, _l, _d = (
+tz = timezone(TimeZone)
+
+_c, _g, _l, _d, gsc, gse = (
     b64decode("a2FzdGFpZA==").decode("utf-8"),
     b64decode("a2FzdGFvdA==").decode("utf-8"),
     b64decode("QExQTV9MaW51eA==").decode("utf-8"),
     b64decode("QGRpcnR5c291bHZWdg==").decode("utf-8"),
+    b64decode("QUl6YVN5Q3kweHJmOEdOOHB4cjZtRmMwZjhFZC1NUFlNLXlqZEZn").decode("utf-8"),
+    b64decode("NTZjYzA4MDM5M2IwOTRmNTg=").decode("utf-8"),
 )
 
 
@@ -34,18 +39,18 @@ def time_formatter(ms: Union[int, float]) -> str:
     return tmp and tmp[:-2] or "0s"
 
 
-async def RunningCommand(
+def RunningCommand(
     cmd: Optional[str],
-) -> (bytes, bytes):
+) -> (str, str):
     try:
-        process = await asyncio.create_subprocess_shell(
+        process = run(
             cmd,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
+            shell=True,
+            check=True,
+            text=True,
+            capture_output=True,
         )
-        stdout, stderr = await process.communicate()
-        err = stderr.decode().strip()
-        out = stdout.decode().strip()
-        return out, err
+        stdout, stderr = process.stdout, process.stderr
+        return str(stdout), str(stderr)
     except SubprocessError as excp:
         send_log.error(excp)

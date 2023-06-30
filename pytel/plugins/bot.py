@@ -10,7 +10,6 @@ from platform import python_version, uname
 from textwrap import indent
 from time import time, perf_counter
 import packaging
-import rsa
 from git import __version__ as git_ver
 from pip import __version__ as pipver
 from pyrogram import __version__
@@ -24,15 +23,18 @@ from . import (
     start_time,
     __license__,
     ParseMode,
+    tz,
     Ping,
     layer,
+    eor,
+    _try_purged,
 )
 
 
 @pytel.instruction("ping", outgoing=True)
 async def ping(client, message):
     start_t = time()
-    r = await message.reply("...")
+    r = await eor(message, text="...")
     end_t = time()
     time_taken_s = (end_t - start_t) * 1000
     # pyrogram
@@ -44,8 +46,7 @@ async def ping(client, message):
 **Server:** `{time_taken_s:.3f} ms`
 **Pyrogram:** `{pings} ms`
 """
-    await r.edit(txt)
-    await message.delete()
+    await eor(r, text=txt)
 
 
 @pytel.instruction(["alive", "on"], outgoing=True)
@@ -53,10 +54,9 @@ async def alive(client, message):
     LAYER = layer
     my_uptime = time_formatter((time() - start_time) * 1000)
     unam = uname()
-    time_stamp = datetime.now().strftime("%A, %I:%M:%S %p UTC%z")
+    time_stamp = datetime.now(tz).strftime("%A, %I:%M:%S %p UTC%z")
     text_active = "<i>“We are connected on the inside.”</i>\n"
     text_active += "----------------------------------------\n"
-    text_active += "› <code>RSA:</code> <code>" + str(rsa.__version__) + "</code> \n"
     text_active += "› <code>Pip:</code> <code>" + str(pipver) + "</code> \n"
     text_active += "› <code>Git:</code> <code>" + str(git_ver) + "</code> \n"
     text_active += "› <code>Python:</code> <code>" + str(python_version()) + "</code> \n"
@@ -85,12 +85,11 @@ async def alive(client, message):
         text=wrp,
         parse_mode=ParseMode.HTML,
         disable_web_page_preview=True,
-        disable_notification=True,
     )
-    await message.delete()
+    return await _try_purged(message, 3)
 
 
 plugins_helper["bot"] = {
     f"{px}ping": "Check how long it takes to ping.",
-    f"{px}alive": "Check alive & version.",
+    f"{px}alive / {px}on": "Check alive & version.",
 }
