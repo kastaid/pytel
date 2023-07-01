@@ -6,24 +6,67 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 from asyncio import sleep
+from datetime import datetime
 from importlib import import_module as import_plugins
+from os import getpid
 from pathlib import Path
 from sys import exit
 from time import time, sleep as sl
 from typing import Tuple, List
-from pyrogram import idle
+from pyrogram import __version__, idle
+from pyrogram.enums import ParseMode
+from pyrogram.raw.all import layer
 from uvloop import install
+from version import __version__ as versi
 from . import (
     __license__,
     __copyright__,
     pytl,
     pytel_tgb,
 )
-from .client import plugins_helper, loopers, time_formatter
+from .client import plugins_helper, time_formatter
 from .client.autopilots import auto_pilots
+from .client.dbase.dbLogger import already_logger, check_logger
+from .client.utils import tz
+from .config import PREFIX, LOGCHAT_ID
 from .logger import pylog as send_log
 
 Plugins: Path = Path(__file__).parent
+
+
+async def running_message(self):
+    user = await self.get_me()
+    user_id = user.id
+    if already_logger(user_id=user_id) and not LOGCHAT_ID:
+        log_data = check_logger().get(user_id)
+        log_id = log_data[0]
+        send_to = int(log_id)
+    elif LOGCHAT_ID:
+        send_to = int(LOGCHAT_ID)
+    else:
+        send_to = None
+    text = """
+<b><u>PYTEL</b></u> is up and running!
+├ <b>PID :</b>  <i>{}</i>
+├ <b>PYTEL :</b>  <i>{}</i>
+├ <b>Layer :</b>  <i>{}</i>
+├ <b>Pyrogram :</b>  <i>{}</i>
+└ <b>Prefix :</b> <code>{}</code>
+""".format(
+        getpid(),
+        versi,
+        layer,
+        __version__,
+        "".join(PREFIX),
+    )
+    dt = datetime.now(tz)
+    await self.send_message(
+        int(send_to),
+        text=text,
+        parse_mode=ParseMode.HTML,
+        disable_notification=False,
+        schedule_date=dt,
+    )
 
 
 def sorted_plugins() -> Tuple[List[str], str]:
@@ -78,15 +121,20 @@ async def runner():
     await sleep(1.5)
     await _.flash()
     _._copyright(_copyright=f"{__copyright__}", _license=f"{__license__}")
+    await running_message(_)
     await idle()
+    for kz in pytl:
+        await kz.stop()
 
 
 if __name__ == "__main__":
     install()
-    try:
-        loopers.run_until_complete(runner())
-    except BaseException as excp:
-        send_log.info(f"{excp}")
-    finally:
-        send_log.info("Goodbye !!!", style="braches")
-        exit(0)
+    for x in pytl:
+        try:
+            x.run_in_loop(runner())
+        except BaseException as excp:
+            x.send_log.info(f"{excp}")
+        finally:
+            x.send_log.info("Goodbye !!!", style="braches")
+            x.loop.stop()
+            exit(0)

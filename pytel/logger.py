@@ -25,7 +25,7 @@ from loguru import logger as pylog
 
 pylog.remove(0)
 pylog.add(
-    sink="pytel-{}.log".format(date.today().strftime("%Y-%m-%d")),
+    sink="logs/pytel-{}.log".format(date.today().strftime("%Y-%m-%d")),
     format="{time:YY/MM/DD HH:mm:ss} | {level: <8}| {name: ^15} | {function: ^15} | {line: >3} : {message}",
     rotation="1 days",
     backtrace=True,
@@ -33,7 +33,7 @@ pylog.add(
 )
 pylog.add(
     stderr,
-    format="{time:YY/MM/DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}",
+    format="<green>{time:YY/MM/DD HH:mm:ss}</green> | <yellow>{level}</yellow> | {name}:{function}:{line} | {message}",
     level="INFO",
     colorize=True,
 )

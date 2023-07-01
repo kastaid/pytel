@@ -162,6 +162,7 @@ cython_debug/
 # pytel
 !sample.env
 cache/
+logs/*.log
 *.session
 *.session-journal
 

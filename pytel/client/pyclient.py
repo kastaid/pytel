@@ -5,15 +5,17 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from asyncio import get_event_loop, sleep
+from asyncio import sleep
 from contextlib import suppress
 from datetime import datetime
 from sys import exc_info
 from traceback import format_exc as fmex
 from typing import (
+    Any,
     Optional,
     Union,
     Callable,
+    Coroutine,
     List,
 )
 from pyrogram import Client, __version__, filters
@@ -23,6 +25,7 @@ from pyrogram.handlers import MessageHandler
 from pyrogram.raw.all import layer
 from pyrogram.types import Message
 from version import __version__ as versi
+from .. import loopers
 from ..config import PREFIX, LOGCHAT_ID
 from ..logger import pylog as send_log
 from .dbase.dbLogger import already_logger, check_logger
@@ -34,8 +37,6 @@ from .utils import (
     _d,
     tz,
 )
-
-loopers = get_event_loop()
 
 
 class PytelClient(Client):
@@ -165,6 +166,9 @@ class PytelClient(Client):
             return wrapper
 
         return decorator
+
+    def run_in_loop(self, func: Coroutine[Any, Any, None]) -> Any:
+        return self.loop.run_until_complete(func)
 
     async def notify_login(self):
         try:
