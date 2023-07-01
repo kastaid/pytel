@@ -1,5 +1,20 @@
 [init]
         defaultBranch = main
+[color]
+        ui = true
+[color "branch"]
+        current = yellow reverse
+        local = yellow
+        remote = green
+[color "diff"]
+        meta = yellow bold
+        frag = magenta bold
+        old = red bold
+        new = green bold
+[color "status"]
+        added = yellow
+        changed = green
+        untracked = red
 [core]
         repositoryformatversion = 0
         filemode = true
@@ -22,3 +37,5 @@
 [receive]
         denyNonFastForwards = true
         fsckObjects = true
+[url "https://github.com/"]
+        insteadOf = gh:

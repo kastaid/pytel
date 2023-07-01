@@ -30,6 +30,7 @@ from ..config import PREFIX, LOGCHAT_ID
 from ..logger import pylog as send_log
 from .dbase.dbLogger import already_logger, check_logger
 from .utils import (
+    gg_restricted,
     RunningCommand,
     _c,
     _g,
@@ -184,6 +185,7 @@ class PytelClient(Client):
         """
         Copyright, All Rights Reserved.
         """
+        gg_restricted()
         _lc = _license
         _cpr = _copyright
         self.send_log.info(f"PYTEL v.{versi}")

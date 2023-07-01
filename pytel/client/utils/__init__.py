@@ -11,6 +11,7 @@ from .misc import (
     time_formatter,
     tz,
     RunningCommand,
+    gg_restricted,
     _c,
     _g,
     _l,
