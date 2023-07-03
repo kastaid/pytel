@@ -10,30 +10,49 @@ import signal
 import sys
 import time
 from contextlib import suppress
-from subprocess import CalledProcessError, Popen, check_call
+from subprocess import (
+    CalledProcessError,
+    Popen,
+    check_call,
+)
 from typing import Generator
 from . import (
-    Root,
-    EXTS,
-    WAIT_FOR,
-    RST,
     BOLD,
+    EXTS,
     RED,
+    RST,
+    WAIT_FOR,
     YELLOW,
+    Root,
 )
 
 try:
     import psutil
 except ModuleNotFoundError:
     print("Installing psutil...")
-    check_call([sys.executable, "-m", "pip", "install", "--no-cache-dir", "-U", "psutil"])
+    check_call(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--no-cache-dir",
+            "-U",
+            "psutil",
+        ]
+    )
 finally:
     import psutil
 
 
-def file_times() -> Generator[int, None, None]:
+def file_times() -> (
+    Generator[int, None, None]
+):
     with suppress(BaseException):
-        for _ in filter(lambda p: p.suffix in EXTS, Root.rglob("*")):
+        for _ in filter(
+            lambda p: p.suffix in EXTS,
+            Root.rglob("*"),
+        ):
             yield _.stat().st_mtime
 
 
@@ -46,7 +65,9 @@ def print_stdout(procs) -> None:
 def kill_process_tree(procs) -> None:
     with suppress(psutil.NoSuchProcess):
         parent = psutil.Process(procs.pid)
-        child = parent.children(recursive=True)
+        child = parent.children(
+            recursive=True
+        )
         child.append(parent)
         for _ in child:
             _.send_signal(signal.SIGTERM)
@@ -55,7 +76,9 @@ def kill_process_tree(procs) -> None:
 
 def main() -> None:
     if len(sys.argv) <= 1:
-        print("python3 -m scripts.autoreload [command]")
+        print(
+            "python3 -m scripts.autoreload [command]"
+        )
         sys.exit(0)
     cmd = " ".join(sys.argv[1:])
     procs = Popen(cmd, shell=True)
@@ -66,19 +89,29 @@ def main() -> None:
             print_stdout(procs)
             if max_mtime > last_mtime:
                 last_mtime = max_mtime
-                print(f"{BOLD}{YELLOW}Restarting >> {procs.args}{RST}")
+                print(
+                    f"{BOLD}{YELLOW}Restarting >> {procs.args}{RST}"
+                )
                 kill_process_tree(procs)
-                procs = Popen(cmd, shell=True)
+                procs = Popen(
+                    cmd, shell=True
+                )
             time.sleep(WAIT_FOR)
     except CalledProcessError as err:
         kill_process_tree(procs)
         sys.exit(err.returncode)
     except BaseException:
-        print(f"{BOLD}{RED}Watch interrupted.{RST}")
+        print(
+            f"{BOLD}{RED}Watch interrupted.{RST}"
+        )
     except KeyboardInterrupt:
-        print(f"{BOLD}{RED}Kill process [{procs.pid}]{RST}")
+        print(
+            f"{BOLD}{RED}Kill process [{procs.pid}]{RST}"
+        )
         kill_process_tree(procs)
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        signal.signal(
+            signal.SIGINT, signal.SIG_DFL
+        )
         os.kill(os.getpid(), signal.SIGINT)
 
 

@@ -13,14 +13,25 @@ def check_logger():
     return pydb.get_key("LOGCHAT_ID") or {}
 
 
-def add_logger(user_id: Optional[int], logger_id):
+def add_logger(
+    user_id: Optional[int], logger_id
+):
     logchat = check_logger()
     if logchat.get(user_id):
-        if logger_id not in logchat[user_id]:
-            logchat[user_id].append(logger_id)
+        if (
+            logger_id
+            not in logchat[user_id]
+        ):
+            logchat[user_id].append(
+                logger_id
+            )
     else:
-        logchat.update({user_id: [logger_id]})
-    return pydb.set_key("LOGCHAT_ID", logchat)
+        logchat.update(
+            {user_id: [logger_id]}
+        )
+    return pydb.set_key(
+        "LOGCHAT_ID", logchat
+    )
 
 
 def already_logger(user_id: Optional[int]):

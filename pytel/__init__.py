@@ -5,7 +5,10 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from asyncio import set_event_loop_policy, get_event_loop
+from asyncio import (
+    get_event_loop,
+    set_event_loop_policy,
+)
 from uvloop import EventLoopPolicy
 from .logger import pylog as send_log
 
@@ -20,8 +23,8 @@ try:
     from pyrogram import Client
     from .client import PytelClient
     from .config import (
-        API_ID,
         API_HASH,
+        API_ID,
         SESSION1,
         SESSION2,
         SESSION3,
@@ -32,7 +35,9 @@ try:
 except Exception as excp:
     send_log.exception(excp)
 
-__license__ = "GNU Affero General Public License v3.0"
+__license__ = (
+    "GNU Affero General Public License v3.0"
+)
 __copyright__ = "PYTEL Copyright (C) 2023-present kastaid"
 
 start_time = time()
@@ -41,7 +46,9 @@ Rooters: Path = Path(__file__).parent.parent
 
 dirs = "cache/"
 if not (Rooters / dirs).exists():
-    (Rooters / dirs).mkdir(parents=True, exist_ok=True)
+    (Rooters / dirs).mkdir(
+        parents=True, exist_ok=True
+    )
 else:
     for f in (Rooters / dirs).rglob("*"):
         if f.is_dir():
@@ -111,7 +118,17 @@ try:
 except Exception as excp:
     send_log.error(excp)
 
-pytl = [_ for _ in [pytel_1, pytel_2, pytel_3, pytel_4, pytel_5] if _]
+pytl = [
+    _
+    for _ in [
+        pytel_1,
+        pytel_2,
+        pytel_3,
+        pytel_4,
+        pytel_5,
+    ]
+    if _
+]
 
 if pytel:
     for pytel_ in pytl:

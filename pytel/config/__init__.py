@@ -14,7 +14,9 @@ directory = ["config.env"]
 for b in directory:
     for a in (Checker / b).rglob("*.*"):
         if not a.exists():
-            print("| [WARNING] | File config.env not found !!")
+            print(
+                "| [WARNING] | File config.env not found !!"
+            )
             exit(1)
 
 try:

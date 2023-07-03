@@ -11,6 +11,7 @@ requests
 
 aiofiles==23.1.0
 aiohttp==3.8.4
+asyncache==0.3.1
 beautifulsoup4==4.12.2
 cachetools==5.3.1
 GitPython==3.1.31
@@ -24,3 +25,4 @@ localdb.json==1.0
 lxml==4.9.2
 tgcrypto==1.2.5
 uvloop==0.17.0
+validators==0.20.0

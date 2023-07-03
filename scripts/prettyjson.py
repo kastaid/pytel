@@ -19,10 +19,19 @@ EXCLUDE = (
 
 def main() -> None:
     try:
-        for file in filter(lambda p: not str(p.parent).endswith(EXCLUDE), Root.rglob("manifest.json")):
-            with open(file, "r", encoding="utf-8") as fp:
+        for file in filter(
+            lambda p: not str(
+                p.parent
+            ).endswith(EXCLUDE),
+            Root.rglob("manifest.json"),
+        ):
+            with open(
+                file, "r", encoding="utf-8"
+            ) as fp:
                 obj = json.load(fp)
-            with open(file, "w", encoding="utf-8") as fp:
+            with open(
+                file, "w", encoding="utf-8"
+            ) as fp:
                 json.dump(
                     obj,
                     fp,
@@ -31,10 +40,14 @@ def main() -> None:
                     ensure_ascii=False,
                 )
                 # outfile.write("\n")
-                print(f"Pretty print : {file.name}")
+                print(
+                    f"Pretty print : {file.name}"
+                )
             time.sleep(0.3)
     except BaseException:
-        print(f"Failed to pretty print : {file}")
+        print(
+            f"Failed to pretty print : {file}"
+        )
         sys.exit(1)
 
 

@@ -24,7 +24,9 @@ class BaseDB:
     def re_cache(self):
         self._cache.clear()
         for key in self.keys():
-            self._cache.update({key: self.get_key(key)})
+            self._cache.update(
+                {key: self.get_key(key)}
+            )
 
     def ping(self):
         return 1
@@ -42,20 +44,28 @@ class BaseDB:
         self.delete(key)
         return True
 
-    def _get_data(self, key=None, data=None):
+    def _get_data(
+        self, key=None, data=None
+    ):
         if key:
             data = self.get(str(key))
         if data and isinstance(data, str):
             with suppress(BaseException):
-                data = ast.literal_eval(data)
+                data = ast.literal_eval(
+                    data
+                )
         return data
 
-    def set_key(self, key, value, cache_only=False):
+    def set_key(
+        self, key, value, cache_only=False
+    ):
         value = self._get_data(data=value)
         self._cache[key] = value
         if cache_only:
             return
-        return self.set(str(key), str(value))
+        return self.set(
+            str(key), str(value)
+        )
 
     def rename(self, key1, key2):
         _ = self.get_key(key1)

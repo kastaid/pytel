@@ -10,12 +10,13 @@ from datetime import datetime
 from typing import Optional
 from pytanggalmerah import TanggalMerah
 from . import (
+    ParseMode,
     TimeZone,
+    _try_purged,
+    plugins_helper,
     px,
     pytel,
-    plugins_helper,
-    ParseMode,
-    _try_purged,
+    random_prefixies,
 )
 
 
@@ -61,8 +62,11 @@ m11 = ["nov", "november"]
 m12 = ["dec", "desember", "december"]
 
 
-@pytel.instruction(["calendar -now", "calendar -m"], outgoing=True)
-async def _help(client, message):
+@pytel.instruction(
+    ["calendar -now", "calendar -m"],
+    outgoing=True,
+)
+async def _calendar(client, message):
     point = message.text.split(None, 2)
     ye = datetime.now().year
     da = datetime.now().strftime(
@@ -71,69 +75,115 @@ async def _help(client, message):
             "Time",
         ),
     )
-    _ = TanggalMerah(cache_path=None, cache_time=600)
+    _ = TanggalMerah(
+        cache_path=None, cache_time=600
+    )
     _.set_timezone(TimeZone)
     if _.is_holiday():
         dayoff = "".join(_.get_event())
     else:
-        dayoff = "{}".format("Now isn't a holiday.")
+        dayoff = "{}".format(
+            "Now isn't a holiday."
+        )
     try:
         if point[1] == "-now":
             mo = datetime.now().month
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m1:
+        elif (
+            point[1] == "-m"
+            and point[2] in m1
+        ):
             mo = 1
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m2:
+        elif (
+            point[1] == "-m"
+            and point[2] in m2
+        ):
             mo = 2
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m3:
+        elif (
+            point[1] == "-m"
+            and point[2] in m3
+        ):
             mo = 3
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m4:
+        elif (
+            point[1] == "-m"
+            and point[2] in m4
+        ):
             mo = 4
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m5:
+        elif (
+            point[1] == "-m"
+            and point[2] in m5
+        ):
             mo = 5
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m6:
+        elif (
+            point[1] == "-m"
+            and point[2] in m6
+        ):
             mo = 6
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m7:
+        elif (
+            point[1] == "-m"
+            and point[2] in m7
+        ):
             mo = 7
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m8:
+        elif (
+            point[1] == "-m"
+            and point[2] in m8
+        ):
             mo = 8
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m9:
+        elif (
+            point[1] == "-m"
+            and point[2] in m9
+        ):
             mo = 9
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m10:
+        elif (
+            point[1] == "-m"
+            and point[2] in m10
+        ):
             mo = 10
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m11:
+        elif (
+            point[1] == "-m"
+            and point[2] in m11
+        ):
             mo = 11
             ca = month(ye, mo, 2, 1)
 
-        elif point[1] == "-m" and point[2] in m12:
+        elif (
+            point[1] == "-m"
+            and point[2] in m12
+        ):
             mo = 12
             ca = month(ye, mo, 2, 1)
 
     except BaseException:
         exam = calendar_command()
-        await message.reply("{}".format(str(exam)), parse_mode=ParseMode.HTML, disable_notification=True)
-        return await _try_purged(message, 3.5)
+        await message.reply(
+            "{}".format(str(exam)),
+            parse_mode=ParseMode.HTML,
+            disable_notification=True,
+        )
+        return await _try_purged(
+            message, 3.5
+        )
 
     date_and_time = """
 <strong><i>{}:</i></strong>
@@ -159,6 +209,6 @@ async def _help(client, message):
 
 
 plugins_helper["calendar"] = {
-    f"{px}calendar -now": "Get calendar now",
-    f"{px}calendar -m [month]": "Get calendar month",
+    f"{random_prefixies(px)}calendar -now": "Get calendar for now.",
+    f"{random_prefixies(px)}calendar -m [month]": "Get calendar month information.",
 }

@@ -22,10 +22,18 @@ PYTEL = r"""
 
 
 def loading():
-    print("Checking if Pyrogram is installed...\n")
+    print(
+        "Checking if Pyrogram is installed...\n"
+    )
     for _ in range(3):
         for frame in r"-\|/-\|/":
-            print("\b", frame, sep="", end="", flush=True)
+            print(
+                "\b",
+                frame,
+                sep="",
+                end="",
+                flush=True,
+            )
             sleep(0.1)
 
 
@@ -42,11 +50,19 @@ def get_api_id_and_hash():
         "Get your API ID and API HASH from my.telegram.org\n\n",
     )
     try:
-        API_ID = int(input("Please enter your API ID: "))
+        API_ID = int(
+            input(
+                "Please enter your API ID: "
+            )
+        )
     except ValueError:
-        print("APP ID must be an integer.\nQuitting...")
+        print(
+            "APP ID must be an integer.\nQuitting..."
+        )
         exit(0)
-    API_HASH = input("Please enter your API HASH: ")
+    API_HASH = input(
+        "Please enter your API HASH: "
+    )
     return API_ID, API_HASH
 
 
@@ -58,7 +74,9 @@ def session():
         x = "\bFound an existing installation of Pyrogram...\nSuccessfully Imported.\n\n"
     except BaseException:
         print("\nInstalling Pyrogram...")
-        os.system("pip install pyrogram tgcrypto")
+        os.system(
+            "pip install pyrogram tgcrypto"
+        )
         x = "\bDone. Installed and imported Pyrogram."
         from pyrogram import Client
 
@@ -68,18 +86,31 @@ def session():
 
     # generate a session
     API_ID, API_HASH = get_api_id_and_hash()
-    print("Enter phone number when asked.\n\n")
+    print(
+        "Enter phone number when asked.\n\n"
+    )
     try:
-        with Client(name="pytel", api_id=API_ID, api_hash=API_HASH, in_memory=True) as pytel:
-            ss = pytel.export_session_string()
+        with Client(
+            name="pytel",
+            api_id=API_ID,
+            api_hash=API_HASH,
+            in_memory=True,
+        ) as pytel:
+            ss = (
+                pytel.export_session_string()
+            )
             pytel.send_message(
                 "me",
                 f"`{ss}`\n\nAbove is your Pyrogram Session String for pytel.\n**DO NOT SHARE it.**",
             )
-            print("Session has been sent to your saved messages!")
+            print(
+                "Session has been sent to your saved messages!"
+            )
             exit(0)
     except Exception as excp:
-        print("Unexpected error occurred while creating session, make sure to validate your inputs.")
+        print(
+            "Unexpected error occurred while creating session, make sure to validate your inputs."
+        )
         print(excp)
 
 
@@ -87,7 +118,11 @@ def main():
     clear_screen()
     print(PYTEL)
     try:
-        type_of_ss = str(input("\npytel using pyrogram session.\n\nDo you want to generate?\n\nEnter choice(Y/n) :  "))
+        type_of_ss = str(
+            input(
+                "\npytel using pyrogram session.\n\nDo you want to generate?\n\nEnter choice(Y/n) :  "
+            )
+        )
     except Exception as excp:
         print(excp)
         exit(0)

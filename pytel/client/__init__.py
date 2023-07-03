@@ -5,5 +5,8 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from .pyclient import loopers, PytelClient
-from .utils import plugins_helper, time_formatter
+from .pyclient import PytelClient, loopers
+from .utils import (
+    plugins_helper,
+    time_formatter,
+)
