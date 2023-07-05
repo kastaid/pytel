@@ -2,6 +2,7 @@ wheel
 setuptools
 frozenlist
 requests
+psutil
 
 # --- setup ---
 

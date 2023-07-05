@@ -5,17 +5,16 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-
+from asyncache import cached
 from base64 import urlsafe_b64decode
 from math import ceil
 from struct import unpack
-from time import perf_counter
 from typing import Callable
-from asyncache import cached
-from cachetools import TTLCache
+from cachetools import MRUCache
 from pyrogram.types import (
     InlineKeyboardButton,
 )
+from ...logger import pylog as send_log
 from ..utils import SaveDict
 
 
@@ -125,36 +124,37 @@ def plugins_button(
 
 
 @cached(
-    TTLCache(
+    MRUCache(
         maxsize=1024,
-        ttl=(120 * 30),
-        timer=perf_counter,
-    )
+    ),
 )
 def unpack_inline(
     inline_message_id: str,
 ) -> Callable:
-    (
-        dc_id,
-        message_id,
-        chat_id,
-        query_id,
-    ) = unpack(
-        "<iiiq",
-        urlsafe_b64decode(
-            inline_message_id
-            + "="
-            * (len(inline_message_id) % 4),
-        ),
-    )
-    x = int(
-        str(chat_id).replace("-1", "-1001")
-    )
-    _ = {
-        "dc_id": dc_id,
-        "message_id": message_id,
-        "chat_id": x,
-        "query_id": query_id,
-        "inline_message_id": inline_message_id,
-    }
-    return SaveDict(_)
+    try:
+        (
+            dc_id,
+            message_id,
+            chat_id,
+            query_id,
+        ) = unpack(
+            "<iiiq",
+            urlsafe_b64decode(
+                inline_message_id
+                + "="
+                * (len(inline_message_id) % 4),
+            ),
+        )
+        x = int(
+            str(chat_id).replace("-1", "-1001")
+        )
+        _ = {
+            "dc_id": dc_id,
+            "message_id": message_id,
+            "chat_id": x,
+            "query_id": query_id,
+            "inline_message_id": inline_message_id,
+        }
+        return SaveDict(_)
+    except BaseException as excp:
+        send_log.exception(excp)

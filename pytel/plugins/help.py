@@ -213,18 +213,6 @@ async def _(client, cq: CallbackQuery):
                         == "MESSAGE_NOT_MODIFIED"
                     ):
                         await sleep(0.1)
-                    else:
-                        await sleep(0.1)
-                    with suppress(
-                        Exception
-                    ):
-                        await cq.edit_message_text(
-                            text=text,
-                            reply_markup=InlineKeyboardMarkup(
-                                button
-                            ),
-                            disable_web_page_preview=True,
-                        )
 
         elif prev_page:
             curr_page = int(prev_page[1])
@@ -257,18 +245,6 @@ async def _(client, cq: CallbackQuery):
                     await sleep(0.1)
                 else:
                     await sleep(0.1)
-                with suppress(Exception):
-                    await cq.edit_message_text(
-                        text=plugins_text,
-                        reply_markup=InlineKeyboardMarkup(
-                            plugins_button(
-                                curr_page
-                                - 1,
-                                plugins_helper,
-                                "help",
-                            )
-                        ),
-                    )
 
         elif next_page:
             nx_page = int(next_page[1])
@@ -301,17 +277,6 @@ async def _(client, cq: CallbackQuery):
                     await sleep(0.1)
                 else:
                     await sleep(0.1)
-                with suppress(Exception):
-                    await cq.edit_message_text(
-                        text=plugins_text,
-                        reply_markup=InlineKeyboardMarkup(
-                            plugins_button(
-                                nx_page + 1,
-                                plugins_helper,
-                                "help",
-                            )
-                        ),
-                    )
 
         elif back_page:
             with suppress(FloodWait):
@@ -328,13 +293,13 @@ async def _(client, cq: CallbackQuery):
 
         elif close_page:
             cq.data.split()
-            un = unpack_inline(
-                cq.inline_message_id
-            )
             for _ in pytel._client:
                 if cq.from_user.id == int(
                     _.me.id
                 ):
+                    un = unpack_inline(
+                        cq.inline_message_id
+                    )
                     chat_id: int = un[
                         "chat_id"
                     ]
@@ -342,8 +307,8 @@ async def _(client, cq: CallbackQuery):
                         "message_id"
                     ]
                     await _.delete_messages(
-                        chat_id=chat_id,
-                        message_ids=message_id,
+                        chat_id=int(chat_id),
+                        message_ids=int(message_id),
                     )
 
 
