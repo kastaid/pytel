@@ -5,19 +5,30 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
+from asyncio import Lock
 from datetime import datetime
+from os import getpid
 from platform import python_version, uname
 from textwrap import indent
-from time import perf_counter, time
+from time import time
+from typing import Optional
 import packaging
+import psutil
 from git import __version__ as git_ver
 from pip import __version__ as pipver
 from pyrogram import __version__
+from pyrogram.types import (
+    InlineQueryResultArticle,
+    InputTextMessageContent,
+    CallbackQuery,
+    InlineKeyboardMarkup,
+)
 from pytgcalls import __version__ as pytgver
 from version import __version__ as b_ver
 from . import (
     ParseMode,
     Ping,
+    PingDelayDisconnect,
     __license__,
     _try_purged,
     eor,
@@ -25,44 +36,19 @@ from . import (
     plugins_helper,
     px,
     pytel,
+    pytel_tgb,
     random_prefixies,
     start_time,
     time_formatter,
     tz,
+    buttons,
+    filters,
 )
 
-
-@pytel.instruction(
-    ["ping", "pong"],
-    supersu=True,
-    disable_errors=True,
-)
-@pytel.instruction(
-    ["ping", "pong"],
-    outgoing=True,
-    disable_errors=True,
-)
-async def _ping(client, message):
-    start_t = time()
-    r = await eor(message, text="...")
-    end_t = time()
-    time_taken_s = (end_t - start_t) * 1000
-    # pyrogram
-    times = perf_counter()
-    await client.invoke(Ping(ping_id=0))
-    pings = round(perf_counter() - times, 3)
-    txt = f"""
-**Pong!!**
-**Server:** `{time_taken_s:.3f} ms`
-**Pyrogram:** `{pings} ms`
-"""
-    await eor(r, text=txt)
+lock = Lock()
 
 
-@pytel.instruction(
-    ["alive", "on"], outgoing=True
-)
-async def _alive(client, message):
+def _ialive() -> Optional[str]:
     LAYER = layer
     my_uptime = time_formatter(
         (time() - start_time) * 1000
@@ -146,12 +132,201 @@ async def _alive(client, message):
     wrp = indent(
         text_active, " ", lambda line: True
     )
-    await message.reply(
-        text=wrp,
-        parse_mode=ParseMode.HTML,
-        disable_web_page_preview=True,
+    return str(wrp)
+
+
+def sys_stats():
+    cpu = psutil.cpu_percent()
+    mem = psutil.virtual_memory().percent
+    disk = psutil.disk_usage("/").percent
+    process = psutil.Process(getpid())
+    stats = f"""
+PYTEL
+------------------
+UPTIME: {time_formatter((time() - start_time) * 1000)}
+BOT: {round(process.memory_info()[0] / 1024 ** 2)} MB
+CPU: {cpu}%
+RAM: {mem}%
+DISK: {disk}%
+
+Copyright (C) 2023-present kastaid
+"""
+    return stats
+
+
+@pytel.instruction(
+    ["ping", "pong"],
+    supersu=True,
+)
+@pytel.instruction(
+    ["ping", "pong"],
+    outgoing=True,
+)
+async def _iping(client, message):
+    if (
+        message.command[0] == "ping"
+        or "pong"
+    ):
+        plugins_n = "ping"
+        try:
+            _ = await client.get_inline_bot_results(
+                pytel_tgb.me.username,
+                plugins_n,
+            )
+            for name in _.results:
+                await message.reply_inline_bot_result(
+                    _.query_id, name.id
+                )
+        except Exception as error:
+            return await eor(
+                message, text=error
+            )
+        return await _try_purged(message)
+
+
+@pytel.instruction(
+    ["alive", "on"], supersu=True
+)
+@pytel.instruction(
+    ["alive", "on"], outgoing=True
+)
+async def _ialv(client, message):
+    if (
+        message.command[0] == "alive"
+        or "on"
+    ):
+        plugins_n = "alive"
+        try:
+            _ = await client.get_inline_bot_results(
+                pytel_tgb.me.username,
+                plugins_n,
+            )
+            for name in _.results:
+                await message.reply_inline_bot_result(
+                    _.query_id, name.id
+                )
+        except Exception as error:
+            return await eor(
+                message, text=error
+            )
+        return await _try_purged(message)
+
+
+@pytel_tgb.on_callback_query(
+    filters.regex("sys_stats")
+)
+async def _sys_callback(
+    client, cq: CallbackQuery
+):
+    text = sys_stats()
+    await pytel_tgb.answer_callback_query(
+        cq.id, text, show_alert=True
     )
-    return await _try_purged(message, 3)
+
+
+@pytel_tgb.on_inline_query(
+    filters.regex("^ping")
+)
+async def _ping_inline(
+    client, cq: CallbackQuery
+):
+    # pyrogram
+    await lock.acquire()
+    start_pyro = time()
+    await client.invoke(
+        Ping(ping_id=client.rnd_id())
+    )
+    lock.release()
+    p1 = time()
+    pings_ = f"{str(round((start_pyro - p1) * -50, 2))}"
+    # delay ping
+    await lock.acquire()
+    start_delay = time()
+    await client.invoke(
+        PingDelayDisconnect(
+            ping_id=client.rnd_id(),
+            disconnect_delay=15,
+        )
+    )
+    lock.release()
+    d1 = time()
+    delay_ping = f"{str(round((start_delay - d1) * -50, 2))}"
+    txt = f"""
+<b><u>PYROGRAM</b></u>
+ ├ <b>Speed:</b> <code>{pings_} ms</code>
+ └ <b>Delay:</b> <code>{delay_ping} ms</code>
+"""
+    rpm = [
+        [
+            buttons(
+                "ꜱᴛᴀᴛꜱ",
+                callback_data="sys_stats",
+            )
+        ],
+    ]
+    await client.answer_inline_query(
+        cq.id,
+        cache_time=600,
+        results=[
+            (
+                InlineQueryResultArticle(
+                    title="PING\n@kastaid #pytel",
+                    reply_markup=InlineKeyboardMarkup(
+                        rpm
+                    ),
+                    input_message_content=InputTextMessageContent(
+                        message_text=txt,
+                        parse_mode=ParseMode.HTML,
+                        disable_web_page_preview=True,
+                    ),
+                )
+            )
+        ],
+    )
+
+
+@pytel_tgb.on_inline_query(
+    filters.regex("^alive")
+)
+async def _alive_inline(
+    client, cq: CallbackQuery
+):
+    text = _ialive()
+    rpm = [
+        [
+            buttons(
+                "KASTA ID 🇮🇩",
+                url="https://t.me/kastaid",
+            ),
+            buttons(
+                "KASTA OT",
+                url="https://t.me/kastaot",
+            ),
+            buttons(
+                "REPO",
+                url="https://github.com/kastaid/pytel",
+            ),
+        ],
+    ]
+    await client.answer_inline_query(
+        cq.id,
+        cache_time=600,
+        results=[
+            (
+                InlineQueryResultArticle(
+                    title="ALIVE\n@kastaid #pytel",
+                    reply_markup=InlineKeyboardMarkup(
+                        rpm
+                    ),
+                    input_message_content=InputTextMessageContent(
+                        message_text=text,
+                        parse_mode=ParseMode.HTML,
+                        disable_web_page_preview=True,
+                    ),
+                )
+            )
+        ],
+    )
 
 
 @pytel.instruction(
@@ -162,16 +337,14 @@ async def _repo(client, message):
         "Click Here",
     )
     await message.reply(
-        message,
         text=text,
         parse_mode=ParseMode.MARKDOWN,
-        disable_web_preview=True,
     )
     await _try_purged(message, 1.5)
 
 
 plugins_helper["bot"] = {
     f"{random_prefixies(px)}alive / {random_prefixies(px)}on": "Check alive & version.",
-    f"{random_prefixies(px)}ping": "Check how long it takes to ping.",
+    f"{random_prefixies(px)}ping / {random_prefixies(px)}pong": "Check how long it takes to ping.",
     f"{random_prefixies(px)}repo": "To see source code.",
 }

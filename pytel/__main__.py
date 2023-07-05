@@ -90,7 +90,7 @@ async def runner():
     for _ in pytl:
         try:
             await _.start()
-            await _.notify_login()
+            _.notify_login()
             await auto_pilots(_)
             await sleep(2)
         except Exception as exc:

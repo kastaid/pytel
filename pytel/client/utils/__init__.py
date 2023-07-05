@@ -11,7 +11,7 @@ from .fetching import (
     get_blacklisted,
     screenshots,
 )
-from .helper import plugins_helper
+from .helper import plugins_helper, SaveDict
 from .misc import (
     RunningCommand,
     _c,

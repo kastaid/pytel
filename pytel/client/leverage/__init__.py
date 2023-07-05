@@ -11,4 +11,8 @@ from ._asserts import (
     get_text,
     replied,
 )
-from ._inline import plugins_button
+from ._inline import (
+    plugins_button,
+    unpack_inline,
+    buttons,
+)

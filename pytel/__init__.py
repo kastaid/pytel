@@ -19,6 +19,7 @@ loopers = get_event_loop()
 try:
     from pathlib import Path
     from shutil import rmtree
+    from sys import exit
     from time import time
     from pyrogram import Client
     from .client import PytelClient
@@ -116,7 +117,8 @@ try:
     )
     pytel = PytelClient(name="pytel")
 except Exception as excp:
-    send_log.error(excp)
+    send_log.exception(excp)
+    exit(1)
 
 pytl = [
     _

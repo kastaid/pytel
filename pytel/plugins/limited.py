@@ -22,7 +22,7 @@ from . import (
 @pytel.instruction(
     ["limit", "limited"], outgoing=True
 )
-async def _tiktok(client, message):
+async def _limited(client, message):
     spambot = "@SpamBot"
     await client.unblock_user(spambot)
     x = await eor(

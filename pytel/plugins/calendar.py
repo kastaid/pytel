@@ -15,13 +15,14 @@ from . import (
     _try_purged,
     plugins_helper,
     px,
+    tz,
     pytel,
     random_prefixies,
 )
 
 
 def calendar_command() -> Optional[str]:
-    u_1 = u_2 = u_3 = px
+    u_1 = u_2 = u_3 = random_prefixies(px)
     calendar_cmd = """
 <b>{} ›</b>
 
@@ -68,9 +69,9 @@ m12 = ["dec", "desember", "december"]
 )
 async def _calendar(client, message):
     point = message.text.split(None, 2)
-    ye = datetime.now().year
-    da = datetime.now().strftime(
-        "{}: %d/%m/%Y\n{}: %H:%M:%S".format(
+    ye = datetime.now(tz).year
+    da = datetime.now(tz).strftime(
+        "<b>{}:</b> <u>%d/%m/%Y</u>\n<b>{}:</b> <u>%H:%M:%S</u>".format(
             "Date",
             "Time",
         ),
@@ -87,7 +88,7 @@ async def _calendar(client, message):
         )
     try:
         if point[1] == "-now":
-            mo = datetime.now().month
+            mo = datetime.now(tz).month
             ca = month(ye, mo, 2, 1)
 
         elif (
@@ -190,8 +191,8 @@ async def _calendar(client, message):
 
 <code>{}</code>
 <u><b>{}</u></b>
-<code>{}</code>
-<code>{}: {}</code>
+{}
+<b>{}:</b> <u>{}</u>
 """.format(
         "The month you requested",
         ca,

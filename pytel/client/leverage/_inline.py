@@ -5,10 +5,18 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
+
+from base64 import urlsafe_b64decode
 from math import ceil
+from struct import unpack
+from time import perf_counter
+from typing import Callable
+from asyncache import cached
+from cachetools import TTLCache
 from pyrogram.types import (
     InlineKeyboardButton,
 )
+from ..utils import SaveDict
 
 
 class EqInlineKeyboardButton(
@@ -22,6 +30,16 @@ class EqInlineKeyboardButton(
 
     def __gt__(self, other):
         return self.text > other.text
+
+
+def buttons(
+    text,
+    **kwargs,
+) -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        text=text,
+        **kwargs,
+    )
 
 
 def plugins_button(
@@ -104,3 +122,39 @@ def plugins_button(
         ]
 
     return get_plugins
+
+
+@cached(
+    TTLCache(
+        maxsize=1024,
+        ttl=(120 * 30),
+        timer=perf_counter,
+    )
+)
+def unpack_inline(
+    inline_message_id: str,
+) -> Callable:
+    (
+        dc_id,
+        message_id,
+        chat_id,
+        query_id,
+    ) = unpack(
+        "<iiiq",
+        urlsafe_b64decode(
+            inline_message_id
+            + "="
+            * (len(inline_message_id) % 4),
+        ),
+    )
+    x = int(
+        str(chat_id).replace("-1", "-1001")
+    )
+    _ = {
+        "dc_id": dc_id,
+        "message_id": message_id,
+        "chat_id": x,
+        "query_id": query_id,
+        "inline_message_id": inline_message_id,
+    }
+    return SaveDict(_)

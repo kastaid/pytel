@@ -9,21 +9,22 @@ from contextlib import suppress
 from pyrogram import filters
 from pyrogram.enums import ParseMode
 from pyrogram.raw.all import layer
-from pyrogram.raw.functions import Ping
+from pyrogram.raw.functions import (
+    Ping,
+    PingDelayDisconnect,
+)
 from validators.url import url as is_url
-from pytel import pytel, pytel_tgb
+from pytel import pytel, pytel_tgb, pytl
 from .. import __license__, start_time
 from ..client import (
     plugins_helper,
     time_formatter,
-)
-from ..client.leverage import (
+    plugins_button,
+    unpack_inline,
     _try_purged,
     eor,
     get_text,
     replied,
-)
-from ..client.utils import (
     LE,
     fetch_adzan,
     mention_html,
@@ -31,6 +32,7 @@ from ..client.utils import (
     random_prefixies,
     screenshots,
     tz,
+    buttons,
 )
 from ..config import PREFIX as px, TimeZone
 from ..logger import pylog as send_log

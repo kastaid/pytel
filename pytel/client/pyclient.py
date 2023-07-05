@@ -5,7 +5,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from asyncio import sleep
+from asyncio import sleep, Lock
 from contextlib import suppress
 from datetime import datetime
 from os import getpid
@@ -20,7 +20,7 @@ from typing import (
     Union,
 )
 from pyrogram import (
-    Client,
+    Client as Raw,
     __version__,
     filters,
 )
@@ -63,7 +63,7 @@ from .utils import (
 )
 
 
-class PytelClient(Client):
+class PytelClient(Raw):
     _client = []
 
     def __init__(
@@ -98,6 +98,7 @@ class PytelClient(Client):
         ).get_group_call()
         self.send_log = send_log
         self.loop = loopers
+        self.lock = Lock()
 
     def instruction(
         self,
@@ -145,7 +146,7 @@ class PytelClient(Client):
             func: Callable,
         ) -> Callable:
             async def wrapper(
-                client: Client,
+                client: PytelClient,
                 message: Message,
             ):
                 user_id = client.me.id
@@ -341,26 +342,20 @@ class PytelClient(Client):
             func
         )
 
-    async def notify_login(self):
-        try:
-            self._me = await self.get_me()
-            _fn = (
-                self._me.first_name
-                if self._me.first_name
-                else "ㅤ"
-            )
-            _ln = (
-                self._me.last_name
-                if self._me.last_name
-                else "ㅤ"
-            )
-            self.send_log.success(
-                f"Started on {_fn}{_ln}"
-            )
-        except BaseException as excp:
-            self.send_log.exception(
-                f"Error : {excp}"
-            )
+    def notify_login(self):
+        _fn = (
+            self.me.first_name
+            if self.me.first_name
+            else "ㅤ"
+        )
+        _ln = (
+            self.me.last_name
+            if self.me.last_name
+            else "ㅤ"
+        )
+        self.send_log.success(
+            f"Started on {_fn}{_ln}"
+        )
 
     def _copyright(
         self,
@@ -412,7 +407,7 @@ class PytelClient(Client):
         elif LOGCHAT_ID:
             send_to = int(LOGCHAT_ID)
         else:
-            send_to = None
+            send_to = "self"
         text = """
 <b><u>PYTEL</b></u> is up and running!
 ├ <b>PID :</b>  <i>{}</i>
@@ -456,8 +451,8 @@ class PytelClient(Client):
                 ):
                     self.send_log.warning(
                         "({} - {}) YOU ARE BLACKLISTED !!".format(
-                            self._me,
-                            self._me.id,
+                            self.me.first_name,
+                            self.me.id,
                         )
                     )
                     exit(1)
