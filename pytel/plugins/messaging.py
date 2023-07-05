@@ -17,7 +17,7 @@ from . import (
 @pytel.instruction(
     ["del", "delete"], outgoing=True
 )
-async def _tiktok(client, message):
+async def _delete(client, message):
     replieds = message.reply_to_message
     if replieds:
         await _try_purged(replieds)
