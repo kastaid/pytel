@@ -87,7 +87,7 @@ async def _help(client, message):
             return
         await eor(
             message,
-            text=f"<b>Plugins Not Found</b> for <code>{plugins_name}</code>\n<b><u>Example</u>:</b> <code>{random_prefixies(px)}ihelp</code8> to see inline helper.",
+            text=f"<b>Plugins Not Found</b> for <code>{plugins_name}</code>\n<b><u>Example</u>:</b> <code>{random_prefixies(px)}ihelp</code> to see inline helper.",
         )
         return
 
