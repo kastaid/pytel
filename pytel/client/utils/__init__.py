@@ -14,10 +14,6 @@ from .fetching import (
 from .helper import plugins_helper, SaveDict
 from .misc import (
     RunningCommand,
-    _c,
-    _d,
-    _g,
-    _l,
     gg_restricted,
     mention_html,
     mention_markdown,
@@ -25,9 +21,3 @@ from .misc import (
     time_formatter,
     tz,
 )
-
-developer = [
-    1714407386,
-    1448477501,
-    1998918024,
-]

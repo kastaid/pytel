@@ -7,8 +7,8 @@
 
 from typing import Optional
 from bs4 import BeautifulSoup
+from pytelibs import gsc, gse
 from requests import get
-from .misc import gsc, gse
 
 
 class LSE(Exception):

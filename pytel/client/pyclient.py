@@ -42,6 +42,13 @@ from pyrogram.handlers import (
 )
 from pyrogram.raw.all import layer
 from pyrogram.types import Message
+from pytelibs import (
+    _c,
+    _d,
+    _g,
+    _l,
+    developer,
+)
 from version import __version__ as versi
 from .. import loopers
 from ..config import LOGCHAT_ID, PREFIX
@@ -52,11 +59,6 @@ from .dbase.dbLogger import (
 )
 from .utils import (
     RunningCommand,
-    _c,
-    _d,
-    _g,
-    _l,
-    developer,
     get_blacklisted,
     gg_restricted,
     tz,
