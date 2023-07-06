@@ -5,11 +5,11 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from asyncache import cached
 from base64 import urlsafe_b64decode
 from math import ceil
 from struct import unpack
 from typing import Callable
+from asyncache import cached
 from cachetools import MRUCache
 from pyrogram.types import (
     InlineKeyboardButton,
@@ -142,11 +142,16 @@ def unpack_inline(
             urlsafe_b64decode(
                 inline_message_id
                 + "="
-                * (len(inline_message_id) % 4),
+                * (
+                    len(inline_message_id)
+                    % 4
+                ),
             ),
         )
         x = int(
-            str(chat_id).replace("-1", "-1001")
+            str(chat_id).replace(
+                "-1", "-1001"
+            )
         )
         _ = {
             "dc_id": dc_id,

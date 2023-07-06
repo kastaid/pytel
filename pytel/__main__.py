@@ -91,7 +91,7 @@ async def runner():
         try:
             await _.start()
             _.notify_login()
-            await auto_pilots(_)
+            await auto_pilots(_, pytel_tgb)
             await sleep(2)
         except Exception as exc:
             send_log.exception(exc)
@@ -102,7 +102,7 @@ async def runner():
         _copyright=f"{__copyright__}",
         _license=f"{__license__}",
     )
-    await _.running_message()
+    await _.running_message(pytel_tgb)
     await idle()
     for kz in pytl:
         await kz.stop()

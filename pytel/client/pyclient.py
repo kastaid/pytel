@@ -208,110 +208,86 @@ class PytelClient(Raw):
                     await sleep(
                         excp.value + 10
                     )
-                    try:
-                        await func(
-                            client, message
+                except Exception as excp:
+                    if not disable_errors:
+                        send_log.error(excp)
+                        date = datetime.now(
+                            tz
+                        ).strftime(
+                            "%d/%m/%Y %I:%M:%S %p"
                         )
-                    except (
-                        Exception
-                    ) as excp:
-                        if (
-                            not disable_errors
+                        format_text = "<code>====</code> ⚠️ <u>Attention</u> ⚠️ <code>====</code>"
+                        format_text += "\nPytel is having Problems."
+                        format_text += "\n( <u>Please report issue to</u> @kastaot )"
+                        format_text += (
+                            "\n\n<b>• Datetime:</b> <code>"
+                            + date
+                            + "</code>"
+                        )
+                        format_text += "\n\n<b>Evidence ⬇️ </b>"
+                        format_text += (
+                            "\n\n<b>🚨 Event Trigger:</b> <code>"
+                            + str(
+                                message.text
+                            )
+                            + "</code>"
+                        )
+                        format_text += (
+                            "\n\n<b>🚨 Traceback:</b> <code>"
+                            + str(fmex())
+                            + "</code>"
+                        )
+                        format_text += (
+                            "\n\n<b>🚨 Error text:</b> <code>"
+                            + str(
+                                exc_info()[
+                                    1
+                                ]
+                            )
+                            + "</code>"
+                        )
+                        format_text += "\n\n<code>======</code> <u>History Commit</u> <code>======</code>"
+                        format_text += "\n\n<b>Last 4 Commit:</b> \n"
+                        (
+                            stdout,
+                            stderr,
+                        ) = RunningCommand(
+                            'git log --pretty=format:"%an: %s" -4'
+                        )
+                        result = str(
+                            stdout
+                        ) + str(stderr)
+                        format_text += (
+                            "<code>"
+                            + str(result)
+                            + "</code>"
+                        )
+                        with suppress(
+                            MessageIdInvalid
                         ):
-                            send_log.error(
-                                excp
-                            )
-                            date = datetime.now(
-                                tz
-                            ).strftime(
-                                "%d/%m/%Y %I:%M:%S %p"
-                            )
-                            format_text = "<code>====</code> ⚠️ <u>Attention</u> ⚠️ <code>====</code>"
-                            format_text += "\nPytel is having Problems."
-                            format_text += "\n( <u>Please report issue to</u> @kastaot )"
-                            format_text += (
-                                "\n\n<b>• Datetime:</b> <code>"
-                                + date
-                                + "</code>"
-                            )
-                            format_text += "\n\n<b>Evidence ⬇️ </b>"
-                            format_text += (
-                                "\n\n<b>🚨 Event Trigger:</b> <code>"
-                                + str(
-                                    message.text
+                            if send_to:
+                                respond_text = (
+                                    "Sorry, <b>Pytel</b> has been crashed."
+                                    f"\nThe error logs are send in ur <b><u>Logger Channel</b></u>.\n<b>LOGGER ID:</b> <code>{send_to}</code>"
                                 )
-                                + "</code>"
-                            )
-                            format_text += (
-                                "\n\n<b>🚨 Traceback:</b> <code>"
-                                + str(
-                                    fmex()
+                                await message.edit(
+                                    respond_text
                                 )
-                                + "</code>"
-                            )
-                            format_text += (
-                                "\n\n<b>🚨 Error text:</b> <code>"
-                                + str(
-                                    exc_info()[
-                                        1
-                                    ]
+                                await sleep(
+                                    2
                                 )
-                                + "</code>"
-                            )
-                            format_text += "\n\n<code>======</code> <u>History Commit</u> <code>======</code>"
-                            format_text += "\n\n<b>Last 5 Commit:</b> \n"
-                            (
-                                stdout,
-                                stderr,
-                            ) = RunningCommand(
-                                'git log --pretty=format:"%an: %s" -3'
-                            )
-                            result = str(
-                                stdout
-                            ) + str(stderr)
-                            format_text += (
-                                "<code>"
-                                + str(
-                                    result
+                                from pytel import (
+                                    pytel_tgb,
                                 )
-                                + "</code>"
-                            )
-                            with suppress(
-                                MessageIdInvalid
-                            ):
-                                if send_to:
-                                    respond_text = (
-                                        "Sorry, <b>Pytel</b> has been crashed."
-                                        "\nThe error logs are send in ur <b><u>Logger Chat</b></u>."
-                                    )
-                                    await message.edit(
-                                        respond_text
-                                    )
-                                    await sleep(
-                                        2
-                                    )
-                                    await client.send_message(
-                                        int(
-                                            send_to
-                                        ),
-                                        format_text,
-                                        parse_mode=ParseMode.HTML,
-                                        disable_notification=True,
-                                    )
-                                else:
-                                    respond_text = (
-                                        "Sorry, <b>Pytel</b> has been crashed."
-                                        "\nThe error logs are send in ur <b><u>Save Messages</b></u>."
-                                    )
-                                    await message.edit(
-                                        respond_text
-                                    )
-                                    await client.send_message(
-                                        "self",
-                                        format_text,
-                                        parse_mode=ParseMode.HTML,
-                                        disable_notification=True,
-                                    )
+
+                                await pytel_tgb.send_message(
+                                    int(
+                                        send_to
+                                    ),
+                                    format_text,
+                                    parse_mode=ParseMode.HTML,
+                                    disable_notification=False,
+                                )
 
             for _ in self._client:
                 if force_edit:
@@ -393,7 +369,7 @@ class PytelClient(Raw):
                 f"Exception : {excp}"
             )
 
-    async def running_message(self):
+    async def running_message(self, p):
         user_id = self.me.id
         if (
             already_logger(user_id=user_id)
@@ -407,7 +383,7 @@ class PytelClient(Raw):
         elif LOGCHAT_ID:
             send_to = int(LOGCHAT_ID)
         else:
-            send_to = "self"
+            send_to = None
         text = """
 <b><u>PYTEL</b></u> is up and running!
 ├ <b>PID :</b>  <i>{}</i>
@@ -422,13 +398,11 @@ class PytelClient(Raw):
             __version__,
             "".join(PREFIX),
         )
-        dt = datetime.now(tz)
-        await self.send_message(
+        await p.send_message(
             int(send_to),
             text=text,
             parse_mode=ParseMode.HTML,
             disable_notification=False,
-            schedule_date=dt,
         )
 
     async def start(self):

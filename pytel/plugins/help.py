@@ -307,8 +307,12 @@ async def _(client, cq: CallbackQuery):
                         "message_id"
                     ]
                     await _.delete_messages(
-                        chat_id=int(chat_id),
-                        message_ids=int(message_id),
+                        chat_id=int(
+                            chat_id
+                        ),
+                        message_ids=int(
+                            message_id
+                        ),
                     )
 
 

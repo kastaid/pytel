@@ -6,6 +6,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
+from pyrogram.types import ChatPrivileges
 from ..config import LOGCHAT_ID
 from ..logger import pylog as send_log
 from .dbase.dbLogger import (
@@ -14,7 +15,9 @@ from .dbase.dbLogger import (
 )
 
 
-async def auto_pilots(_) -> None:
+async def auto_pilots(_, tgb) -> None:
+    if tgb.me.is_bot:
+        b_username = tgb.me.username
     user_id = _.me.id
     if LOGCHAT_ID or already_logger(
         user_id
@@ -36,24 +39,41 @@ async def auto_pilots(_) -> None:
         )
         name = first_name + last_name
     send_log.info(
-        f"Creating a group LOGGER for {name}"
+        f"Creating a channel LOGGER for {name}"
     )
     try:
-        group_name = "KASTA ID ( LOGGER )"
-        group = await _.create_supergroup(
-            group_name
+        channel_name = "KASTA ID ( LOGGER )"
+        channel = await _.create_channel(
+            channel_name
         )
-        logger_id = group.id
-        description = "DON'T DELETE THIS GROUP !!\n\nUser ID : {}\nGroup ID : {}\n\nOur Channel: @kastaid".format(
-            user_id, logger_id
+        logger_id: int = channel.id
+        await sleep(1)
+        await _.promote_chat_member(
+            int(logger_id),
+            b_username,
+            privileges=(
+                ChatPrivileges(
+                    can_post_messages=True,
+                    can_delete_messages=True,
+                    can_restrict_members=True,
+                    can_manage_video_chats=True,
+                    can_change_info=True,
+                    can_promote_members=True,
+                    can_edit_messages=True,
+                    can_invite_users=True,
+                )
+            ),
+        )
+        description = "DON'T DELETE THIS CHANNEL !!\n\nUser ID : {}\nChannel ID : {}\n\nOur Channel: @kastaid".format(
+            user_id, int(logger_id)
         )
         await _.set_chat_description(
-            logger_id,
+            int(logger_id),
             description=description,
         )
         pics = "resources/kastaid/kasta_logger.jpg"
         await _.set_chat_photo(
-            logger_id, photo=pics
+            int(logger_id), photo=pics
         )
         await sleep(0.8)
         add_logger(
@@ -64,5 +84,5 @@ async def auto_pilots(_) -> None:
         send_log.error(excp)
 
     send_log.success(
-        "Success for creating a group."
+        "Success for creating a channel."
     )
