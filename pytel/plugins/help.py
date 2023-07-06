@@ -39,7 +39,9 @@ _HELP_LOCK = Lock()
 
 
 @pytel.instruction(
-    ["help", "ihelp"], outgoing=True
+    ["help", "ihelp"],
+    outgoing=True,
+    supergroups=True,
 )
 async def _help(client, message):
     if message.command[0] == "ihelp":

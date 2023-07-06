@@ -5,12 +5,13 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from base64 import urlsafe_b64decode
+from io import BytesIO
 from math import ceil
 from struct import unpack
 from typing import Callable
 from asyncache import cached
 from cachetools import MRUCache
+from pyrogram.file_id import b64_decode
 from pyrogram.types import (
     InlineKeyboardButton,
 )
@@ -132,31 +133,22 @@ def unpack_inline(
     inline_message_id: str,
 ) -> Callable:
     try:
+        b = BytesIO(
+            b64_decode(inline_message_id)
+        )
         (
             dc_id,
             message_id,
-            chat_id,
+            pid,
             query_id,
-        ) = unpack(
-            "<iiiq",
-            urlsafe_b64decode(
-                inline_message_id
-                + "="
-                * (
-                    len(inline_message_id)
-                    % 4
-                ),
-            ),
-        )
-        x = int(
-            str(chat_id).replace(
-                "-1", "-1001"
-            )
+        ) = unpack("=iiiq", b.read())
+        peer = int(
+            str(pid).replace("-", "-100")
         )
         _ = {
             "dc_id": dc_id,
             "message_id": message_id,
-            "chat_id": x,
+            "chat_id": peer,
             "query_id": query_id,
             "inline_message_id": inline_message_id,
         }

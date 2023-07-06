@@ -103,11 +103,11 @@ class PytelClient(Raw):
     def instruction(
         self,
         command: Union[str, List[str]],
-        group_only: Union[
+        supergroups: Union[
             bool, bool
         ] = False,
         outgoing: Union[bool, bool] = False,
-        self_admin: Union[
+        admin_only: Union[
             bool, bool
         ] = False,
         disable_errors: Union[
@@ -169,15 +169,15 @@ class PytelClient(Raw):
                     )
                 else:
                     send_to = None
-                if (
-                    self_admin
-                    and message.chat.type
-                    != ChatType.SUPERGROUP
-                ):
-                    return await message.edit(
-                        "This command can be used in supergroups only."
-                    )
-                if self_admin:
+
+                if admin_only:
+                    if (
+                        message.chat.type
+                        != ChatType.SUPERGROUP
+                    ):
+                        return await message.edit(
+                            "This command can be used in supergroups only."
+                        )
                     me = await client.get_chat_member(
                         message.chat.id,
                         (
@@ -192,7 +192,7 @@ class PytelClient(Raw):
                             "I must be admin to execute this Command"
                         )
                 if (
-                    group_only
+                    supergroups
                     and message.chat.type
                     != ChatType.SUPERGROUP
                 ):
@@ -434,7 +434,7 @@ class PytelClient(Raw):
                 f"Successfuly, ur has been login."
             )
         except FloodWait as excp:
-            await sleep(excp.value + 10)
+            await sleep(excp.value + 5)
             await super().start()
         except Exception as excp:
             self.send_log.exception(excp)
