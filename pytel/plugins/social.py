@@ -25,7 +25,7 @@ from . import (
 
 
 @pytel.instruction("socmed", outgoing=True)
-async def _tiktok(client, message):
+async def _socmed(client, message):
     str_link = get_text(
         message, save_link=True
     )
@@ -79,5 +79,5 @@ async def _tiktok(client, message):
 
 
 plugins_helper["social"] = {
-    f"{random_prefixies(px)}socmed [url]/[reply link]": "To get tiktok/instagram/twitter/facebook/youtube video. ( Tiktok No Watermark)",
+    f"{random_prefixies(px)}socmed [url]/[reply link]": "To get tiktok/instagram. ( Tiktok No Watermark)",
 }

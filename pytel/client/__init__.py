@@ -5,6 +5,7 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
+from .dbase import pydb
 from .leverage import (
     _try_purged,
     eor,

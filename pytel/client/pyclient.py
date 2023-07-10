@@ -196,7 +196,10 @@ class PytelClient(Raw):
                 if (
                     supergroups
                     and message.chat.type
-                    != ChatType.SUPERGROUP
+                    not in [
+                        ChatType.SUPERGROUP,
+                        ChatType.CHANNEL,
+                    ]
                 ):
                     return await message.edit(
                         "This command can be used in supergroups only."

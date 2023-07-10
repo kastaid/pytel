@@ -13,6 +13,7 @@ from pyrogram.raw.functions import (
     Ping,
     PingDelayDisconnect,
 )
+from pytelibs import attr_file
 from validators.url import url as is_url
 from pytel import pytel, pytel_tgb, pytl
 from .. import __license__, start_time
@@ -33,6 +34,8 @@ from ..client import (
     screenshots,
     tz,
     buttons,
+    RunningCommand,
+    pydb,
 )
 from ..config import PREFIX as px, TimeZone
 from ..logger import pylog as send_log

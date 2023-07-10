@@ -7,8 +7,9 @@
 
 from asyncio import Lock
 from datetime import datetime
-from os import getpid
+from os import getpid, close, execvp
 from platform import python_version, uname
+from sys import executable
 from textwrap import indent
 from time import time
 from typing import Optional
@@ -26,6 +27,7 @@ from pyrogram.types import (
 from pytgcalls import __version__ as pytgver
 from version import __version__ as b_ver
 from . import (
+    RunningCommand,
     ParseMode,
     Ping,
     PingDelayDisconnect,
@@ -329,6 +331,67 @@ async def _alive_inline(
     )
 
 
+async def restarting(message) -> None:
+    try:
+        import psutil
+
+        proc = psutil.Process(getpid())
+        for _ in (
+            proc.open_files()
+            + proc.connections()
+        ):
+            close(_.fd)
+    except BaseException:
+        pass
+    await _try_purged(message)
+    execvp(
+        executable,
+        [executable, "-m", "pytel"],
+    )
+
+
+@pytel.instruction("update", supersu=True)
+@pytel.instruction("update", outgoing=True)
+async def _updates(client, message):
+    if not lock.locked():
+        x = await message.reply(
+            "Getting information up to date.."
+        )
+
+    async with lock:
+        stdout, stderr = RunningCommand(
+            "git pull"
+        )
+        if "Already up to date." in str(
+            stdout
+        ):
+            text = (
+                "It's already up-to date!"
+            )
+            await eor(x, text=text)
+            return
+
+        elif str(stderr):
+            await eor(x, text=f"{stderr}")
+            return
+
+        else:
+            await eor(
+                x,
+                text=f"Update successfuly.\nRestarting, wait for 1 minutes.",
+            )
+            await restarting(x)
+
+
+@pytel.instruction("restart", outgoing=True)
+async def _restart(client, message):
+    x = await message.reply(
+        "Restarting client, wait for 1 minutes.."
+    )
+    RunningCommand("git pull")
+    await restarting(x)
+
+
 @pytel.instruction(
     ["repository", "repo"], outgoing=True
 )
@@ -346,5 +409,7 @@ async def _repo(client, message):
 plugins_helper["bot"] = {
     f"{random_prefixies(px)}alive / {random_prefixies(px)}on": "Check alive & version.",
     f"{random_prefixies(px)}ping / {random_prefixies(px)}pong": "Check how long it takes to ping.",
+    f"{random_prefixies(px)}update": "To update ur source.",
+    f"{random_prefixies(px)}restart": "To restart ur bot.",
     f"{random_prefixies(px)}repo": "To see source code.",
 }
