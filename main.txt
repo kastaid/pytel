@@ -3,6 +3,7 @@ setuptools
 frozenlist
 requests
 psutil
+pyrogram
 
 # --- setup ---
 
