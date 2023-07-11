@@ -87,3 +87,32 @@ def replied(message: Message):
         reply_id = message.id
 
     return reply_id
+
+
+def attr_file(message: Message):
+    if message.media:
+        for message_type in (
+            "photo",
+            "animation",
+            "audio",
+            "document",
+            "video",
+            "video_note",
+            "voice",
+            "contact",
+            "dice",
+            "poll",
+            "location",
+            "venue",
+            "sticker",
+        ):
+            obj = getattr(
+                message, message_type
+            )
+            if obj:
+                setattr(
+                    obj,
+                    "message_type",
+                    message_type,
+                )
+                return obj

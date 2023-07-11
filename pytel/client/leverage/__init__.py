@@ -10,6 +10,7 @@ from ._asserts import (
     eor,
     get_text,
     replied,
+    attr_file,
 )
 from ._inline import (
     plugins_button,
