@@ -8,11 +8,13 @@
 from contextlib import suppress
 from pyrogram import filters
 from pyrogram.enums import ParseMode
+from pyrogram.raw import functions
 from pyrogram.raw.all import layer
 from pyrogram.raw.functions import (
     Ping,
     PingDelayDisconnect,
 )
+from pytelibs import developer
 from validators.url import url as is_url
 from pytel import pytel, pytel_tgb, pytl
 from .. import __license__, start_time

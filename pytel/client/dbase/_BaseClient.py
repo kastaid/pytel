@@ -42,7 +42,7 @@ class BaseDB:
         if key in self._cache:
             del self._cache[key]
         self.delete(key)
-        return True
+        return
 
     def _get_data(
         self, key=None, data=None

@@ -53,6 +53,7 @@ from version import __version__ as versi
 from .. import loopers
 from ..config import LOGCHAT_ID, PREFIX
 from ..logger import pylog as send_log
+from .dbase import pydb
 from .dbase.dbLogger import (
     already_logger,
     check_logger,
@@ -62,6 +63,21 @@ from .utils import (
     get_blacklisted,
     gg_restricted,
     tz,
+)
+
+anti_pm = filters.create(
+    lambda _, __, ___: pydb.get_key(
+        "PMSTATUS"
+    )
+    if pydb.get_key("PMSTATUS")
+    else False
+)
+
+in_contact_list = filters.create(
+    lambda _, __, message: message.from_user.is_contact
+)
+is_support = filters.create(
+    lambda _, __, message: message.chat.is_support
 )
 
 
@@ -104,10 +120,13 @@ class PytelClient(Raw):
 
     def instruction(
         self,
-        command: Union[str, List[str]],
+        command: Union[
+            str, List[str]
+        ] = None,
         supergroups: Union[
             bool, bool
         ] = False,
+        is_antipm: Union[bool, bool] = None,
         outgoing: Union[bool, bool] = False,
         admin_only: Union[
             bool, bool
@@ -142,6 +161,15 @@ class PytelClient(Raw):
                     prefixes=handler,
                 )
                 & filters.me
+            )
+        if is_antipm:
+            filt = (
+                filters.private
+                & ~filters.me
+                & ~filters.bot
+                & ~in_contact_list
+                & ~is_support
+                & anti_pm
             )
 
         def decorator(
