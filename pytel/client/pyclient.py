@@ -53,7 +53,6 @@ from version import __version__ as versi
 from .. import loopers
 from ..config import LOGCHAT_ID, PREFIX
 from ..logger import pylog as send_log
-from .dbase import pydb
 from .dbase.dbLogger import (
     already_logger,
     check_logger,
@@ -63,14 +62,6 @@ from .utils import (
     get_blacklisted,
     gg_restricted,
     tz,
-)
-
-anti_pm = filters.create(
-    lambda _, __, ___: pydb.get_key(
-        "PMSTATUS"
-    )
-    if pydb.get_key("PMSTATUS")
-    else False
 )
 
 in_contact_list = filters.create(
@@ -169,7 +160,6 @@ class PytelClient(Raw):
                 & ~filters.bot
                 & ~in_contact_list
                 & ~is_support
-                & anti_pm
             )
 
         def decorator(

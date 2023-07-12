@@ -5,6 +5,14 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
+from ..client.dbase.dbAntipm import (
+    get_antipm_status,
+    set_antipm,
+    set_pmreport,
+    get_pmreport_status,
+    set_pmblock,
+    get_pmblock_status,
+)
 from ..client.dbase.dbLogger import (
     check_logger,
 )
@@ -16,20 +24,25 @@ from . import (
     functions,
     plugins_helper,
     px,
+    pydb,
     pytel,
     pytel_tgb,
     random_prefixies,
-    pydb,
 )
 
-ANTIPM = pydb.get_key("PMSTATUS")
-PMBLOCK = pydb.get_key("PMBLOCK")
-PMSPAMREPORT = pydb.get_key("PMSPAMREPORT")
+PM_STATUS: bool = (
+    pydb.get_key("ANTIPM")
+    if pydb.get_key("ANTIPM")
+    else False
+)
 
 
-@pytel.instruction(is_antipm=True)
+@pytel.instruction(is_antipm=PM_STATUS)
 async def _anti_pm_status(client, message):
     _ = client.me.id
+    if get_antipm_status(user_id=_) != "On":
+        return
+
     is_blocked, is_reported = None, None
     user_info = await client.resolve_peer(
         message.chat.id
@@ -37,14 +50,20 @@ async def _anti_pm_status(client, message):
     if user_info.user_id in developer:
         return
 
-    if pydb.get_key("PMSPAMREPORT"):
+    if (
+        get_pmreport_status(user_id=_)
+        == "On"
+    ):
         await client.send(
             functions.messages.ReportSpam(
                 peer=user_info
             )
         )
         is_reported = "Yes"
-    if pydb.get_key("PMBLOCK"):
+    if (
+        get_pmblock_status(user_id=_)
+        == "On"
+    ):
         await client.send(
             functions.contacts.Block(
                 id=user_info
@@ -87,8 +106,12 @@ async def _anti_pm_status(client, message):
     ["antipm", "anti_pm"], outgoing=True
 )
 async def _anti_pm(client, message):
+    _ = client.me.id
     if len(message.command) == 1:
-        if ANTIPM == "True":
+        if (
+            get_antipm_status(user_id=_)
+            == "On"
+        ):
             text = """
 <b>Anti-PM status: enabled
 Disable with: </b><code>{}antipm disable</code>
@@ -119,7 +142,7 @@ Enable with: </b><code>{}antipm enable</code>
         "yes",
         "true",
     ]:
-        pydb.set_key("PMSTATUS", True)
+        set_antipm(user_id=_, status="On")
         await eor(
             message,
             text="<b>Anti-PM enabled!</b>",
@@ -132,7 +155,7 @@ Enable with: </b><code>{}antipm enable</code>
         "no",
         "false",
     ]:
-        pydb.set_key("PMSTATUS", False)
+        set_antipm(user_id=_, status="Off")
         await eor(
             message,
             text="<b>Anti-PM disabled!</b>",
@@ -155,8 +178,12 @@ Enable with: </b><code>{}antipm enable</code>
     "antipm_report", outgoing=True
 )
 async def _antipm_report(client, message):
+    _ = client.me.id
     if len(message.command) == 1:
-        if PMSPAMREPORT == "True":
+        if (
+            get_pmreport_status(user_id=_)
+            == "On"
+        ):
             text = """
 <b>Spam-reporting enabled.
 Disable with: </b><code>{}antipm_report disable</code>
@@ -187,7 +214,7 @@ Disable with: </b><code>{}antipm_report enable</code>
         "yes",
         "true",
     ]:
-        pydb.set_key("PMSPAMREPORT", True)
+        set_pmreport(user_id=_, status="On")
         await eor(
             message,
             text="<b>Spam-reporting enabled!</b>",
@@ -200,7 +227,9 @@ Disable with: </b><code>{}antipm_report enable</code>
         "no",
         "false",
     ]:
-        pydb.set_key("PMSPAMREPORT", False)
+        set_pmreport(
+            user_id=_, status="Off"
+        )
         await eor(
             message,
             text="<b>Spam-reporting disabled!</b>",
@@ -218,8 +247,12 @@ Disable with: </b><code>{}antipm_report enable</code>
     "antipm_block", outgoing=True
 )
 async def _antipm_block(client, message):
+    _ = client.me.id
     if len(message.command) == 1:
-        if PMBLOCK == "True":
+        if (
+            get_pmblock_status(user_id=_)
+            == "On"
+        ):
             text = """
 <b>Blocking users enabled.
 Disable with: </b><code>{}antipm_block disable</code>
@@ -250,7 +283,7 @@ Disable with: </b><code>{}antipm_block enable</code>
         "yes",
         "true",
     ]:
-        pydb.set_key("PMBLOCK", True)
+        set_pmblock(user_id=_, status="On")
         await eor(
             message,
             text="<b>Blocking users enabled!</b>",
@@ -263,7 +296,7 @@ Disable with: </b><code>{}antipm_block enable</code>
         "no",
         "false",
     ]:
-        pydb.set_key("PMBLOCK", False)
+        set_pmblock(user_id=_, status="Off")
         await eor(
             message,
             text="<b>Blocking users disabled!</b>",
