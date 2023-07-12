@@ -9,6 +9,7 @@ from ..client.dbase.dbLogger import (
     check_logger,
 )
 from . import (
+    LOGCHAT_ID,
     ParseMode,
     eor,
     developer,
@@ -58,7 +59,11 @@ async def _anti_pm_status(client, message):
         )
     )
 
-    chat_id = check_logger().get(_)
+    if LOGCHAT_ID:
+        chat_id = int(LOGCHAT_ID)
+    else:
+        log_data = check_logger().get(_)
+        chat_id = int(log_data[0])
     text = """
 #ANTIPM_LOGGER
 <u><b>STATUS</b></u>
@@ -71,7 +76,7 @@ async def _anti_pm_status(client, message):
         is_reported,
     )
     await pytel_tgb.send_message(
-        int(str(chat_id[0])),
+        int(chat_id),
         text,
         parse_mode=ParseMode.HTML,
         disable_notification=False,

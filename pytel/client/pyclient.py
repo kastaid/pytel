@@ -197,7 +197,6 @@ class PytelClient(Raw):
                     send_to = int(
                         LOGCHAT_ID
                     )
-                    pydb.set_key("LOGCHAT_ID", LOGCHAT_ID)
                 else:
                     send_to = None
 

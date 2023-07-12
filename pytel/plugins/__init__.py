@@ -39,5 +39,9 @@ from ..client import (
     RunningCommand,
     pydb,
 )
-from ..config import PREFIX as px, TimeZone
+from ..config import (
+    PREFIX as px,
+    TimeZone,
+    LOGCHAT_ID,
+)
 from ..logger import pylog as send_log
