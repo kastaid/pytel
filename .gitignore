@@ -166,6 +166,7 @@ downloads/
 logs/*.log
 *.session
 *.session-journal
+*.swp
 
 # database ( local )
 pytel.json
