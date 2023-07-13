@@ -122,7 +122,9 @@ async def _purge_me(client, message):
         )
 
 
-@pytel.instruction("schedule", outgoing=True)
+@pytel.instruction(
+    "schedule", outgoing=True
+)
 async def _schedule_msg(client, message):
     chat_id: Optional[int] = message.chat.id
     if chat_id in _SCHEDULE:

@@ -24,27 +24,22 @@ from . import (
     functions,
     plugins_helper,
     px,
-    pydb,
     pytel,
     pytel_tgb,
     random_prefixies,
 )
 
-PM_STATUS: bool = (
-    pydb.get_key("ANTIPM")
-    if pydb.get_key("ANTIPM")
-    else False
-)
 
-
-@pytel.instruction(is_antipm=PM_STATUS)
+@pytel.instruction(is_antipm=True)
 async def _anti_pm_status(client, message):
     _ = client.me.id
     is_blocked, is_reported = None, None
 
     if get_antipm_status(user_id=_) == "On":
-        user_info = await client.resolve_peer(
-            message.chat.id
+        user_info = (
+            await client.resolve_peer(
+                message.chat.id
+            )
         )
         if user_info.user_id in developer:
             return
