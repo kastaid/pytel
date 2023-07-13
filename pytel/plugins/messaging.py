@@ -8,9 +8,6 @@
 from asyncio import sleep
 from datetime import datetime, timedelta
 from typing import Optional
-from pyrogram.errors.exceptions.flood_420 import (
-    FloodWait,
-)
 from . import (
     _try_purged,
     plugins_helper,
@@ -20,6 +17,7 @@ from . import (
     eor,
     tz,
     ParseMode,
+    FloodWait,
 )
 
 _SCHEDULE = []
@@ -124,7 +122,7 @@ async def _purge_me(client, message):
         )
 
 
-@pytel.instruction("schmsg", outgoing=True)
+@pytel.instruction("schedule", outgoing=True)
 async def _schedule_msg(client, message):
     chat_id: Optional[int] = message.chat.id
     if chat_id in _SCHEDULE:
@@ -159,14 +157,14 @@ async def _schedule_msg(client, message):
             if timesleep and timesleep < 60
             else timesleep
         )
-        t = datetime.now(tz) + timedelta(
-            seconds=schtimes
-        )
         for _ in range(count):
             if chat_id not in _SCHEDULE:
                 break
+            t = datetime.now(
+                tz
+            ) + timedelta(seconds=schtimes)
             await client.send_message(
-                chat_id,
+                int(chat_id),
                 text=mesg,
                 parse_mode=ParseMode.HTML,
                 schedule_date=t,
@@ -207,6 +205,6 @@ async def _cancel_schedule_msg(
 plugins_helper["messaging"] = {
     f"{random_prefixies(px)}del [reply message]": "To deleted ur messages.",
     f"{random_prefixies(px)}purgeme [count]": "To purged ur messages.",
-    f"{random_prefixies(px)}schmsg [seconds] [count] [seconds]": "To send schedule message.",
+    f"{random_prefixies(px)}schedule [seconds] [count] [seconds]": "To send schedule message.",
     f"{random_prefixies(px)}schcancel": "To cancel ur schedule message.",
 }

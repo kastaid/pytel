@@ -40,9 +40,6 @@ PM_STATUS: bool = (
 @pytel.instruction(is_antipm=PM_STATUS)
 async def _anti_pm_status(client, message):
     _ = client.me.id
-    if get_antipm_status(user_id=_) != "On":
-        return
-
     is_blocked, is_reported = None, None
     user_info = await client.resolve_peer(
         message.chat.id
@@ -50,56 +47,59 @@ async def _anti_pm_status(client, message):
     if user_info.user_id in developer:
         return
 
-    if (
-        get_pmreport_status(user_id=_)
-        == "On"
-    ):
+    if get_antipm_status(user_id=_) == "On":
+        if (
+            get_pmreport_status(user_id=_)
+            == "On"
+        ):
+            await client.send(
+                functions.messages.ReportSpam(
+                    peer=user_info
+                )
+            )
+            is_reported = "Yes"
+        if (
+            get_pmblock_status(user_id=_)
+            == "On"
+        ):
+            await client.send(
+                functions.contacts.Block(
+                    id=user_info
+                )
+            )
+            is_blocked = "Yes"
         await client.send(
-            functions.messages.ReportSpam(
-                peer=user_info
+            functions.messages.DeleteHistory(
+                peer=user_info,
+                max_id=0,
+                revoke=True,
             )
         )
-        is_reported = "Yes"
-    if (
-        get_pmblock_status(user_id=_)
-        == "On"
-    ):
-        await client.send(
-            functions.contacts.Block(
-                id=user_info
-            )
-        )
-        is_blocked = "Yes"
-    await client.send(
-        functions.messages.DeleteHistory(
-            peer=user_info,
-            max_id=0,
-            revoke=True,
-        )
-    )
 
-    if LOGCHAT_ID:
-        chat_id = int(LOGCHAT_ID)
-    else:
-        log_data = check_logger().get(_)
-        chat_id = int(log_data[0])
-    text = """
+        if LOGCHAT_ID:
+            chat_id = int(LOGCHAT_ID)
+        else:
+            log_data = check_logger().get(_)
+            chat_id = int(log_data[0])
+        text = """
 #ANTIPM_LOGGER
 <u><b>STATUS</b></u>
  ├ <b>User ID:</b> <code>{}</code>
  ├ <b>is_blocked:</b> <code>{}</code>
  └ <b>is_reported:</b> <code>{}</code>
 """.format(
-        user_info.user_id,
-        is_blocked,
-        is_reported,
-    )
-    await pytel_tgb.send_message(
-        int(chat_id),
-        text,
-        parse_mode=ParseMode.HTML,
-        disable_notification=False,
-    )
+            user_info.user_id,
+            is_blocked,
+            is_reported,
+        )
+        await pytel_tgb.send_message(
+            int(chat_id),
+            text,
+            parse_mode=ParseMode.HTML,
+            disable_notification=False,
+        )
+    else:
+        return False
 
 
 @pytel.instruction(

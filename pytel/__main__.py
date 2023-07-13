@@ -76,7 +76,7 @@ def load_plugins():
     loaded_time = time_formatter(
         (time() - loads) * 1000
     )
-    loaded_msg = ">> Loaded plugins: {}, Commands: {}\nTotal {}, Time for {}".format(
+    loaded_msg = ">> Loaded plugins: {}, Commands: {}\nTotal {}, Time taken {}".format(
         plugins_helper.count,
         plugins_helper.total,
         tuple(plugins),

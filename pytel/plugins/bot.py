@@ -45,6 +45,7 @@ from . import (
     tz,
     buttons,
     filters,
+    suppress,
 )
 
 lock = Lock()
@@ -376,11 +377,21 @@ async def _updates(client, message):
             return
 
         else:
-            await eor(
+            await client.lock.acquire()
+            yy = await eor(
                 x,
+                text=f"<u><b>Updating</u>!!</b>\nInstall requirements...",
+            )
+            with suppress(Exception):
+                RunningCommand(
+                    "pip3 install -U -r main.txt"
+                )
+            client.lock.release()
+            xy = await eor(
+                yy,
                 text=f"Update successfuly.\nRestarting, wait for 1 minutes.",
             )
-            await restarting(x)
+            await restarting(xy)
 
 
 @pytel.instruction("restart", outgoing=True)
