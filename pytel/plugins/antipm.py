@@ -41,13 +41,14 @@ PM_STATUS: bool = (
 async def _anti_pm_status(client, message):
     _ = client.me.id
     is_blocked, is_reported = None, None
-    user_info = await client.resolve_peer(
-        message.chat.id
-    )
-    if user_info.user_id in developer:
-        return
 
     if get_antipm_status(user_id=_) == "On":
+        user_info = await client.resolve_peer(
+            message.chat.id
+        )
+        if user_info.user_id in developer:
+            return
+
         if (
             get_pmreport_status(user_id=_)
             == "On"
