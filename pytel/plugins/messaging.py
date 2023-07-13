@@ -17,7 +17,6 @@ from . import (
     eor,
     tz,
     ParseMode,
-    FloodWait,
 )
 
 _SCHEDULE = []
@@ -172,8 +171,6 @@ async def _schedule_msg(client, message):
                 schedule_date=t,
             )
             await sleep(timesleep)
-    except FloodWait as excp:
-        await sleep(excp.value + 5)
     except BaseException:
         pass
     if chat_id in _SCHEDULE:

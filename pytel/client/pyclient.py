@@ -229,7 +229,7 @@ class PytelClient(Raw):
                     )
                 except FloodWait as excp:
                     await sleep(
-                        excp.value + 10
+                        excp.value + 5
                     )
                 except Exception as excp:
                     if not disable_errors:
