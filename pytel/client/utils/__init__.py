@@ -14,6 +14,7 @@ from .fetching import (
 from .helper import plugins_helper, SaveDict
 from .misc import (
     RunningCommand,
+    humanboolean,
     gg_restricted,
     mention_html,
     mention_markdown,

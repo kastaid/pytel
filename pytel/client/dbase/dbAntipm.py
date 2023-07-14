@@ -21,6 +21,14 @@ def get_pmblock():
     return pydb.get_key("PMBLOCK") or {}
 
 
+def get_pmpurged():
+    return pydb.get_key("PMPURGED") or {}
+
+
+def get_pm_media():
+    return pydb.get_key("PMLOGMEDIA") or {}
+
+
 def set_antipm(
     user_id: Optional[int],
     status: Optional[str],
@@ -68,5 +76,39 @@ def get_pmblock_status(
     user_id: Optional[int],
 ):
     apm = get_pmblock()
+    if user_id in apm.keys():
+        return apm[user_id]
+
+
+def set_pmpurged(
+    user_id: Optional[int],
+    status: Optional[str],
+):
+    apm = get_pmpurged()
+    apm.update({user_id: status})
+    return pydb.set_key("PMPURGED", apm)
+
+
+def get_antipm_purged(
+    user_id: Optional[int],
+):
+    apm = get_pmpurged()
+    if user_id in apm.keys():
+        return apm[user_id]
+
+
+def set_pmlogmedia(
+    user_id: Optional[int],
+    status: Optional[str],
+):
+    apm = get_pm_media()
+    apm.update({user_id: status})
+    return pydb.set_key("PMLOGMEDIA", apm)
+
+
+def get_pmlog_media(
+    user_id: Optional[int],
+):
+    apm = get_pm_media()
     if user_id in apm.keys():
         return apm[user_id]

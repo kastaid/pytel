@@ -13,6 +13,9 @@ from pyrogram.errors.exceptions.bad_request_400 import (
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,
 )
+from pyrogram.errors.exceptions.forbidden_403 import (
+    ChatSendInlineForbidden,
+)
 from pyrogram.types import (
     InlineKeyboardMarkup,
     InlineQueryResultArticle,
@@ -55,9 +58,15 @@ async def _help(client, message):
                 await message.reply_inline_bot_result(
                     _.query_id, name.id
                 )
+        except ChatSendInlineForbidden:
+            await message.reply(
+                "You cannot use inline bots to send messages in this chat."
+            )
         except Exception as error:
             await message.reply(error)
-        return await _try_purged(message)
+        return await _try_purged(
+            message, 1.5
+        )
 
     if message.command[0] == "help":
         plugins_name = get_text(message)

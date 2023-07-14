@@ -20,6 +20,7 @@ from .pyclient import PytelClient, loopers
 from .utils import (
     LE,
     fetch_adzan,
+    humanboolean,
     get_blacklisted,
     screenshots,
     plugins_helper,

@@ -47,6 +47,7 @@ from ..client import (
     buttons,
     attr_file,
     RunningCommand,
+    humanboolean,
     pydb,
 )
 from ..config import (

@@ -68,7 +68,7 @@ in_contact_list = filters.create(
     lambda _, __, message: message.from_user.is_contact
 )
 is_support = filters.create(
-    lambda _, __, message: message.chat.is_support
+    lambda _, __, message: message.from_user.is_support
 )
 
 
@@ -333,6 +333,24 @@ class PytelClient(Raw):
 
         return decorator
 
+    async def _fullname(
+        self, user_id: Optional[int]
+    ) -> Optional[str]:
+        user = await self.get_users(user_id)
+        full_name = (
+            user.first_name + user.last_name
+            if user.last_name
+            else "ㅤ"  # blank-font
+        )
+        return str(full_name)
+
+    async def _username(
+        self, user_id: Optional[int]
+    ) -> Optional[str]:
+        user = await self.get_users(user_id)
+        if user.username:
+            return str(user.username)
+
     def run_in_loop(
         self,
         func: Coroutine[Any, Any, None],
@@ -414,6 +432,8 @@ class PytelClient(Raw):
 ├ <b>Layer :</b>  <i>{}</i>
 ├ <b>Pyrogram :</b>  <i>{}</i>
 └ <b>Prefix :</b> <code>{}</code>
+
+(c) @kastaid #pytel
 """.format(
             getpid(),
             versi,

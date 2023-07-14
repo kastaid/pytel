@@ -51,6 +51,12 @@ def mention_markdown(user_id, name):
     )
 
 
+def humanboolean(
+    x: Optional[bool] = False,
+) -> Optional[str]:
+    return "Yes" if x else "No"
+
+
 def time_formatter(
     ms: Union[int, float]
 ) -> str:
