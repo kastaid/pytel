@@ -179,6 +179,6 @@ pytel.json
 *.png
 *.jpg
 *.ogg
-
+*.gif
 # paid
 paid.py
