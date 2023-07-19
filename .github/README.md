@@ -17,6 +17,3 @@
     > pip3 install -U -r main.txt
   * <strong>Run pytel:</strong>
     > python3 -m start --help
-
-
-## Still in development stage...
