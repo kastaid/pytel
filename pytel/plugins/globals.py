@@ -26,10 +26,6 @@ _GCAST_LOCK = Lock()
 
 
 @pytel.instruction(
-    ["sgcast"],
-    supersu=["PYTEL"],
-)
-@pytel.instruction(
     ["gcast"],
     outgoing=True,
 )

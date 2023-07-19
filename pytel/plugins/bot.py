@@ -460,14 +460,10 @@ async def _updates(client, message):
             )
             return
 
-        elif str(stderr):
-            await eor(
-                x,
-                text=f"{stderr}",
-            )
-            return
-
-        else:
+        elif (
+            "From https://github.com/kastaid/pytel"
+            in str(stderr)
+        ):
             await client.lock.acquire()
             yy = await eor(
                 x,
@@ -485,6 +481,14 @@ async def _updates(client, message):
                 text=f"Update successfuly.\nRestarting, wait for 1 minutes.",
             )
             await restarting(xy)
+            return
+
+        else:
+            await eor(
+                x,
+                text="Sorry, I can't update.",
+            )
+            return
 
 
 @pytel.instruction(
