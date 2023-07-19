@@ -16,10 +16,11 @@ from . import (
     random_prefixies,
     eor,
     tz,
+    suppress,
     ParseMode,)
 
-_SCHEDULE = []
-
+_SCHEDULE: list = []
+_DSPAM: list = []
 
 schedule_example = f"""
 --**Command Guide**-- ›_
@@ -143,7 +144,7 @@ async def _schedule_msg(
     chat_id: Optional[
         int
     ] = message.chat.id
-    if chat_id in _SCHEDULE:
+    if chat_id in list(_SCHEDULE):
         await eor(
             message,
             text="Please wait until previous --schedule-- msg are finished..",
@@ -155,7 +156,7 @@ async def _schedule_msg(
         )
         schtimes = float(args[1])
         count = int(args[2])
-        timesleep = float(args[3])
+        tms = float(args[3])
         mesg = str(args[4])
     except BaseException:
         await eor(
@@ -164,8 +165,8 @@ async def _schedule_msg(
             parse_mode=ParseMode.MARKDOWN,
         )
         return
-    await _try_purged(message)
-    try:
+    await message.delete()
+    with suppress(BaseException):
         _SCHEDULE.append(chat_id)
         schtimes = (
             60
@@ -175,29 +176,73 @@ async def _schedule_msg(
         )
         timesleep = (
             60
-            if timesleep
-            and timesleep < 60
-            else timesleep
+            if tms and tms < 60
+            else tms
         )
         for _ in range(count):
-            if chat_id not in _SCHEDULE:
+            if chat_id not in list(
+                _SCHEDULE
+            ):
                 break
-            t = datetime.now(
-                tz
-            ) + timedelta(
-                seconds=schtimes
-            )
-            await client.send_message(
-                int(chat_id),
-                text=mesg,
-                parse_mode=ParseMode.HTML,
-                schedule_date=t,
-            )
-            await sleep(timesleep)
+            else:
+                t = datetime.now(
+                    tz
+                ) + timedelta(
+                    seconds=schtimes
+                )
+                await client.send_message(
+                    int(chat_id),
+                    text=mesg,
+                    parse_mode=ParseMode.HTML,
+                    schedule_date=t,
+                )
+                await sleep(timesleep)
+
+
+@pytel.instruction(
+    ["dsp"],
+    outgoing=True,
+)
+async def _dspam_msg(client, message):
+    chat_id: Optional[
+        int
+    ] = message.chat.id
+    if chat_id in list(_DSPAM):
+        await eor(
+            message,
+            text="Please wait until previous --delay spam-- are finished..",
+        )
+        return
+    try:
+        args = message.text.split(
+            None, 3
+        )
+        count = int(args[2])
+        tms = float(args[1])
+        mesg = str(args[3])
     except BaseException:
-        pass
-    if chat_id in _SCHEDULE:
-        _SCHEDULE.remove(chat_id)
+        await eor(
+            message,
+            text=f"{random_prefixies(px)}dsp [seconds] [count] [text]",
+        )
+        return
+    timesleep = (
+        60 if tms and tms < 60 else tms
+    )
+    await message.delete()
+    with suppress(BaseException):
+        for _ in range(count):
+            if chat_id not in list(
+                _DSPAM
+            ):
+                break
+            else:
+                await client.send_message(
+                    int(chat_id),
+                    text=mesg,
+                    parse_mode=ParseMode.HTML,
+                )
+                await sleep(timesleep)
 
 
 @pytel.instruction(
@@ -214,7 +259,7 @@ async def _cancel_schedule_msg(
         message,
         text="Canceling schedule messages...",
     )
-    if chat_id not in _SCHEDULE:
+    if chat_id not in list(_SCHEDULE):
         await eor(
             x,
             text="No current --**Schedule**-- msg are running or cancel in --schedule-- msg.",
@@ -227,9 +272,38 @@ async def _cancel_schedule_msg(
     )
 
 
+@pytel.instruction(
+    ["dspcancel"],
+    outgoing=True,
+)
+async def _cancel_dspam_msg(
+    client, message
+):
+    chat_id: Optional[
+        int
+    ] = message.chat.id
+    x = await eor(
+        message,
+        text="Canceling delay-spam messages...",
+    )
+    if chat_id not in list(_DSPAM):
+        await eor(
+            x,
+            text="No current --**DSpam**-- msg are running.",
+        )
+        return
+    _DSPAM.remove(chat_id)
+    await eor(
+        x,
+        text="--**DSpam**-- messages has been canceled.",
+    )
+
+
 plugins_helper["messaging"] = {
     f"{random_prefixies(px)}del [reply message]": "To deleted ur messages.",
     f"{random_prefixies(px)}purgeme [count]": "To purged ur messages.",
     f"{random_prefixies(px)}schedule [seconds] [count] [seconds] [text]": "To send schedule message.",
     f"{random_prefixies(px)}schcancel": "To cancel ur schedule message.",
+    f"{random_prefixies(px)}dsp [seconds] [count] [text]": "To send delay-spam message.",
+    f"{random_prefixies(px)}dspcancel": "To cancel ur delay-spam message.",
 }
