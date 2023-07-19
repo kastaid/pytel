@@ -231,6 +231,7 @@ async def _dspam_msg(client, message):
     )
     await message.delete()
     with suppress(BaseException):
+        _DSPAM.append(chat_id)
         for _ in range(count):
             if chat_id not in list(
                 _DSPAM
