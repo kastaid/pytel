@@ -2,7 +2,7 @@
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
-# PLease read the GNU Affero General Public License in
+# Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 from io import BytesIO
@@ -14,7 +14,7 @@ from cachetools import MRUCache
 from pyrogram.file_id import b64_decode
 from pyrogram.types import (
     InlineKeyboardButton,
-)
+    InlineKeyboardMarkup,)
 from ...logger import pylog as send_log
 from ..utils import SaveDict
 
@@ -42,6 +42,16 @@ def buttons(
     )
 
 
+def ikmarkup(
+    *args,
+    **kwargs,
+) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        *args,
+        **kwargs,
+    )
+
+
 def plugins_button(
     p_name,
     plugins_dict,
@@ -54,7 +64,8 @@ def plugins_button(
                 EqInlineKeyboardButton(
                     name,
                     callback_data="{}_plug({})".format(
-                        prefixies, name
+                        prefixies,
+                        name,
                     ),
                 )
                 for name in plugins_dict.value
@@ -76,14 +87,19 @@ def plugins_button(
         )
     linear = 2
     get_plugins = list(
-        zip(plugins[::2], plugins[1::2])
+        zip(
+            plugins[::2],
+            plugins[1::2],
+        )
     )
     total = 0
     for plgns in get_plugins:
         for _ in plgns:
             total += 1
     if len(plugins) - total == 1:
-        get_plugins.append((plugins[-1],))
+        get_plugins.append(
+            (plugins[-1],)
+        )
     elif len(plugins) - total == 2:
         get_plugins.append(
             (
@@ -134,16 +150,24 @@ def unpack_inline(
 ) -> Callable:
     try:
         b = BytesIO(
-            b64_decode(inline_message_id)
+            b64_decode(
+                inline_message_id
+            )
         )
         (
             dc_id,
             message_id,
             pid,
             query_id,
-        ) = unpack("=iiiq", b.read())
+        ) = unpack(
+            "=iiiq",
+            b.read(),
+        )
         peer = int(
-            str(pid).replace("-", "-100")
+            str(pid).replace(
+                "-",
+                "-100",
+            )
         )
         _ = {
             "dc_id": dc_id,

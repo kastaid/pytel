@@ -8,12 +8,15 @@
 from html import escape
 from random import choice
 from re import sub
-from subprocess import SubprocessError, run
+from subprocess import (
+    SubprocessError,
+    run,)
 from typing import List, Optional, Union
 from pytelibs import _i
 from pytz import timezone
 from pytel.config import TimeZone
-from pytel.logger import pylog as send_log
+from pytel.logger import (
+    pylog as send_log,)
 
 tz = timezone(TimeZone)
 
@@ -30,7 +33,9 @@ def random_prefixies(
     return str(prefixies)
 
 
-def escape_markdown(text):
+def escape_markdown(
+    text,
+):
     escape_chars = r"\*_`\[}{"
     return sub(
         r"([%s])" % escape_chars,
@@ -41,13 +46,17 @@ def escape_markdown(text):
 
 def mention_html(user_id, name):
     return '<a href="tg://user?id={}">{}</a>'.format(
-        user_id, escape(name)
+        user_id,
+        escape(name),
     )
 
 
 def mention_markdown(user_id, name):
-    return "[{}](tg://user?id={})".format(
-        escape_markdown(name), user_id
+    return (
+        "[{}](tg://user?id={})".format(
+            escape_markdown(name),
+            user_id,
+        )
     )
 
 
@@ -60,12 +69,25 @@ def humanboolean(
 def time_formatter(
     ms: Union[int, float]
 ) -> str:
-    minutes, seconds = divmod(
-        int(ms / 1000), 60
+    (
+        minutes,
+        seconds,
+    ) = divmod(
+        int(ms / 1000),
+        60,
     )
-    hours, minutes = divmod(minutes, 60)
-    days, hours = divmod(hours, 24)
-    weeks, days = divmod(days, 7)
+    (
+        hours,
+        minutes,
+    ) = divmod(minutes, 60)
+    (
+        days,
+        hours,
+    ) = divmod(hours, 24)
+    (
+        weeks,
+        days,
+    ) = divmod(days, 7)
     tmp = (
         (
             (str(weeks) + "w, ")
@@ -107,7 +129,10 @@ def RunningCommand(
             text=True,
             capture_output=True,
         )
-        stdout, stderr = (
+        (
+            stdout,
+            stderr,
+        ) = (
             process.stdout,
             process.stderr,
         )

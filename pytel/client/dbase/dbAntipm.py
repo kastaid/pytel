@@ -14,7 +14,9 @@ def get_antipm():
 
 
 def get_pmreport():
-    return pydb.get_key("PMREPORT") or {}
+    return (
+        pydb.get_key("PMREPORT") or {}
+    )
 
 
 def get_pmblock():
@@ -22,11 +24,15 @@ def get_pmblock():
 
 
 def get_pmpurged():
-    return pydb.get_key("PMPURGED") or {}
+    return (
+        pydb.get_key("PMPURGED") or {}
+    )
 
 
 def get_pm_media():
-    return pydb.get_key("PMLOGMEDIA") or {}
+    return (
+        pydb.get_key("PMLOGMEDIA") or {}
+    )
 
 
 def set_antipm(
@@ -35,7 +41,10 @@ def set_antipm(
 ):
     apm = get_antipm()
     apm.update({user_id: status})
-    return pydb.set_key("ANTIPM", apm)
+    return pydb.set_key(
+        "ANTIPM",
+        apm,
+    )
 
 
 def get_antipm_status(
@@ -52,7 +61,10 @@ def set_pmreport(
 ):
     apm = get_pmreport()
     apm.update({user_id: status})
-    return pydb.set_key("PMREPORT", apm)
+    return pydb.set_key(
+        "PMREPORT",
+        apm,
+    )
 
 
 def get_pmreport_status(
@@ -69,7 +81,10 @@ def set_pmblock(
 ):
     apm = get_pmblock()
     apm.update({user_id: status})
-    return pydb.set_key("PMBLOCK", apm)
+    return pydb.set_key(
+        "PMBLOCK",
+        apm,
+    )
 
 
 def get_pmblock_status(
@@ -86,7 +101,10 @@ def set_pmpurged(
 ):
     apm = get_pmpurged()
     apm.update({user_id: status})
-    return pydb.set_key("PMPURGED", apm)
+    return pydb.set_key(
+        "PMPURGED",
+        apm,
+    )
 
 
 def get_antipm_purged(
@@ -103,7 +121,10 @@ def set_pmlogmedia(
 ):
     apm = get_pm_media()
     apm.update({user_id: status})
-    return pydb.set_key("PMLOGMEDIA", apm)
+    return pydb.set_key(
+        "PMLOGMEDIA",
+        apm,
+    )
 
 
 def get_pmlog_media(

@@ -17,12 +17,13 @@ from . import (
     px,
     tz,
     pytel,
-    random_prefixies,
-)
+    random_prefixies,)
 
 
 def calendar_command() -> Optional[str]:
-    u_1 = u_2 = u_3 = random_prefixies(px)
+    u_1 = u_2 = u_3 = random_prefixies(
+        px
+    )
     calendar_cmd = """
 <b>{} ›</b>
 
@@ -49,23 +50,65 @@ def calendar_command() -> Optional[str]:
     return str(calendar_cmd)
 
 
-m1 = ["jan", "januari", "january"]
-m2 = ["feb", "februari", "february"]
-m3 = ["mar", "maret", "march"]
+m1 = [
+    "jan",
+    "januari",
+    "january",
+]
+m2 = [
+    "feb",
+    "februari",
+    "february",
+]
+m3 = [
+    "mar",
+    "maret",
+    "march",
+]
 m4 = ["apr", "april"]
 m5 = ["may", "mei"]
-m6 = ["jun", "juni", "june"]
-m7 = ["jul", "juli", "july"]
-m8 = ["aug", "agustus", "august"]
-m9 = ["sep", "september"]
-m10 = ["oct", "oktober", "october"]
-m11 = ["nov", "november"]
-m12 = ["dec", "desember", "december"]
+m6 = [
+    "jun",
+    "juni",
+    "june",
+]
+m7 = [
+    "jul",
+    "juli",
+    "july",
+]
+m8 = [
+    "aug",
+    "agustus",
+    "august",
+]
+m9 = [
+    "sep",
+    "september",
+]
+m10 = [
+    "oct",
+    "oktober",
+    "october",
+]
+m11 = [
+    "nov",
+    "november",
+]
+m12 = [
+    "dec",
+    "desember",
+    "december",
+]
 
 
 @pytel.instruction(
-    ["calendar -now", "calendar -m"],
+    [
+        "calendar -now",
+        "calendar -m",
+    ],
     outgoing=True,
+    sensitive=False,
 )
 async def _calendar(client, message):
     point = message.text.split(None, 2)
@@ -77,7 +120,8 @@ async def _calendar(client, message):
         ),
     )
     _ = TanggalMerah(
-        cache_path=None, cache_time=600
+        cache_path=None,
+        cache_time=600,
     )
     _.set_timezone(TimeZone)
     if _.is_holiday():
@@ -89,91 +133,156 @@ async def _calendar(client, message):
     try:
         if point[1] == "-now":
             mo = datetime.now(tz).month
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m1
         ):
             mo = 1
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m2
         ):
             mo = 2
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m3
         ):
             mo = 3
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m4
         ):
             mo = 4
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m5
         ):
             mo = 5
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m6
         ):
             mo = 6
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m7
         ):
             mo = 7
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m8
         ):
             mo = 8
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m9
         ):
             mo = 9
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m10
         ):
             mo = 10
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m11
         ):
             mo = 11
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
         elif (
             point[1] == "-m"
             and point[2] in m12
         ):
             mo = 12
-            ca = month(ye, mo, 2, 1)
+            ca = month(
+                ye,
+                mo,
+                2,
+                1,
+            )
 
     except BaseException:
         exam = calendar_command()
@@ -183,7 +292,8 @@ async def _calendar(client, message):
             disable_notification=True,
         )
         return await _try_purged(
-            message, 3.5
+            message,
+            3.5,
         )
 
     date_and_time = """
@@ -206,7 +316,9 @@ async def _calendar(client, message):
         parse_mode=ParseMode.HTML,
         disable_notification=True,
     )
-    return await _try_purged(message, 3.5)
+    return await _try_purged(
+        message, 3.5
+    )
 
 
 plugins_helper["calendar"] = {

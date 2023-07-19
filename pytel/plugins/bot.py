@@ -8,7 +8,9 @@
 from asyncio import Lock
 from datetime import datetime
 from os import getpid, close, execvp
-from platform import python_version, uname
+from platform import (
+    python_version,
+    uname,)
 from sys import executable
 from textwrap import indent
 from time import time
@@ -21,12 +23,14 @@ from pyrogram import __version__
 from pyrogram.types import (
     InlineQueryResultArticle,
     InputTextMessageContent,
-    CallbackQuery,
-    InlineKeyboardMarkup,
-)
-from pytgcalls import __version__ as pytgver
+    CallbackQuery,)
+from pytgcalls import (
+    __version__ as pytgver,)
 from version import __version__ as b_ver
 from . import (
+    ChatSendInlineForbidden,
+    BotResponseTimeout,
+    QueryIdInvalid,
     RunningCommand,
     ParseMode,
     Ping,
@@ -44,11 +48,45 @@ from . import (
     time_formatter,
     tz,
     buttons,
+    ikmarkup,
     filters,
-    suppress,
-)
+    suppress,)
 
 lock = Lock()
+
+
+async def _er_iping(
+    client,
+) -> Optional[str]:
+    # pyrogram
+    await lock.acquire()
+    start_pyro = time()
+    await client.invoke(
+        Ping(ping_id=client.rnd_id())
+    )
+    lock.release()
+    p1 = time()
+    pings_ = f"{str(round((start_pyro - p1) * -50, 2))}"
+    # delay ping
+    await lock.acquire()
+    start_delay = time()
+    await client.invoke(
+        PingDelayDisconnect(
+            ping_id=client.rnd_id(),
+            disconnect_delay=15,
+        )
+    )
+    lock.release()
+    d1 = time()
+    delay_ping = f"{str(round((start_delay - d1) * -50, 2))}"
+    text = f"""
+<b><u>PYROGRAM</b></u>
+ ├ <b>Speed:</b> <code>{pings_} ms</code>
+ └ <b>Delay:</b> <code>{delay_ping} ms</code>
+
+(c) @kastaid #pytel
+"""
+    return str(text)
 
 
 def _ialive() -> Optional[str]:
@@ -57,9 +95,9 @@ def _ialive() -> Optional[str]:
         (time() - start_time) * 1000
     )
     unam = uname()
-    time_stamp = datetime.now(tz).strftime(
-        "%A, %I:%M:%S %p UTC%z"
-    )
+    time_stamp = datetime.now(
+        tz
+    ).strftime("%A, %I:%M:%S %p UTC%z")
     text_active = "<i>“We are connected on the inside.”</i>\n"
     text_active += "----------------------------------------\n"
     text_active += (
@@ -133,24 +171,31 @@ def _ialive() -> Optional[str]:
         + "</a></b>\n"
     )
     wrp = indent(
-        text_active, " ", lambda line: True
+        text_active,
+        " ",
+        lambda line: True,
     )
     return str(wrp)
 
 
 def sys_stats():
     cpu = psutil.cpu_percent()
-    mem = psutil.virtual_memory().percent
-    disk = psutil.disk_usage("/").percent
+    mem = (
+        psutil.virtual_memory().percent
+    )
+    disk = psutil.disk_usage(
+        "/"
+    ).percent
     process = psutil.Process(getpid())
     stats = f"""
-PYTEL
-------------------
+PYTEL-Premium
+-----------------------
 UPTIME: {time_formatter((time() - start_time) * 1000)}
 BOT: {round(process.memory_info()[0] / 1024 ** 2)} MB
 CPU: {cpu}%
 RAM: {mem}%
 DISK: {disk}%
+-----------------------
 
 Copyright (C) 2023-present kastaid
 """
@@ -159,11 +204,17 @@ Copyright (C) 2023-present kastaid
 
 @pytel.instruction(
     ["ping", "pong"],
-    supersu=True,
+    supersu=["PYTEL"],
+    force_edit=False,
+    supergroups=True,
+    disable_errors=True,
 )
 @pytel.instruction(
     ["ping", "pong"],
     outgoing=True,
+    force_edit=False,
+    supergroups=True,
+    disable_errors=True,
 )
 async def _iping(client, message):
     if (
@@ -177,21 +228,44 @@ async def _iping(client, message):
                 plugins_n,
             )
             for name in _.results:
-                await message.reply_inline_bot_result(
-                    _.query_id, name.id
-                )
-        except Exception as error:
-            return await eor(
-                message, text=error
+                try:
+                    await message.reply_inline_bot_result(
+                        _.query_id,
+                        name.id,
+                    )
+                except ChatSendInlineForbidden:
+                    txt = (
+                        await _er_iping(
+                            client
+                        )
+                    )
+                    await client.send_message(
+                        message.chat.id,
+                        text=txt,
+                        disable_web_page_preview=True,
+                    )
+        except BotResponseTimeout:
+            await message.reply(
+                "Did not answer the request, please try again.",
             )
-        return await _try_purged(message)
+        return await _try_purged(
+            message
+        )
 
 
 @pytel.instruction(
-    ["alive", "on"], supersu=True
+    ["alive", "on"],
+    supersu=["PYTEL"],
+    force_edit=False,
+    supergroups=True,
+    disable_errors=True,
 )
 @pytel.instruction(
-    ["alive", "on"], outgoing=True
+    ["alive", "on"],
+    outgoing=True,
+    force_edit=False,
+    supergroups=True,
+    disable_errors=True,
 )
 async def _ialv(client, message):
     if (
@@ -205,25 +279,40 @@ async def _ialv(client, message):
                 plugins_n,
             )
             for name in _.results:
-                await message.reply_inline_bot_result(
-                    _.query_id, name.id
-                )
-        except Exception as error:
-            return await eor(
-                message, text=error
+                try:
+                    await message.reply_inline_bot_result(
+                        _.query_id,
+                        name.id,
+                    )
+                except ChatSendInlineForbidden:
+                    text = _ialive()
+                    await client.send_message(
+                        message.chat.id,
+                        text=text,
+                        disable_web_page_preview=True,
+                    )
+        except BotResponseTimeout:
+            await message.reply(
+                text="Did not answer the request, please try again.",
             )
-        return await _try_purged(message)
+            return
+        return await _try_purged(
+            message
+        )
 
 
 @pytel_tgb.on_callback_query(
     filters.regex("sys_stats")
 )
 async def _sys_callback(
-    client, cq: CallbackQuery
+    client,
+    cq: CallbackQuery,
 ):
     text = sys_stats()
     await pytel_tgb.answer_callback_query(
-        cq.id, text, show_alert=True
+        cq.id,
+        text,
+        show_alert=True,
     )
 
 
@@ -231,34 +320,10 @@ async def _sys_callback(
     filters.regex("^ping")
 )
 async def _ping_inline(
-    client, cq: CallbackQuery
+    client,
+    cq: CallbackQuery,
 ):
-    # pyrogram
-    await lock.acquire()
-    start_pyro = time()
-    await client.invoke(
-        Ping(ping_id=client.rnd_id())
-    )
-    lock.release()
-    p1 = time()
-    pings_ = f"{str(round((start_pyro - p1) * -50, 2))}"
-    # delay ping
-    await lock.acquire()
-    start_delay = time()
-    await client.invoke(
-        PingDelayDisconnect(
-            ping_id=client.rnd_id(),
-            disconnect_delay=15,
-        )
-    )
-    lock.release()
-    d1 = time()
-    delay_ping = f"{str(round((start_delay - d1) * -50, 2))}"
-    txt = f"""
-<b><u>PYROGRAM</b></u>
- ├ <b>Speed:</b> <code>{pings_} ms</code>
- └ <b>Delay:</b> <code>{delay_ping} ms</code>
-"""
+    txt = await _er_iping(client)
     rpm = [
         [
             buttons(
@@ -267,32 +332,34 @@ async def _ping_inline(
             )
         ],
     ]
-    await client.answer_inline_query(
-        cq.id,
-        cache_time=600,
-        results=[
-            (
-                InlineQueryResultArticle(
-                    title="PING\n@kastaid #pytel",
-                    reply_markup=InlineKeyboardMarkup(
-                        rpm
-                    ),
-                    input_message_content=InputTextMessageContent(
-                        message_text=txt,
-                        parse_mode=ParseMode.HTML,
-                        disable_web_page_preview=True,
-                    ),
+    with suppress(QueryIdInvalid):
+        await client.answer_inline_query(
+            cq.id,
+            is_personal=True,
+            results=[
+                (
+                    InlineQueryResultArticle(
+                        title="PING\n@kastaid #pytel",
+                        reply_markup=ikmarkup(
+                            rpm
+                        ),
+                        input_message_content=InputTextMessageContent(
+                            message_text=txt,
+                            parse_mode=ParseMode.HTML,
+                            disable_web_page_preview=True,
+                        ),
+                    )
                 )
-            )
-        ],
-    )
+            ],
+        )
 
 
 @pytel_tgb.on_inline_query(
     filters.regex("^alive")
 )
 async def _alive_inline(
-    client, cq: CallbackQuery
+    client,
+    cq: CallbackQuery,
 ):
     text = _ialive()
     rpm = [
@@ -305,34 +372,39 @@ async def _alive_inline(
                 "KASTA OT",
                 url="https://t.me/kastaot",
             ),
+        ],
+        [
             buttons(
-                "REPO",
+                "REPOSITORY",
                 url="https://github.com/kastaid/pytel",
             ),
         ],
     ]
-    await client.answer_inline_query(
-        cq.id,
-        cache_time=600,
-        results=[
-            (
-                InlineQueryResultArticle(
-                    title="ALIVE\n@kastaid #pytel",
-                    reply_markup=InlineKeyboardMarkup(
-                        rpm
-                    ),
-                    input_message_content=InputTextMessageContent(
-                        message_text=text,
-                        parse_mode=ParseMode.HTML,
-                        disable_web_page_preview=True,
-                    ),
+    with suppress(QueryIdInvalid):
+        await client.answer_inline_query(
+            cq.id,
+            is_personal=True,
+            results=[
+                (
+                    InlineQueryResultArticle(
+                        title="ALIVE\n@kastaid #pytel",
+                        reply_markup=ikmarkup(
+                            rpm
+                        ),
+                        input_message_content=InputTextMessageContent(
+                            message_text=text,
+                            parse_mode=ParseMode.HTML,
+                            disable_web_page_preview=True,
+                        ),
+                    )
                 )
-            )
-        ],
-    )
+            ],
+        )
 
 
-async def restarting(message) -> None:
+async def restarting(
+    message,
+) -> None:
     try:
         import psutil
 
@@ -347,33 +419,52 @@ async def restarting(message) -> None:
     await _try_purged(message)
     execvp(
         executable,
-        [executable, "-m", "pytel"],
+        [
+            executable,
+            "-m",
+            "pytel",
+        ],
     )
 
 
-@pytel.instruction("update", supersu=True)
-@pytel.instruction("update", outgoing=True)
+@pytel.instruction(
+    ["update"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
+    ["update"],
+    outgoing=True,
+)
 async def _updates(client, message):
-    if not lock.locked():
-        x = await message.reply(
-            "Getting information up to date.."
+    if lock.locked():
+        await message.edit(
+            "Please wait until --**updating**-- done."
         )
 
     async with lock:
-        stdout, stderr = RunningCommand(
-            "git pull"
+        x = await message.reply(
+            "Getting information up to date..."
         )
-        if "Already up to date." in str(
-            stdout
+        (
+            stdout,
+            stderr,
+        ) = RunningCommand("git pull")
+        if (
+            "Already up to date."
+            in str(stdout)
         ):
-            text = (
-                "It's already up-to date!"
+            text = "It's already up-to date!"
+            await eor(
+                x,
+                text=text,
             )
-            await eor(x, text=text)
             return
 
         elif str(stderr):
-            await eor(x, text=f"{stderr}")
+            await eor(
+                x,
+                text=f"{stderr}",
+            )
             return
 
         else:
@@ -382,7 +473,9 @@ async def _updates(client, message):
                 x,
                 text=f"<u><b>Updating</u>!!</b>\nInstall requirements...",
             )
-            with suppress(Exception):
+            with suppress(
+                BaseException
+            ):
                 RunningCommand(
                     "pip3 install -U -r main.txt"
                 )
@@ -394,17 +487,23 @@ async def _updates(client, message):
             await restarting(xy)
 
 
-@pytel.instruction("restart", outgoing=True)
+@pytel.instruction(
+    ["restart"],
+    outgoing=True,
+)
 async def _restart(client, message):
     x = await message.reply(
         "Restarting client, wait for 1 minutes.."
     )
-    RunningCommand("git pull")
     await restarting(x)
 
 
 @pytel.instruction(
-    ["repository", "repo"], outgoing=True
+    [
+        "repository",
+        "repo",
+    ],
+    outgoing=True,
 )
 async def _repo(client, message):
     text = "[{}](https://github.com/kastaid/pytel) : source code.".format(
@@ -418,6 +517,7 @@ async def _repo(client, message):
 
 
 plugins_helper["bot"] = {
+    f"{random_prefixies(px)}expired / {random_prefixies(px)}status": "To check expired.",
     f"{random_prefixies(px)}alive / {random_prefixies(px)}on": "Check alive & version.",
     f"{random_prefixies(px)}ping / {random_prefixies(px)}pong": "Check how long it takes to ping.",
     f"{random_prefixies(px)}update": "To update ur source.",

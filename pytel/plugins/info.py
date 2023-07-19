@@ -13,11 +13,13 @@ from . import (
     random_prefixies,
     eor,
     mention_html,
-    attr_file,
+    attr_file,)
+
+
+@pytel.instruction(
+    ["id"],
+    outgoing=True,
 )
-
-
-@pytel.instruction("id", outgoing=True)
 async def _ids(client, message):
     chat_type = message.chat.type
 
@@ -50,7 +52,10 @@ async def _ids(client, message):
             user_id,
             dc_id,
         )
-        await eor(message, text=text)
+        await eor(
+            message,
+            text=text,
+        )
         return
 
     elif chat_type == ChatType.CHANNEL:
@@ -59,7 +64,9 @@ async def _ids(client, message):
             if message.sender_chat.dc_id
             else "N/A"
         )
-        channel_id = message.sender_chat.id
+        channel_id = (
+            message.sender_chat.id
+        )
         text = """
 <b><u>CHANNEL</b></u>
  ├ <b>Profile</b>: {}
@@ -73,7 +80,10 @@ async def _ids(client, message):
             channel_id,
             dc_id,
         )
-        await eor(message, text=text)
+        await eor(
+            message,
+            text=text,
+        )
         return
 
     elif chat_type in [
@@ -175,7 +185,10 @@ async def _ids(client, message):
             message.reply_to_message
             or message
         )
-        await eor(msg, text=text)
+        await eor(
+            msg,
+            text=text,
+        )
 
 
 plugins_helper["info"] = {

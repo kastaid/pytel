@@ -12,11 +12,13 @@ from . import (
     plugins_helper,
     px,
     pytel,
-    random_prefixies,
+    random_prefixies,)
+
+
+@pytel.instruction(
+    ["lyrics"],
+    outgoing=True,
 )
-
-
-@pytel.instruction("lyrics", outgoing=True)
 async def _lyrics(client, message):
     search_text = get_text(message)
 
@@ -48,7 +50,10 @@ async def _lyrics(client, message):
                 + "\n\n"
                 + songs.pop("lyrics")
             )
-            cxz = rxv.replace("\n", "\n")
+            cxz = rxv.replace(
+                "\n",
+                "\n",
+            )
             MyLyrics = "{}".format(cxz)
         await kz.reply(
             MyLyrics,

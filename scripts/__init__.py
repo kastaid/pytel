@@ -7,7 +7,9 @@
 
 from pathlib import Path
 
-Root: Path = Path(__file__).parent.parent
+Root: Path = Path(
+    __file__
+).parent.parent
 
 EXTS = (
     ".py",

@@ -26,11 +26,15 @@ def main() -> None:
             Root.rglob("manifest.json"),
         ):
             with open(
-                file, "r", encoding="utf-8"
+                file,
+                "r",
+                encoding="utf-8",
             ) as fp:
                 obj = json.load(fp)
             with open(
-                file, "w", encoding="utf-8"
+                file,
+                "w",
+                encoding="utf-8",
             ) as fp:
                 json.dump(
                     obj,

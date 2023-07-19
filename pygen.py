@@ -6,8 +6,21 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 import os
+from platform import uname
 from sys import exit
 from time import sleep
+from version import __version__
+
+APP_VERSION = (
+    f"PYTEL-Premium {__version__}"
+)
+DEVICE_MODEL = f"{uname().machine}"
+SYSTEM_VERSION = f"{uname().system}"
+WORKERS = min(
+    32,
+    (os.cpu_count() or 0) + 4,
+)
+
 
 PYTEL = r"""
               _       _
@@ -63,7 +76,10 @@ def get_api_id_and_hash():
     API_HASH = input(
         "Please enter your API HASH: "
     )
-    return API_ID, API_HASH
+    return (
+        API_ID,
+        API_HASH,
+    )
 
 
 def session():
@@ -73,7 +89,9 @@ def session():
 
         x = "\bFound an existing installation of Pyrogram...\nSuccessfully Imported.\n\n"
     except BaseException:
-        print("\nInstalling Pyrogram...")
+        print(
+            "\nInstalling Pyrogram..."
+        )
         os.system(
             "pip install pyrogram tgcrypto"
         )
@@ -85,7 +103,10 @@ def session():
     print(x)
 
     # generate a session
-    API_ID, API_HASH = get_api_id_and_hash()
+    (
+        API_ID,
+        API_HASH,
+    ) = get_api_id_and_hash()
     print(
         "Enter phone number when asked.\n\n"
     )
@@ -94,6 +115,10 @@ def session():
             name="pytel",
             api_id=API_ID,
             api_hash=API_HASH,
+            workers=WORKERS,
+            app_version=APP_VERSION,
+            device_model=DEVICE_MODEL,
+            system_version=SYSTEM_VERSION,
             in_memory=True,
         ) as pytel:
             ss = (
@@ -126,14 +151,23 @@ def main():
     except Exception as excp:
         print(excp)
         exit(0)
-    if type_of_ss.lower() in ["y", "yes"]:
+    if type_of_ss.lower() in [
+        "y",
+        "yes",
+    ]:
         session()
-    elif type_of_ss.lower() in ["n", "no"]:
+    elif type_of_ss.lower() in [
+        "n",
+        "no",
+    ]:
         exit(0)
     else:
         print("Invalid choice.")
     x = input("Run again? (Y/n)")
-    if x.lower() in ["y", "yes"]:
+    if x.lower() in [
+        "y",
+        "yes",
+    ]:
         main()
     else:
         exit(0)

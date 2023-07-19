@@ -23,12 +23,12 @@ CYAN = "\x1b[36m"
 python = "python3"
 nocache = f"{python} -B"
 app = f"{python} -m pytel"
-app_watch = (
-    f"{python} -m scripts.autoreload {app}"
-)
+app_watch = f"{python} -m scripts.autoreload {app}"
 
-black = "black --line-length 44 --exclude version.py ."
-isort = "isort --settings-file=setup.cfg ."
+black = "black --line-length 40 --exclude version.py ."
+isort = (
+    "isort --settings-file=setup.cfg ."
+)
 flake8 = "flake8 --config=setup.cfg ."
 mypy = "mypy --config-file=setup.cfg ."
 prettyjson = (
@@ -36,7 +36,9 @@ prettyjson = (
 )
 
 
-def run_cmd(cmd) -> None:
+def run_cmd(
+    cmd,
+) -> None:
     try:
         proc = run(
             shlex.split(cmd),
@@ -90,9 +92,13 @@ class CapitalisedHelpFormatter(
         if not prefix:
             prefix = "Usage: "
         return super(
-            CapitalisedHelpFormatter, self
+            CapitalisedHelpFormatter,
+            self,
         ).add_usage(
-            usage, actions, groups, prefix
+            usage,
+            actions,
+            groups,
+            prefix,
         )
 
 
@@ -163,7 +169,9 @@ def main() -> None:
             f"{BOLD}{GREEN}PRODUCTION MODE...{RST}"
         )
         clean()
-        print(f"{BOLD}{BLUE}>> {app}{RST}")
+        print(
+            f"{BOLD}{BLUE}>> {app}{RST}"
+        )
         run_cmd(app)
     elif args.dev:
         print(
@@ -171,7 +179,9 @@ def main() -> None:
         )
         clean()
         lint()
-        print(f"{BOLD}{BLUE}>> {app}{RST}")
+        print(
+            f"{BOLD}{BLUE}>> {app}{RST}"
+        )
         run_cmd(app)
     elif args.watch:
         print(
@@ -197,7 +207,9 @@ def main() -> None:
     elif args.clean:
         clean()
     else:
-        print(f"{python} -m start --help")
+        print(
+            f"{python} -m start --help"
+        )
 
 
 if __name__ == "__main__":

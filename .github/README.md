@@ -14,7 +14,7 @@
 
 ### Guide Command ›_
   * <strong>Install requirements:</strong>
-    > pip3 install -r main.txt
+    > pip3 install -U -r main.txt
   * <strong>Run pytel:</strong>
     > python3 -m start --help
 

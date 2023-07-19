@@ -8,6 +8,7 @@
 import re
 from asyncio import sleep
 from base64 import b64decode
+from datetime import datetime
 from io import BytesIO
 from sys import version_info
 from time import perf_counter
@@ -16,20 +17,24 @@ from typing import (
     Optional,
     Set,
     Tuple,
-    Union,
-)
+    Union,)
 from uuid import uuid4
 from aiofiles import open
 from aiohttp import (
     ClientSession,
-    __version__,
-)
+    __version__,)
 from asyncache import cached
 from cachetools import TTLCache
+from pytz import (
+    country_timezones,
+    timezone,
+    country_names,)
 from version import __version__ as versi
 
 
-def get_random_hex(length: int = 12) -> str:
+def get_random_hex(
+    length: int = 12,
+) -> str:
     return uuid4().hex[:length]
 
 
@@ -84,7 +89,10 @@ async def fetching(
         except BaseException:
             return None
         if resp.status not in {
-            *{200, 201},
+            *{
+                200,
+                201,
+            },
             *statuses,
         }:
             return None
@@ -111,7 +119,12 @@ async def get_blacklisted(
     is_json: bool = False,
     attempts: int = 3,
     fallbacks: Optional[
-        Tuple[Union[int, str]]
+        Tuple[
+            Union[
+                int,
+                str,
+            ]
+        ]
     ] = None,
 ) -> Set[Union[int, str]]:
     count = 0
@@ -132,7 +145,8 @@ async def get_blacklisted(
         if is_content:
             reg = r"[^\s#,\[\]\{\}]+"
             data = re.findall(
-                reg, res.decode("utf-8")
+                reg,
+                res.decode("utf-8"),
             )
             ids = [
                 int(x)
@@ -140,7 +154,9 @@ async def get_blacklisted(
                 if x.isdecimal()
                 or (
                     x.startswith("-")
-                    and x[1:].isdecimal()
+                    and x[
+                        1:
+                    ].isdecimal()
                 )
             ]
         else:
@@ -172,16 +188,20 @@ async def screenshots(
     if not response:
         return None
     getpic = response["image"].replace(
-        "data:image/jpeg;base64,", ""
+        "data:image/jpeg;base64,",
+        "",
     )
     file_name = f"{file_name}.jpg"
     if not download:
-        file = BytesIO(b64decode(getpic))
+        file = BytesIO(
+            b64decode(getpic)
+        )
         file.name = file_name
     else:
         file = "cache/" + file_name
         async with open(
-            file, mode="wb"
+            file,
+            mode="wb",
         ) as f:
             await f.write(response)
 
@@ -197,11 +217,13 @@ async def fetch_adzan(
         "X-RapidAPI-Host": "muslimsalat.p.rapidapi.com",
     }
     response = await fetching(
-        url, re_json=True, headers=headers
+        url,
+        re_json=True,
+        headers=headers,
     )
     if not response:
         text = "{}!".format(
-            "Try again later.",
+            "Try again later!",
         )
         return text
     if response["status_code"] == 0:
@@ -222,9 +244,9 @@ async def fetch_adzan(
         maps = f"https://www.google.com/maps?q={cordinates}"
         celci = (
             f"{response['today_weather']['temperature']}"
-            if response["today_weather"][
-                "temperature"
-            ]
+            if response[
+                "today_weather"
+            ]["temperature"]
             else 0
         )
         temperature = (
@@ -254,7 +276,9 @@ async def fetch_adzan(
         )
         text += (
             "├ <b>"
-            + "{}".format("Code Country")
+            + "{}".format(
+                "Code Country"
+            )
             + f" :</b> <code>{response['country_code']}</code>\n"
         )
         text += (
@@ -274,6 +298,202 @@ async def fetch_adzan(
         text += f"└ <b>Maps :</b> <code>{maps}</code>"
 
     return str(text)
+
+
+async def fetch_weather(
+    str_city: Optional[str],
+) -> Optional[str]:
+    tz_countries = {
+        tz: country
+        for country, tzs in country_timezones.items()
+        for tz in tzs
+    }
+
+    if "," in str_city:
+        new_str_city = str_city.split(
+            ","
+        )
+        if len(new_str_city[1]) == 2:
+            str_city = (
+                new_str_city[0].strip()
+                + ","
+                + new_str_city[
+                    1
+                ].strip()
+            )
+        else:
+            country = (
+                await get_timezone(
+                    (
+                        new_str_city[
+                            1
+                        ].strip()
+                    ).title()
+                )
+            )
+            try:
+                countrycode = (
+                    tz_countries[
+                        f"{country}"
+                    ]
+                )
+            except KeyError:
+                text = "{}".format(
+                    "Invalid country."
+                )
+                return text
+            str_city = (
+                new_str_city[0].strip()
+                + ","
+                + countrycode.strip()
+            )
+
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={str_city}&appid=439141654b1019a49e73e5118c6cfd0b"
+    response = await fetching(
+        url,
+        re_json=True,
+    )
+    if not response:
+        text = "{}".format(
+            "Cannot retrieve region, please check again."
+        )
+        return text
+
+    cityname = response["name"]
+    curtemp = response["main"]["temp"]
+    humidity = response["main"][
+        "humidity"
+    ]
+    min_temp = response["main"][
+        "temp_min"
+    ]
+    max_temp = response["main"][
+        "temp_max"
+    ]
+    desc = response["weather"][0]
+    desc = desc["main"]
+    desc = "{}".format(desc)
+    country = response["sys"]["country"]
+    sunrise = response["sys"]["sunrise"]
+    sunset = response["sys"]["sunset"]
+    wind = response["wind"]["speed"]
+    winddir = response["wind"]["deg"]
+
+    ctimezone = timezone(
+        country_timezones[country][0]
+    )
+    time = datetime.now(
+        ctimezone
+    ).strftime("%A, %H:%M:%S")
+    fullcountry_names = country_names[
+        f"{country}"
+    ]
+    dirs = [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW",
+    ]
+
+    div = 360 / len(dirs)
+    funmath = int(
+        (winddir + (div / 2)) / div
+    )
+    findir = dirs[funmath % len(dirs)]
+    kmph = str(wind * 3.6).split(".")
+    mph = str(wind * 2.237).split(".")
+
+    def wt_fahrenheit(
+        f,
+    ):
+        temp = str(
+            ((f - 273.15) * 9 / 5 + 32)
+        ).split(".")
+        return temp[0]
+
+    def wt_celsius(c):
+        temp = str((c - 273.15)).split(
+            "."
+        )
+        return temp[0]
+
+    def wt_sun(unix):
+        xx = datetime.fromtimestamp(
+            unix,
+            tz=ctimezone,
+        ).strftime("%H:%M:%S")
+        return xx
+
+    text = (
+        "<u>"
+        + "{}".format(
+            "WEATHER INFORMATION"
+        )
+        + "</u>\n"
+    )
+    text += (
+        "├ <b>"
+        + "Temperature"
+        + f":</b> {wt_celsius(curtemp)}°C | {wt_fahrenheit(curtemp)}°F\n"
+    )
+    text += f"├ <b>Min. Temp.:</b> {wt_celsius(min_temp)}°C | {wt_fahrenheit(min_temp)}°F\n"
+    text += f"├ <b>Max. Temp.:</b> {wt_celsius(max_temp)}°C | {wt_fahrenheit(max_temp)}°F\n"
+    text += (
+        "├ <b>"
+        + "{}".format("Humidity")
+        + f":</b> {humidity}%\n"
+    )
+    text += "┌─────────────────────\n"
+    text += (
+        "├ <b>"
+        + "{}".format("Wind")
+        + f":</b> {kmph[0]} kmh | {mph[0]} mph, {findir}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Sunrise")
+        + f":</b> {wt_sun(sunrise)}\n"
+    )
+    text += (
+        "└ <b>"
+        + "{}".format("Sunset")
+        + f":</b> {wt_sun(sunset)}\n\n"
+    )
+    text += f"<u><b>{desc}</b></u>\n"
+    text += f"└ {cityname}, {fullcountry_names} {time}"
+    text += f"\n\n(c) @kastaid #pytel"
+
+    return text
+
+
+async def get_timezone(
+    in_country: Optional[str],
+) -> Optional[str]:
+    for country_code in country_names:
+        if (
+            in_country
+            == country_names[
+                country_code
+            ]
+        ):
+            return timezone(
+                country_timezones[
+                    country_code
+                ][0]
+            )
+    try:
+        if country_names[in_country]:
+            return timezone(
+                country_timezones[
+                    in_country
+                ][0]
+            )
+    except KeyError:
+        return
 
 
 def fahrenheit(

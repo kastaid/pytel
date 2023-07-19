@@ -6,13 +6,13 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
-from pyrogram.types import ChatPrivileges
+from pyrogram.types import (
+    ChatPrivileges,)
 from ..config import LOGCHAT_ID
 from ..logger import pylog as send_log
 from .dbase.dbLogger import (
     add_logger,
-    already_logger,
-)
+    already_logger,)
 
 
 async def auto_pilots(_, tgb) -> None:
@@ -42,9 +42,13 @@ async def auto_pilots(_, tgb) -> None:
         f"Creating a channel LOGGER for {name}"
     )
     try:
-        channel_name = "KASTA ID ( LOGGER )"
-        channel = await _.create_channel(
-            channel_name
+        channel_name = (
+            "PYTEL 🇮🇩 ( LOGGER )"
+        )
+        channel = (
+            await _.create_channel(
+                channel_name
+            )
         )
         logger_id: int = channel.id
         await sleep(1)
@@ -64,16 +68,18 @@ async def auto_pilots(_, tgb) -> None:
                 )
             ),
         )
-        description = "DON'T DELETE THIS CHANNEL !!\n\nUser ID : {}\nChannel ID : {}\n\nOur Channel: @kastaid".format(
-            user_id, int(logger_id)
+        description = "⚠️ DON'T DELETE THIS CHANNEL !!⚠️\n\nUser ID : {}\nChannel ID : {}\n\nPYTEL Channel: t.me/PYTELPremium\nPowered by: @kastaid".format(
+            user_id,
+            int(logger_id),
         )
         await _.set_chat_description(
             int(logger_id),
             description=description,
         )
-        pics = "resources/kastaid/kasta_logger.jpg"
+        pics = "resources/kastaid/pytel_logger.jpg"
         await _.set_chat_photo(
-            int(logger_id), photo=pics
+            int(logger_id),
+            photo=pics,
         )
         await sleep(0.8)
         add_logger(

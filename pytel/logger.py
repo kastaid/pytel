@@ -17,8 +17,7 @@ from logging import (
     basicConfig,
     currentframe,
     disable,
-    getLogger,
-)
+    getLogger,)
 from sys import stderr
 from typing import Union
 from loguru import logger as pylog
@@ -26,7 +25,9 @@ from loguru import logger as pylog
 pylog.remove(0)
 pylog.add(
     sink="logs/pytel-{}.log".format(
-        date.today().strftime("%Y-%m-%d")
+        date.today().strftime(
+            "%Y-%m-%d"
+        )
     ),
     format="{time:YY/MM/DD HH:mm:ss} | {level: <8}| {name: ^15} | {function: ^15} | {line: >3} : {message}",
     rotation="1 days",
@@ -39,7 +40,10 @@ pylog.add(
     level="INFO",
     colorize=True,
 )
-pylog.opt(lazy=True, colors=True)
+pylog.opt(
+    lazy=True,
+    colors=True,
+)
 
 
 class InterceptHandler(Handler):
@@ -48,17 +52,22 @@ class InterceptHandler(Handler):
     """
 
     def emit(
-        self, record: LogRecord
+        self,
+        record: LogRecord,
     ) -> None:
         try:
             level: Union[
-                str, int
+                str,
+                int,
             ] = pylog.level(
                 record.levelname
             ).name
         except ValueError:
             level = record.levelno
-        frame, depth = (
+        (
+            frame,
+            depth,
+        ) = (
             currentframe(),
             2,
         )
@@ -72,7 +81,10 @@ class InterceptHandler(Handler):
         pylog.opt(
             depth=depth,
             exception=record.exc_info,
-        ).log(level, record.getMessage())
+        ).log(
+            level,
+            record.getMessage(),
+        )
 
 
 disable(DEBUG)
@@ -81,9 +93,9 @@ getLogger("pyrogram").setLevel(ERROR)
 getLogger("pyrogram.client").setLevel(
     WARNING
 )
-getLogger("pyrogram.session.auth").setLevel(
-    CRITICAL
-)
+getLogger(
+    "pyrogram.session.auth"
+).setLevel(CRITICAL)
 getLogger(
     "pyrogram.session.session"
 ).setLevel(CRITICAL)

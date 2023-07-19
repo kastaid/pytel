@@ -24,28 +24,41 @@ class _Lyrics:
     source_code = None
     title = None
 
-    def __call__(self, source_code, title):
+    def __call__(
+        self,
+        source_code,
+        title,
+    ):
         self.source_code = source_code
         self.title = title
 
     def __up_title__(self, title):
         self.title = title
 
-    def __GeniusEngine1__(self):
-        extract = self.source_code.select(
-            ".lyrics"
+    def __GeniusEngine1__(
+        self,
+    ):
+        extract = (
+            self.source_code.select(
+                ".lyrics"
+            )
         )
         if not extract:
             return None
 
         lyrics = (
             (extract[0].get_text())
-            .replace("<br>", "\n")
+            .replace(
+                "<br>",
+                "\n",
+            )
             .strip()
         )
         return lyrics
 
-    def __GeniusEngine2__(self):
+    def __GeniusEngine2__(
+        self,
+    ):
         all_extracts = self.source_code.select(
             'div[class*="Lyrics__Container-sc-"]'
         )
@@ -62,23 +75,34 @@ class _Lyrics:
 
         return lyrics.strip()
 
-    def genius_engine(self):
+    def genius_engine(
+        self,
+    ):
         lyrics = (
             self.__GeniusEngine1__()
             or self.__GeniusEngine2__()
         )
-        self.__up_title__(self.title[:-16])
+        self.__up_title__(
+            self.title[:-16]
+        )
 
         return lyrics
 
-    def glamsham_engine(self):
-        extract = self.source_code.find_all(
-            "font", class_="general"
-        )[5]
+    def glamsham_engine(
+        self,
+    ):
+        extract = (
+            self.source_code.find_all(
+                "font",
+                class_="general",
+            )[5]
+        )
         if not extract:
             return None
 
-        for br in extract.find_all("br"):
+        for br in extract.find_all(
+            "br"
+        ):
             br.replace_with("\n")
         lyrics = extract.get_text()
         self._update_title(
@@ -87,9 +111,13 @@ class _Lyrics:
 
         return lyrics
 
-    def lyricsbell_engine(self):
-        extract = self.source_code.select(
-            ".lyrics-col p"
+    def lyricsbell_engine(
+        self,
+    ):
+        extract = (
+            self.source_code.select(
+                ".lyrics-col p"
+            )
         )
         if not extract:
             return None
@@ -102,14 +130,21 @@ class _Lyrics:
             )
 
         lyrics = lyrics.replace(
-            "<br>", "\n"
+            "<br>",
+            "\n",
         ).strip()
-        self._update_title(self.title[:-13])
+        self._update_title(
+            self.title[:-13]
+        )
         return lyrics
 
-    def lyricsted_engine(self):
-        extract = self.source_code.select(
-            ".lyric-content p"
+    def lyricsted_engine(
+        self,
+    ):
+        extract = (
+            self.source_code.select(
+                ".lyric-content p"
+            )
         )
         if not extract:
             return None
@@ -124,13 +159,18 @@ class _Lyrics:
             )
 
         lyrics = lyrics.replace(
-            "<br>", "\n"
+            "<br>",
+            "\n",
         ).strip()
         return lyrics
 
-    def lyricsoff_engine(self):
-        extract = self.source_code.select(
-            "#main_lyrics p"
+    def lyricsoff_engine(
+        self,
+    ):
+        extract = (
+            self.source_code.select(
+                "#main_lyrics p"
+            )
         )
         if not extract:
             return None
@@ -139,16 +179,21 @@ class _Lyrics:
         for i in range(len(extract)):
             lyrics += (
                 extract[i]
-                .get_text(separator="\n")
+                .get_text(
+                    separator="\n"
+                )
                 .strip()
                 + self.BREAKS
             )
 
         return lyrics.strip()
 
-    def lyricsmint_engine(self):
+    def lyricsmint_engine(
+        self,
+    ):
         extract = self.source_code.find(
-            "section", {"id": "lyrics"}
+            "section",
+            {"id": "lyrics"},
         ).find_all("p")
         if not extract:
             return None
@@ -182,14 +227,19 @@ class LyricsEngine:
 
     def __init__(
         self,
-        gcs_api_key: Optional[str] = gsc,
-        gcs_engine_id: Optional[str] = gse,
+        gcs_api_key: Optional[
+            str
+        ] = gsc,
+        gcs_engine_id: Optional[
+            str
+        ] = gse,
     ):
         self.gsc_api = gcs_api_key
         self.gse_id = gcs_engine_id
 
     def __handle_requests__(
-        self, song_name
+        self,
+        song_name,
     ):
         url = "https://www.googleapis.com/customsearch/v1/siterestrict"
         params = {
@@ -198,21 +248,28 @@ class LyricsEngine:
             "q": f"{song_name} lyrics",
         }
 
-        response = get(url, params=params)
+        response = get(
+            url,
+            params=params,
+        )
         data = response.json()
         if response.status_code != 200:
             raise LSE(data)
         return data
 
     def __extract_lyrics__(
-        self, result_url, title
+        self,
+        result_url,
+        title,
     ):
         page = get(result_url)
         source_code = BeautifulSoup(
-            page.content, "lxml"
+            page.content,
+            "lxml",
         )
         self.engine_universe(
-            source_code, title
+            source_code,
+            title,
         )
         for (
             domain,
@@ -224,35 +281,41 @@ class LyricsEngine:
         return lyrics
 
     def getting_my_lyrics(
-        self, song_name: str
+        self,
+        song_name: str,
     ) -> dict:
         data = self.__handle_requests__(
             song_name
         )
         spell = data.get(
-            "spelling", {}
+            "spelling",
+            {},
         ).get("correctedQuery")
         data = (
-            self.__handle_requests__(spell)
+            self.__handle_requests__(
+                spell
+            )
             if spell
             else data
         )
         query_results = data.get(
-            "items", []
+            "items",
+            [],
         )
 
-        for i in range(len(query_results)):
-            result_url = query_results[i][
-                "link"
-            ]
+        for i in range(
+            len(query_results)
+        ):
+            result_url = query_results[
+                i
+            ]["link"]
             title = query_results[i][
                 "title"
             ]
             try:
-                lyrics = (
-                    self.__extract_lyrics__(
-                        result_url, title
-                    )
+                lyrics = self.__extract_lyrics__(
+                    result_url,
+                    title,
                 )
             except Exception as excp:
                 raise LSE(excp)

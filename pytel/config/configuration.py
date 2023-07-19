@@ -7,14 +7,20 @@
 
 from os import getenv as gets
 from typing import List, Optional, Union
-from dotenv import find_dotenv, load_dotenv
+from dotenv import (
+    find_dotenv,
+    load_dotenv,)
 
 load_dotenv(find_dotenv("config.env"))
 
-API_ID: Optional[int] = gets("API_ID", "")
+# REQURED
+API_ID: Optional[int] = gets(
+    "API_ID", ""
+)
 API_HASH: Optional[str] = gets(
     "API_HASH", ""
 )
+OWNER_ID: int = gets("OWNER_ID", "")
 TGB_TOKEN: Optional[str] = gets(
     "TGB_TOKEN", ""
 )
@@ -45,5 +51,10 @@ SESSION5: Optional[str] = gets(
     "SESSION5", ""
 )
 
+# PRODUCTION_MODE
+PRODUCTION_MODE: Optional[bool] = gets(
+    "PRODUCTION_MODE",
+    "",
+)
 
 del load_dotenv, gets

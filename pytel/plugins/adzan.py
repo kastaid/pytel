@@ -2,7 +2,7 @@
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
-# PLease read the GNU Affero General Public License in
+# Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from . import (
@@ -15,12 +15,18 @@ from . import (
     px,
     pytel,
     random_prefixies,
-    suppress,
+    suppress,)
+
+
+@pytel.instruction(
+    [
+        "adzan",
+        "adzhan",
+        "azan",
+    ],
+    outgoing=True,
 )
-
-
-@pytel.instruction("adzan", outgoing=True)
-async def _screenshots(client, message):
+async def _adzan(client, message):
     with suppress(BaseException):
         str_city = get_text(message)
         if not str_city:
@@ -42,7 +48,7 @@ async def _screenshots(client, message):
             parse_mode=ParseMode.HTML,
             disable_notification=True,
         )
-        return await _try_purged(x, 3.5)
+        return await _try_purged(x, 1.5)
 
 
 plugins_helper["adzan"] = {

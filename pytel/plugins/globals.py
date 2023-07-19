@@ -20,14 +20,19 @@ from . import (
     pytel,
     get_blacklisted,
     random_prefixies,
-    _try_purged,
-)
+    _try_purged,)
 
 _GCAST_LOCK = Lock()
 
 
-@pytel.instruction("sgcast", supersu=True)
-@pytel.instruction("gcast", outgoing=True)
+@pytel.instruction(
+    ["sgcast"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
+    ["gcast"],
+    outgoing=True,
+)
 async def _global_broadcast(
     client, message
 ):
@@ -39,7 +44,9 @@ async def _global_broadcast(
         return
     async with _GCAST_LOCK:
         if message.reply_to_message:
-            send = message.reply_to_message
+            send = (
+                message.reply_to_message
+            )
         elif len(message.command) < 2:
             await eor(
                 message,
@@ -48,13 +55,18 @@ async def _global_broadcast(
             return
         else:
             send = message.text.split(
-                None, 1
+                None,
+                1,
             )[1]
         xx = await eor(
             message,
             text="💬 Broadcasting...",
         )
-        start_time, success, failed = (
+        (
+            start_time,
+            success,
+            failed,
+        ) = (
             time(),
             0,
             0,
@@ -73,7 +85,10 @@ async def _global_broadcast(
                 ChatType.SUPERGROUP,
             ]:
                 chat_id = gg.chat.id
-                if chat_id not in gblack:
+                if (
+                    chat_id
+                    not in gblack
+                ):
                     try:
                         if (
                             message.reply_to_message
@@ -83,11 +98,13 @@ async def _global_broadcast(
                             )
                             await sleep(
                                 randrange(
-                                    4, 6
+                                    6,
+                                    10,
                                 )
                             )
                             success = (
-                                success + 1
+                                success
+                                + 1
                             )
                         else:
                             await client.send_message(
@@ -100,20 +117,25 @@ async def _global_broadcast(
                             )
                             await sleep(
                                 randrange(
-                                    4, 6
+                                    6,
+                                    10,
                                 )
                             )
                             success = (
-                                success + 1
+                                success
+                                + 1
                             )
                     except (
                         FloodWait
                     ) as excp:
                         await sleep(
-                            excp.value + 5
+                            excp.value
+                            + 5
                         )
                     except Exception:
-                        failed = failed + 1
+                        failed = (
+                            failed + 1
+                        )
 
         taken = time_formatter(
             (time() - start_time) * 1000
@@ -130,7 +152,7 @@ async def _global_broadcast(
             + "</code> groups.\n"
             + " └ <b>Failed:</b> <code>"
             + s2
-            + "</code> groups."
+            + "</code> groups.\n\n(c) @kastaid #pytel"
         )
         await client.send_message(
             int(message.chat.id),

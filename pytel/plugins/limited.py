@@ -8,19 +8,21 @@
 from asyncio import sleep
 from pyrogram.raw.functions.messages import (
     DeleteHistory,
-    StartBot,
-)
+    StartBot,)
 from . import (
     eor,
     plugins_helper,
     px,
     pytel,
-    random_prefixies,
-)
+    random_prefixies,)
 
 
 @pytel.instruction(
-    ["limit", "limited"], outgoing=True
+    [
+        "limit",
+        "limited",
+    ],
+    outgoing=True,
 )
 async def _limited(client, message):
     spambot = "@SpamBot"
@@ -45,7 +47,10 @@ async def _limited(client, message):
         spambot,
         resp.updates[1].message.id + 1,
     )
-    await eor(x, text=f"`{status.text}`")
+    await eor(
+        x,
+        text=f"`{status.text}`",
+    )
     await client.send(
         DeleteHistory(
             peer=history,

@@ -11,7 +11,11 @@ from localdb import Database
 
 
 class BaseDB:
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        **kwargs,
+    ):
         self._cache = {}
 
     def get_key(self, key):
@@ -21,7 +25,9 @@ class BaseDB:
         self._cache.update({key: value})
         return value
 
-    def re_cache(self):
+    def re_cache(
+        self,
+    ):
         self._cache.clear()
         for key in self.keys():
             self._cache.update(
@@ -45,39 +51,61 @@ class BaseDB:
         return
 
     def _get_data(
-        self, key=None, data=None
+        self,
+        key=None,
+        data=None,
     ):
         if key:
             data = self.get(str(key))
-        if data and isinstance(data, str):
-            with suppress(BaseException):
+        if data and isinstance(
+            data,
+            str,
+        ):
+            with suppress(
+                BaseException
+            ):
                 data = ast.literal_eval(
                     data
                 )
         return data
 
     def set_key(
-        self, key, value, cache_only=False
+        self,
+        key,
+        value,
+        cache_only=False,
     ):
-        value = self._get_data(data=value)
+        value = self._get_data(
+            data=value
+        )
         self._cache[key] = value
         if cache_only:
             return
         return self.set(
-            str(key), str(value)
+            str(key),
+            str(value),
         )
 
-    def rename(self, key1, key2):
+    def rename(
+        self,
+        key1,
+        key2,
+    ):
         _ = self.get_key(key1)
         if _:
             self.del_key(key1)
-            self.set_key(key2, _)
+            self.set_key(
+                key2,
+                _,
+            )
             return 0
         return 1
 
 
 class Local(BaseDB):
-    def __init__(self):
+    def __init__(
+        self,
+    ):
         self.db = Database("pytel")
         self.get = self.db.get
         self.set = self.db.set
@@ -91,7 +119,9 @@ class Local(BaseDB):
     def keys(self):
         return self._cache.keys()
 
-    def __repr__(self):
+    def __repr__(
+        self,
+    ):
         return f"<Pytel.Local\n -total_keys: {len(self.keys())}\n>"
 
 

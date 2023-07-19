@@ -7,23 +7,16 @@
 
 from asyncio import sleep, Lock
 from re import match
-from pyrogram.errors.exceptions.bad_request_400 import (
-    MessageNotModified,
-)
-from pyrogram.errors.exceptions.flood_420 import (
-    FloodWait,
-)
-from pyrogram.errors.exceptions.forbidden_403 import (
-    ChatSendInlineForbidden,
-)
 from pyrogram.types import (
-    InlineKeyboardMarkup,
     InlineQueryResultArticle,
     InputTextMessageContent,
-    CallbackQuery,
-)
+    CallbackQuery,)
 from . import (
-    _try_purged,
+    FloodWait,
+    ChatSendInlineForbidden,
+    MessageNotModified,
+    BotResponseTimeout,
+    QueryIdInvalid,
     eor,
     filters,
     get_text,
@@ -35,8 +28,9 @@ from . import (
     suppress,
     unpack_inline,
     plugins_button,
+    _try_purged,
     buttons,
-)
+    ikmarkup,)
 
 _HELP_LOCK = Lock()
 
@@ -44,7 +38,9 @@ _HELP_LOCK = Lock()
 @pytel.instruction(
     ["help", "ihelp"],
     outgoing=True,
+    force_edit=False,
     supergroups=True,
+    disable_errors=True,
 )
 async def _help(client, message):
     if message.command[0] == "ihelp":
@@ -55,17 +51,23 @@ async def _help(client, message):
                 plugins_n,
             )
             for name in _.results:
-                await message.reply_inline_bot_result(
-                    _.query_id, name.id
-                )
-        except ChatSendInlineForbidden:
-            await message.reply(
-                "You cannot use inline bots to send messages in this chat."
+                try:
+                    await message.reply_inline_bot_result(
+                        _.query_id,
+                        name.id,
+                    )
+                except ChatSendInlineForbidden:
+                    return await message.reply(
+                        "You cannot use inline bots to send messages in this chat."
+                    )
+        except BotResponseTimeout:
+            await eor(
+                message,
+                text="Did not answer the request, please try again.",
             )
-        except Exception as error:
-            await message.reply(error)
+            return
         return await _try_purged(
-            message, 1.5
+            message
         )
 
     if message.command[0] == "help":
@@ -74,25 +76,42 @@ async def _help(client, message):
 
         if not plugins_name:
             text = f"<b>Command Guide</b>\n\n<b><u>Example</u></b>\n</b>❯</b> <code>{random_prefixies(px)}help webtools</code>\n    └ <u>To get plugins webtools.</u>\n</b>❯</b> <code>{random_prefixies(px)}ihelp</code>\n    └ <u>To get Inline helper.</u>"
-            await eor(message, text=text)
+            await eor(
+                message,
+                text=text,
+            )
             return
 
-        if plugins_name in plugins_helper:
+        if (
+            plugins_name
+            in plugins_helper
+        ):
             name = plugins_name
         else:
-            for x in plugins_name.split():
+            for (
+                x
+            ) in plugins_name.split():
                 if x in plugins_helper:
                     name = x
                     break
         if name:
             cmds = plugins_helper[name]
             text = f"<b>{len(cmds)} Commands For <u>{name.upper()}</u></b>\n\n"
-            for cmd, desc in cmds.items():
+            for (
+                cmd,
+                desc,
+            ) in cmds.items():
                 text += "</b>❯</b> <code>{}</code>\n<b>Description:</b> <i>{}</i>\n\n".format(
-                    cmd, desc
+                    cmd,
+                    desc,
                 )
-            text += "(c) @kastaid #pytel"
-            await eor(message, text=text)
+            text += (
+                "(c) @kastaid #pytel"
+            )
+            await eor(
+                message,
+                text=text,
+            )
             return
         await eor(
             message,
@@ -105,48 +124,55 @@ async def _help(client, message):
     filters.regex("^xdbnafghjrt")
 )
 async def _helper_inline(
-    client, cq: CallbackQuery
+    client,
+    cq: CallbackQuery,
 ):
-    content = "<b>❏ Help Menu\n├ Plugins : {}\n├ Commands : {}\n╰ Prefixies : <code>{}</code></b>\n\n".format(
+    content = "<b>❏ <u>Help Menu</u>\n├ Plugins : {}\n├ Commands : {}\n└  Prefixies : <code>{}</code></b>\n\n".format(
         plugins_helper.count,
         plugins_helper.total,
         random_prefixies(px),
     )
     content += "(c) @kastaid #pytel"
     await sleep(0.2)
-    await client.answer_inline_query(
-        cq.id,
-        cache_time=100,
-        results=[
-            (
-                InlineQueryResultArticle(
-                    title="MENU\n@kastaid #pytel",
-                    reply_markup=InlineKeyboardMarkup(
-                        plugins_button(
-                            0,
-                            plugins_helper,
-                            "help",
-                        )
-                    ),
-                    input_message_content=InputTextMessageContent(
-                        content
-                    ),
+    with suppress(QueryIdInvalid):
+        await client.answer_inline_query(
+            cq.id,
+            is_personal=True,
+            results=[
+                (
+                    InlineQueryResultArticle(
+                        title="MENU\n@kastaid #pytel",
+                        reply_markup=ikmarkup(
+                            plugins_button(
+                                0,
+                                plugins_helper,
+                                "help",
+                            )
+                        ),
+                        input_message_content=InputTextMessageContent(
+                            content
+                        ),
+                    )
                 )
-            )
-        ],
-    )
+            ],
+        )
 
 
 @pytel_tgb.on_callback_query(
     filters.regex(r"help_(.*?)")
 )
-async def _(client, cq: CallbackQuery):
-    plugins_text = "<b>❏ Help Menu\n├ Plugins : {}\n├ Commands : {}\n╰ Prefixies : <code>{}</code></b>\n\n".format(
+async def _(
+    client,
+    cq: CallbackQuery,
+):
+    plugins_text = "<b>❏ <u>Help Menu</u>\n├ Plugins : {}\n├ Commands : {}\n└ Prefixies : <code>{}</code></b>\n\n".format(
         plugins_helper.count,
         plugins_helper.total,
         random_prefixies(px),
     )
-    plugins_text += "(c) @kastaid #pytel"
+    plugins_text += (
+        "(c) @kastaid #pytel"
+    )
     plugins_match = match(
         r"help_plug\((.+?)\)",
         cq.data,
@@ -173,21 +199,23 @@ async def _(client, cq: CallbackQuery):
             for _ in nm:
                 name = (
                     _
-                    if _ in plugins_helper
+                    if _
+                    in plugins_helper
                     else nm
                 )
-                cmds = plugins_helper[name]
+                cmds = plugins_helper[
+                    name
+                ]
                 text = f"<b>{len(cmds)} Commands For <u>{name.upper()}</b></u>\n\n"
                 for (
                     cmd,
                     desc,
                 ) in cmds.items():
                     text += "<b>❯</b><code>{}</code>\n<b>Description:</b> <i>{}</i>\n\n".format(
-                        cmd, desc
+                        cmd,
+                        desc,
                     )
-                text += (
-                    "(c) @kastaid #pytel"
-                )
+                text += "(c) @kastaid #pytel"
                 button = [
                     [
                         buttons(
@@ -203,7 +231,7 @@ async def _(client, cq: CallbackQuery):
                 try:
                     await cq.edit_message_text(
                         text=text,
-                        reply_markup=InlineKeyboardMarkup(
+                        reply_markup=ikmarkup(
                             button
                         ),
                         disable_web_page_preview=True,
@@ -226,13 +254,16 @@ async def _(client, cq: CallbackQuery):
                         await sleep(0.1)
 
         elif prev_page:
-            curr_page = int(prev_page[1])
+            curr_page = int(
+                prev_page[1]
+            )
             try:
                 await cq.edit_message_text(
                     text=plugins_text,
-                    reply_markup=InlineKeyboardMarkup(
+                    reply_markup=ikmarkup(
                         plugins_button(
-                            curr_page - 1,
+                            curr_page
+                            - 1,
                             plugins_helper,
                             "help",
                         )
@@ -254,15 +285,13 @@ async def _(client, cq: CallbackQuery):
                     == "MESSAGE_NOT_MODIFIED"
                 ):
                     await sleep(0.1)
-                else:
-                    await sleep(0.1)
 
         elif next_page:
             nx_page = int(next_page[1])
             try:
                 await cq.edit_message_text(
                     text=plugins_text,
-                    reply_markup=InlineKeyboardMarkup(
+                    reply_markup=ikmarkup(
                         plugins_button(
                             nx_page + 1,
                             plugins_helper,
@@ -286,14 +315,12 @@ async def _(client, cq: CallbackQuery):
                     == "MESSAGE_NOT_MODIFIED"
                 ):
                     await sleep(0.1)
-                else:
-                    await sleep(0.1)
 
         elif back_page:
             with suppress(FloodWait):
                 await cq.edit_message_text(
                     text=plugins_text,
-                    reply_markup=InlineKeyboardMarkup(
+                    reply_markup=ikmarkup(
                         plugins_button(
                             0,
                             plugins_helper,
@@ -305,8 +332,9 @@ async def _(client, cq: CallbackQuery):
         elif close_page:
             cq.data.split()
             for _ in pytel._client:
-                if cq.from_user.id == int(
-                    _.me.id
+                if (
+                    cq.from_user.id
+                    == int(_.me.id)
                 ):
                     un = unpack_inline(
                         cq.inline_message_id
@@ -314,9 +342,9 @@ async def _(client, cq: CallbackQuery):
                     chat_id: int = un[
                         "chat_id"
                     ]
-                    message_id: int = un[
-                        "message_id"
-                    ]
+                    message_id: int = (
+                        un["message_id"]
+                    )
                     await _.delete_messages(
                         chat_id=int(
                             chat_id

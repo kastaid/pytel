@@ -164,6 +164,7 @@ cython_debug/
 cache/
 downloads/
 logs/*.log
+*errors.txt
 *.session
 *.session-journal
 *.swp

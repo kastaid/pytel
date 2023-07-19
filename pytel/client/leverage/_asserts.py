@@ -2,7 +2,7 @@
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
-# PLease read the GNU Affero General Public License in
+# Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 from asyncio import sleep
@@ -13,7 +13,8 @@ from pyrogram.types import Message
 
 
 async def _try_purged(
-    message, timer: Union[int, float] = None
+    message,
+    timer: Union[int, float] = None,
 ):
     with suppress(BaseException):
         if timer:
@@ -75,7 +76,9 @@ def get_text(
             return str(text_.lower())
 
 
-def replied(message: Message):
+def replied(
+    message: Message,
+):
     reply_id = None
 
     if message.reply_to_message:
@@ -89,7 +92,9 @@ def replied(message: Message):
     return reply_id
 
 
-def attr_file(message: Message):
+def attr_file(
+    message: Message,
+):
     if message.media:
         for message_type in (
             "photo",
@@ -107,7 +112,8 @@ def attr_file(message: Message):
             "sticker",
         ):
             obj = getattr(
-                message, message_type
+                message,
+                message_type,
             )
             if obj:
                 setattr(

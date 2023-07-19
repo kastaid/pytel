@@ -16,8 +16,7 @@ from . import (
     random_prefixies,
     eor,
     tz,
-    ParseMode,
-)
+    ParseMode,)
 
 _SCHEDULE = []
 
@@ -59,19 +58,29 @@ __1 minute equals 60 seconds__
 
 
 @pytel.instruction(
-    ["del", "delete"], outgoing=True
+    ["del", "delete"],
+    outgoing=True,
 )
 async def _delete(client, message):
     replieds = message.reply_to_message
     if replieds:
         await _try_purged(replieds)
-        await _try_purged(message, 0.7)
+        await _try_purged(
+            message,
+            0.9,
+        )
         return
     else:
-        await _try_purged(message)
+        await _try_purged(
+            message,
+            0.4,
+        )
 
 
-@pytel.instruction("purgeme", outgoing=True)
+@pytel.instruction(
+    ["purgeme"],
+    outgoing=True,
+)
 async def _purge_me(client, message):
     if len(message.command) != 2:
         return await message.delete()
@@ -82,7 +91,8 @@ async def _purge_me(client, message):
     ].strip()
     if not n.isnumeric():
         return await eor(
-            message, text="Invalid Args"
+            message,
+            text="Invalid Args",
         )
 
     n = int(n)
@@ -108,7 +118,9 @@ async def _purge_me(client, message):
     to_delete = [
         message_ids[i : i + 99]
         for i in range(
-            0, len(message_ids), 99
+            0,
+            len(message_ids),
+            99,
         )
     ]
     for (
@@ -122,10 +134,15 @@ async def _purge_me(client, message):
 
 
 @pytel.instruction(
-    "schedule", outgoing=True
+    ["schedule"],
+    outgoing=True,
 )
-async def _schedule_msg(client, message):
-    chat_id: Optional[int] = message.chat.id
+async def _schedule_msg(
+    client, message
+):
+    chat_id: Optional[
+        int
+    ] = message.chat.id
     if chat_id in _SCHEDULE:
         await eor(
             message,
@@ -133,7 +150,9 @@ async def _schedule_msg(client, message):
         )
         return
     try:
-        args = message.text.split(None, 4)
+        args = message.text.split(
+            None, 4
+        )
         schtimes = float(args[1])
         count = int(args[2])
         timesleep = float(args[3])
@@ -150,12 +169,14 @@ async def _schedule_msg(client, message):
         _SCHEDULE.append(chat_id)
         schtimes = (
             60
-            if schtimes and schtimes < 60
+            if schtimes
+            and schtimes < 60
             else schtimes
         )
         timesleep = (
             60
-            if timesleep and timesleep < 60
+            if timesleep
+            and timesleep < 60
             else timesleep
         )
         for _ in range(count):
@@ -163,7 +184,9 @@ async def _schedule_msg(client, message):
                 break
             t = datetime.now(
                 tz
-            ) + timedelta(seconds=schtimes)
+            ) + timedelta(
+                seconds=schtimes
+            )
             await client.send_message(
                 int(chat_id),
                 text=mesg,
@@ -178,12 +201,15 @@ async def _schedule_msg(client, message):
 
 
 @pytel.instruction(
-    "schcancel", outgoing=True
+    ["schcancel"],
+    outgoing=True,
 )
 async def _cancel_schedule_msg(
     client, message
 ):
-    chat_id: Optional[int] = message.chat.id
+    chat_id: Optional[
+        int
+    ] = message.chat.id
     x = await eor(
         message,
         text="Canceling schedule messages...",
@@ -204,6 +230,6 @@ async def _cancel_schedule_msg(
 plugins_helper["messaging"] = {
     f"{random_prefixies(px)}del [reply message]": "To deleted ur messages.",
     f"{random_prefixies(px)}purgeme [count]": "To purged ur messages.",
-    f"{random_prefixies(px)}schedule [seconds] [count] [seconds]": "To send schedule message.",
+    f"{random_prefixies(px)}schedule [seconds] [count] [seconds] [text]": "To send schedule message.",
     f"{random_prefixies(px)}schcancel": "To cancel ur schedule message.",
 }

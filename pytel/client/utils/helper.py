@@ -13,49 +13,75 @@ from typing import (
     Union,
     Dict,
     Any,
-    Optional,
-)
+    Optional,)
 
 
 class SaveDict(dict):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        **kwargs,
+    ):
         if args:
             cdict = args[0]
         else:
             cdict = kwargs
         for key in cdict:
-            if isinstance(cdict[key], dict):
+            if isinstance(
+                cdict[key],
+                dict,
+            ):
                 cdict[key] = SaveDict(
                     cdict[key]
                 )
             elif isinstance(
                 cdict[key],
-                (list, tuple, set),
+                (
+                    list,
+                    tuple,
+                    set,
+                ),
             ):
                 cdict[
                     key
                 ] = self.convert_list(
                     cdict[key]
                 )
-        super().__init__(*args, **cdict)
+        super().__init__(
+            *args,
+            **cdict,
+        )
 
     def convert_list(
         self,
         n: Union[
             List[Any],
-            Tuple[Any, ...],
+            Tuple[
+                Any,
+                ...,
+            ],
             Set[Any],
         ],
     ) -> List[Any]:
         new_list = []
         for item in n:
             if isinstance(
-                item, (list, tuple, set)
+                item,
+                (
+                    list,
+                    tuple,
+                    set,
+                ),
             ):
                 new_list.append(
-                    self.convert_list(item)
+                    self.convert_list(
+                        item
+                    )
                 )
-            elif isinstance(item, dict):
+            elif isinstance(
+                item,
+                dict,
+            ):
                 new_list.append(
                     SaveDict(item)
                 )
@@ -63,34 +89,45 @@ class SaveDict(dict):
                 new_list.append(item)
         return new_list
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(
+        self,
+    ) -> Dict[str, Any]:
         _dict = dict(self)
         for key in _dict:
             if isinstance(
-                _dict[key], SaveDict
+                _dict[key],
+                SaveDict,
             ):
                 _dict[key] = _dict[
                     key
                 ].to_dict()
             elif isinstance(
                 _dict[key],
-                (list, tuple, set),
+                (
+                    list,
+                    tuple,
+                    set,
+                ),
             ):
                 new_list = []
                 for i in _dict[key]:
                     if isinstance(
-                        i, SaveDict
+                        i,
+                        SaveDict,
                     ):
                         new_list.append(
                             i.to_dict()
                         )
                     else:
-                        new_list.append(i)
+                        new_list.append(
+                            i
+                        )
                 _dict[key] = new_list
         return _dict
 
     def prettify(
-        self, indent: int = 4
+        self,
+        indent: int = 4,
     ) -> str:
         return json.dumps(
             self.to_dict(),
@@ -105,7 +142,9 @@ class SaveDict(dict):
             f"Attrify has no attribute '{attr}'"
         )
 
-    def __dir__(self) -> List[str]:
+    def __dir__(
+        self,
+    ) -> List[str]:
         mx = dict.__dir__(self)
         mx.extend(
             [
@@ -119,7 +158,8 @@ class SaveDict(dict):
 
 class PluginsHelp(dict):
     def append(
-        self, obj: Optional[dict]
+        self,
+        obj: Optional[dict],
     ) -> None:
         plug = list(obj.keys())[0]
         cmds = {}
@@ -130,17 +170,24 @@ class PluginsHelp(dict):
         self[plug] = cmds
 
     @property
-    def count(self) -> Optional[int]:
+    def count(
+        self,
+    ) -> Optional[int]:
         return len(self)
 
     @property
-    def total(self) -> Optional[int]:
+    def total(
+        self,
+    ) -> Optional[int]:
         return sum(
-            len(_) for _ in self.values()
+            len(_)
+            for _ in self.values()
         )
 
     @property
-    def value(self: Optional[dict]):
+    def value(
+        self: Optional[dict],
+    ):
         return [*self]
 
 

@@ -7,11 +7,9 @@
 
 from asyncio import sleep
 from pyrogram.errors.exceptions.forbidden_403 import (
-    ChatSendMediaForbidden,
-)
+    ChatSendMediaForbidden,)
 from pyrogram.raw.functions.messages import (
-    DeleteHistory,
-)
+    DeleteHistory,)
 from . import (
     _try_purged,
     eor,
@@ -20,14 +18,17 @@ from . import (
     plugins_helper,
     px,
     pytel,
-    random_prefixies,
+    random_prefixies,)
+
+
+@pytel.instruction(
+    ["socmed"],
+    outgoing=True,
 )
-
-
-@pytel.instruction("socmed", outgoing=True)
 async def _socmed(client, message):
     str_link = get_text(
-        message, save_link=True
+        message,
+        save_link=True,
     )
     if not str_link or not (
         is_url(str_link) is True
@@ -68,7 +69,9 @@ async def _socmed(client, message):
             return
 
     await sleep(5)
-    del_his = await client.resolve_peer(smd)
+    del_his = await client.resolve_peer(
+        smd
+    )
     return await client.send(
         DeleteHistory(
             peer=del_his,

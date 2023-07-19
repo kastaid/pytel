@@ -13,8 +13,7 @@ from contextlib import suppress
 from subprocess import (
     CalledProcessError,
     Popen,
-    check_call,
-)
+    check_call,)
 from typing import Generator
 from . import (
     BOLD,
@@ -23,8 +22,7 @@ from . import (
     RST,
     WAIT_FOR,
     YELLOW,
-    Root,
-)
+    Root,)
 
 try:
     import psutil
@@ -46,7 +44,11 @@ finally:
 
 
 def file_times() -> (
-    Generator[int, None, None]
+    Generator[
+        int,
+        None,
+        None,
+    ]
 ):
     with suppress(BaseException):
         for _ in filter(
@@ -56,21 +58,29 @@ def file_times() -> (
             yield _.stat().st_mtime
 
 
-def print_stdout(procs) -> None:
+def print_stdout(
+    procs,
+) -> None:
     out = procs.stdout
     if out:
         print(out)
 
 
-def kill_process_tree(procs) -> None:
+def kill_process_tree(
+    procs,
+) -> None:
     with suppress(psutil.NoSuchProcess):
-        parent = psutil.Process(procs.pid)
+        parent = psutil.Process(
+            procs.pid
+        )
         child = parent.children(
             recursive=True
         )
         child.append(parent)
         for _ in child:
-            _.send_signal(signal.SIGTERM)
+            _.send_signal(
+                signal.SIGTERM
+            )
     procs.terminate()
 
 
@@ -81,11 +91,16 @@ def main() -> None:
         )
         sys.exit(0)
     cmd = " ".join(sys.argv[1:])
-    procs = Popen(cmd, shell=True)
+    procs = Popen(
+        cmd,
+        shell=True,
+    )
     last_mtime = max(file_times())
     try:
         while True:
-            max_mtime = max(file_times())
+            max_mtime = max(
+                file_times()
+            )
             print_stdout(procs)
             if max_mtime > last_mtime:
                 last_mtime = max_mtime
@@ -94,7 +109,8 @@ def main() -> None:
                 )
                 kill_process_tree(procs)
                 procs = Popen(
-                    cmd, shell=True
+                    cmd,
+                    shell=True,
                 )
             time.sleep(WAIT_FOR)
     except CalledProcessError as err:
@@ -110,9 +126,13 @@ def main() -> None:
         )
         kill_process_tree(procs)
         signal.signal(
-            signal.SIGINT, signal.SIG_DFL
+            signal.SIGINT,
+            signal.SIG_DFL,
         )
-        os.kill(os.getpid(), signal.SIGINT)
+        os.kill(
+            os.getpid(),
+            signal.SIGINT,
+        )
 
 
 if __name__ == "__main__":

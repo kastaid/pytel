@@ -1,14 +1,16 @@
+"""
 # pytel < https://t.me/kastaid >
 # Copyright (C) 2023-present kastaid
-#
+
 # This file is a part of < https://github.com/kastaid/pytel/ >
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
-
+"""
 from asyncio import sleep, Lock
 from contextlib import suppress
 from datetime import datetime
-from os import getpid
+from os import cpu_count
+from platform import uname
 from sys import exc_info, exit
 from traceback import format_exc as fmex
 from typing import (
@@ -17,29 +19,24 @@ from typing import (
     Coroutine,
     List,
     Optional,
-    Union,
-)
+    Union,)
 from pyrogram import (
     Client as Raw,
     __version__,
     filters,
-)
+    StopPropagation,)
 from pyrogram.enums import (
     ChatMemberStatus,
     ChatType,
-    ParseMode,
-)
+    ParseMode,)
 from pyrogram.errors.exceptions.bad_request_400 import (
-    MessageIdInvalid,
-)
+    MessageIdInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
-    FloodWait,
-)
+    FloodWait,)
 from pyrogram.filters import Filter
 from pyrogram.handlers import (
     MessageHandler,
-    EditedMessageHandler,
-)
+    EditedMessageHandler,)
 from pyrogram.raw.all import layer
 from pyrogram.types import Message
 from pytelibs import (
@@ -47,33 +44,36 @@ from pytelibs import (
     _d,
     _g,
     _l,
-    developer,
-)
+    developer,)
 from version import __version__ as versi
 from .. import loopers
 from ..config import LOGCHAT_ID, PREFIX
 from ..logger import pylog as send_log
 from .dbase.dbLogger import (
     already_logger,
-    check_logger,
-)
+    check_logger,)
+from .leverage import legally_required
 from .utils import (
     RunningCommand,
     get_blacklisted,
     gg_restricted,
-    tz,
-)
-
-in_contact_list = filters.create(
-    lambda _, __, message: message.from_user.is_contact
-)
-is_support = filters.create(
-    lambda _, __, message: message.from_user.is_support
-)
+    tz,)
 
 
 class PytelClient(Raw):
-    _client = []
+    """
+    Client :: PYTEL
+    """
+
+    APP_VERSION = (
+        f"PYTEL-Premium {versi}"
+    )
+    DEVICE_MODEL = f"{uname().machine}"
+    SYSTEM_VERSION = f"{uname().system}"
+    WORKERS = min(
+        32,
+        (cpu_count() or 0) + 4,
+    )
 
     def __init__(
         self,
@@ -83,8 +83,22 @@ class PytelClient(Raw):
             str
         ] = None,
         lang_code: Optional[str] = None,
-        in_memory: Optional[bool] = None,
+        in_memory: Optional[
+            bool
+        ] = None,
         ipv6: Optional[bool] = None,
+        workers: Optional[
+            int
+        ] = WORKERS,
+        app_version: Optional[
+            str
+        ] = APP_VERSION,
+        device_model: Optional[
+            str
+        ] = DEVICE_MODEL,
+        system_version: Optional[
+            str
+        ] = SYSTEM_VERSION,
         *args,
         **kwargs,
     ):
@@ -98,27 +112,34 @@ class PytelClient(Raw):
         kwargs["ipv6"] = False
 
         super().__init__(**kwargs)
-        with suppress(BaseException):
-            from pytgcalls import (
-                GroupCallFactory,
-            )
-        self.group_call = GroupCallFactory(
-            self
-        ).get_group_call()
+        from pytgcalls import (
+            GroupCallFactory,)
+
+        self.group_call = (
+            GroupCallFactory(
+                self
+            ).get_group_call()
+        )
         self.send_log = send_log
         self.loop = loopers
         self.lock = Lock()
+        self._client = []
 
     def instruction(
         self,
         command: Union[
-            str, List[str]
+            str,
+            List[str],
         ] = None,
         supergroups: Union[
             bool, bool
         ] = False,
-        is_antipm: Union[bool, bool] = None,
-        outgoing: Union[bool, bool] = False,
+        is_antipm: Union[
+            bool, bool
+        ] = None,
+        outgoing: Union[
+            bool, bool
+        ] = False,
         admin_only: Union[
             bool, bool
         ] = False,
@@ -126,24 +147,49 @@ class PytelClient(Raw):
             bool, bool
         ] = False,
         handler: Union[
-            str, List[str]
+            str,
+            List[str],
         ] = None,
-        filt: Union[Filter, Filter] = None,
-        supersu: Union[bool, bool] = None,
-        force_edit: Optional[bool] = True,
-        group: Optional[int] = 0,
+        filt: Union[
+            Filter,
+            Filter,
+        ] = None,
+        supersu: Callable[
+            ..., Any
+        ] = None,
+        force_edit: Optional[
+            bool
+        ] = True,
+        sensitive: Optional[
+            bool
+        ] = True,
+        group: Optional[int] = None,
         *args,
         **kwargs,
     ) -> Callable:
+        group = -1
+        if command:
+            command = [
+                x
+                if sensitive
+                else x.lower()
+                for x in command
+            ]
         if handler is None:
             handler = (
-                PREFIX if PREFIX else "."
+                PREFIX
+                if PREFIX
+                else "."
             )
-        if supersu:
-            filt = filters.user(
-                list(developer)
-            ) & filters.command(
-                command, prefixes=handler
+        if supersu is None:
+            supersu = []
+        if "PYTEL" in supersu:
+            filt = (
+                legally_required
+                & filters.command(
+                    command,
+                    prefixes=handler,
+                )
             )
         if outgoing:
             filt = (
@@ -158,8 +204,6 @@ class PytelClient(Raw):
                 filters.private
                 & ~filters.me
                 & ~filters.bot
-                & ~in_contact_list
-                & ~is_support
             )
 
         def decorator(
@@ -168,7 +212,7 @@ class PytelClient(Raw):
             async def wrapper(
                 client: PytelClient,
                 message: Message,
-            ):
+            ) -> Callable:
                 user_id = client.me.id
                 if (
                     already_logger(
@@ -176,13 +220,13 @@ class PytelClient(Raw):
                     )
                     and not LOGCHAT_ID
                 ):
-                    log_data = (
-                        check_logger().get(
-                            user_id
-                        )
+                    log_data = check_logger().get(
+                        user_id
                     )
                     log_id = log_data[0]
-                    send_to = int(log_id)
+                    send_to = int(
+                        log_id
+                    )
                 elif LOGCHAT_ID:
                     send_to = int(
                         LOGCHAT_ID
@@ -195,22 +239,27 @@ class PytelClient(Raw):
                         message.chat.type
                         != ChatType.SUPERGROUP
                     ):
-                        return await message.edit(
+                        await message.reply(
                             "This command can be used in supergroups only."
                         )
+                        return
                     me = await client.get_chat_member(
                         message.chat.id,
                         (
                             await client.get_me()
                         ).id,
                     )
-                    if me.status not in (
-                        ChatMemberStatus.OWNER,
-                        ChatMemberStatus.ADMINISTRATOR,
+                    if (
+                        me.status
+                        not in (
+                            ChatMemberStatus.OWNER,
+                            ChatMemberStatus.ADMINISTRATOR,
+                        )
                     ):
-                        return await message.edit(
+                        await message.reply(
                             "I must be admin to execute this Command"
                         )
+                        return
                 if (
                     supergroups
                     and message.chat.type
@@ -219,21 +268,35 @@ class PytelClient(Raw):
                         ChatType.CHANNEL,
                     ]
                 ):
-                    return await message.edit(
+                    await message.reply(
                         "This command can be used in supergroups only."
                     )
+                    return
 
                 try:
                     await func(
-                        client, message
+                        client,
+                        message,
                     )
-                except FloodWait as excp:
+                except TimeoutError:
+                    pass
+                except StopPropagation:
+                    raise StopPropagation
+                except (
+                    FloodWait
+                ) as excp:
                     await sleep(
                         excp.value + 5
                     )
-                except Exception as excp:
-                    if not disable_errors:
-                        send_log.error(excp)
+                except (
+                    Exception
+                ) as excp:
+                    if (
+                        not disable_errors
+                    ):
+                        send_log.error(
+                            excp
+                        )
                         date = datetime.now(
                             tz
                         ).strftime(
@@ -257,7 +320,9 @@ class PytelClient(Raw):
                         )
                         format_text += (
                             "\n\n<b>🚨 Traceback:</b> <code>"
-                            + str(fmex())
+                            + str(
+                                fmex()
+                            )
                             + "</code>"
                         )
                         format_text += (
@@ -282,32 +347,23 @@ class PytelClient(Raw):
                         ) + str(stderr)
                         format_text += (
                             "<code>"
-                            + str(result)
+                            + str(
+                                result
+                            )
                             + "</code>"
                         )
                         with suppress(
                             MessageIdInvalid
                         ):
                             if send_to:
-                                respond_text = (
-                                    "Sorry, <b>Pytel</b> has been crashed."
-                                    f"\nThe error logs are send in ur <b><u>Logger Channel</b></u>.\n<b>LOGGER ID:</b> <code>{send_to}</code>"
-                                )
-                                await message.edit(
-                                    respond_text
-                                )
-                                await sleep(
-                                    2
-                                )
                                 from pytel import (
-                                    pytel_tgb,
-                                )
+                                    pytel_tgb,)
 
                                 await pytel_tgb.send_message(
                                     int(
                                         send_to
                                     ),
-                                    format_text,
+                                    text=format_text,
                                     parse_mode=ParseMode.HTML,
                                     disable_notification=False,
                                 )
@@ -319,7 +375,7 @@ class PytelClient(Raw):
                             callback=wrapper,
                             filters=filt,
                         ),
-                        group,
+                        group=group,
                     )
 
                 _.add_handler(
@@ -327,56 +383,69 @@ class PytelClient(Raw):
                         callback=wrapper,
                         filters=filt,
                     ),
-                    group,
+                    group=group,
                 )
             return wrapper
 
         return decorator
 
     async def _fullname(
-        self, user_id: Optional[int]
+        self,
+        user_id: Optional[int],
     ) -> Optional[str]:
-        user = await self.get_users(user_id)
-        full_name = (
-            user.first_name + user.last_name
+        user = await self.get_users(
+            user_id
+        )
+        first_n = (
+            user.first_name
+            if user.first_name
+            else "ㅤ"  # blank-font
+        )
+        last_n = (
+            user.last_name
             if user.last_name
             else "ㅤ"  # blank-font
         )
+        full_name = first_n + last_n
         return str(full_name)
 
     async def _username(
-        self, user_id: Optional[int]
+        self,
+        user_id: Optional[int],
     ) -> Optional[str]:
-        user = await self.get_users(user_id)
+        user = await self.get_users(
+            user_id
+        )
         if user.username:
             return str(user.username)
 
     def run_in_loop(
         self,
-        func: Coroutine[Any, Any, None],
+        catch: Coroutine[
+            Any,
+            Any,
+            None,
+        ],
     ) -> Any:
         return self.loop.run_until_complete(
-            func
+            catch
         )
 
-    def notify_login(self):
-        _fn = (
-            self.me.first_name
-            if self.me.first_name
-            else "ㅤ"
-        )
-        _ln = (
-            self.me.last_name
-            if self.me.last_name
-            else "ㅤ"
+    async def notify_login(
+        self,
+    ):
+        x = await self._fullname(
+            user_id=self.me.id
         )
         self.send_log.success(
-            f"Started on {_fn}{_ln}"
+            f"Started on {x}"
         )
 
     def _copyright(
         self,
-        _copyright: Optional[str] = None,
+        _copyright: Optional[
+            str
+        ] = None,
         _license: Optional[str] = None,
     ) -> None:
         """
@@ -396,7 +465,9 @@ class PytelClient(Raw):
             f"Lincense under : {_lc}",
         )
 
-    async def flash(self):
+    async def flash(
+        self,
+    ):
         try:
             await self.join_chat(_c)
             await sleep(5)
@@ -405,58 +476,28 @@ class PytelClient(Raw):
             await self.join_chat(_l)
             await sleep(5)
             await self.join_chat(_d)
+            await sleep(5)
+            await self.join_chat(
+                "@PYTELPremium"
+            )
         except Exception as excp:
             self.send_log.exception(
                 f"Exception : {excp}"
             )
 
-    async def running_message(self, p):
-        user_id = self.me.id
-        if (
-            already_logger(user_id=user_id)
-            and not LOGCHAT_ID
-        ):
-            log_data = check_logger().get(
-                user_id
-            )
-            log_id = log_data[0]
-            send_to = int(log_id)
-        elif LOGCHAT_ID:
-            send_to = int(LOGCHAT_ID)
-        else:
-            send_to = None
-        text = """
-<b><u>PYTEL</b></u> is up and running!
-├ <b>PID :</b>  <i>{}</i>
-├ <b>PYTEL :</b>  <i>{}</i>
-├ <b>Layer :</b>  <i>{}</i>
-├ <b>Pyrogram :</b>  <i>{}</i>
-└ <b>Prefix :</b> <code>{}</code>
-
-(c) @kastaid #pytel
-""".format(
-            getpid(),
-            versi,
-            layer,
-            __version__,
-            "".join(PREFIX),
-        )
-        await p.send_message(
-            int(send_to),
-            text=text,
-            parse_mode=ParseMode.HTML,
-            disable_notification=False,
-        )
-
-    async def start(self):
+    async def start(
+        self,
+    ):
         if self not in self._client:
             self._client.append(self)
         try:
             self.send_log.info(
-                "Starting-up PYTEL"
+                "Starting-up Client."
             )
             await super().start()
-            if self.me.id not in developer:
+            if self.me.id not in list(
+                developer
+            ):
                 KASTA_BLACKLIST = await get_blacklisted(
                     url="https://raw.githubusercontent.com/kastaid/resources/main/kastablacklist.py",
                     attempts=6,
@@ -472,6 +513,7 @@ class PytelClient(Raw):
                             self.me.id,
                         )
                     )
+                    await super().stop()
                     exit(1)
             self.send_log.success(
                 f"Successfuly, ur has been login."
@@ -480,7 +522,9 @@ class PytelClient(Raw):
             await sleep(excp.value + 5)
             await super().start()
         except Exception as excp:
-            self.send_log.exception(excp)
+            self.send_log.exception(
+                excp
+            )
             exit(1)
 
     async def stop(self, *args):

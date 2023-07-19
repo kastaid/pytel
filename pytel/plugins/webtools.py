@@ -6,8 +6,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from pyrogram.errors.exceptions.forbidden_403 import (
-    ChatSendMediaForbidden,
-)
+    ChatSendMediaForbidden,)
 from . import (
     ParseMode,
     _try_purged,
@@ -18,14 +17,18 @@ from . import (
     px,
     pytel,
     random_prefixies,
-    screenshots,
+    screenshots,)
+
+
+@pytel.instruction(
+    ["webss"],
+    outgoing=True,
 )
-
-
-@pytel.instruction("webss", outgoing=True)
 async def _screenshots(client, message):
     url = get_text(message)
-    if not url or not (is_url(url) is True):
+    if not url or not (
+        is_url(url) is True
+    ):
         await eor(
             message,
             text="Provide a valid link!",
@@ -33,20 +36,26 @@ async def _screenshots(client, message):
         return
 
     x = await eor(
-        message, text="Take a screenshot..."
+        message,
+        text="Take a screenshot...",
     )
     try:
         file = await screenshots(
-            url=url, download=False
+            url=url,
+            download=False,
         )
     except BaseException as excp:
-        await eor(x, text=f"{excp}")
+        await eor(
+            x,
+            text=f"{excp}",
+        )
         return
 
     if file:
         try:
             z = await eor(
-                x, text="Uploading..."
+                x,
+                text="Uploading...",
             )
             await client.send_photo(
                 z.chat.id,
@@ -60,6 +69,7 @@ async def _screenshots(client, message):
                     )
                 ),
                 parse_mode=ParseMode.MARKDOWN,
+                force_document=True,
                 disable_notification=True,
             )
             await _try_purged(z, 2.5)
