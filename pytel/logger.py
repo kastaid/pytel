@@ -99,8 +99,6 @@ getLogger(
 getLogger(
     "pyrogram.session.session"
 ).setLevel(CRITICAL)
-getLogger("pytgcalls").setLevel(ERROR)
-getLogger("tgcalls").setLevel(ERROR)
 
 getLogger("urllib3").disabled = True
 getLogger(
