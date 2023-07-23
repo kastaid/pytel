@@ -65,6 +65,7 @@ def get_text(
         text_ = (
             message.reply_to_message.text
             or message.reply_to_message.caption
+            or message.reply_to_message.caption_entities
         )
 
     if text_ is None:

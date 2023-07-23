@@ -303,6 +303,7 @@ Want to be extended? wait until it expires.
 
 <b><u>Buyer Status</b></u>
  ├ <b>Name:</b> {x.mention}
+ ├ <b>User ID:</b> <code>{x.id}</code>
  ├ <b>Monthly purchases:</b> {duration} month.
  └ <b>Price:</b> <code>{price}</code>
 
@@ -332,7 +333,7 @@ Want to be extended? wait until it expires.
         reply_markup=rpm,
         protect_content=True,
     )
-    await frwd.copy(int(_chpytel))
+    await frwd.copy(_chpytel[0])
 
 
 @pytel_tgb.on_message(

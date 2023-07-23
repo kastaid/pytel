@@ -36,7 +36,7 @@ pylog.add(
 )
 pylog.add(
     stderr,
-    format="<green>{time:YY/MM/DD HH:mm:ss}</green> | <yellow>{level}</yellow> | {name}:{function}:{line} | {message}",
+    format="<b><magenta>{time:YY/MM/DD HH:mm:ss}</magenta></b> | <u><b><green>{level}</green></b></u> | <b><cyan>{name}:{function}:{line}</cyan></b> | <b><white>{message}</white></b>",
     level="INFO",
     colorize=True,
 )

@@ -6,11 +6,13 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 """
-from asyncio import sleep, Lock
+from asyncio import (
+    set_event_loop,
+    sleep,
+    Lock,
+    AbstractEventLoop,)
 from contextlib import suppress
 from datetime import datetime
-from os import cpu_count
-from platform import uname
 from sys import exc_info, exit
 from traceback import format_exc as fmex
 from typing import (
@@ -44,11 +46,11 @@ from pytelibs import (
     _d,
     _g,
     _l,
-    developer,)
-from version import __version__ as versi
+    developer,
+    cpytl,)
 from .. import loopers
 from ..config import LOGCHAT_ID, PREFIX
-from ..logger import pylog as send_log
+from ..logger import pylog
 from .dbase.dbLogger import (
     already_logger,
     check_logger,)
@@ -65,15 +67,10 @@ class PytelClient(Raw):
     Client :: PYTEL
     """
 
-    APP_VERSION = (
-        f"PYTEL-Premium {versi}"
-    )
-    DEVICE_MODEL = f"{uname().machine}"
-    SYSTEM_VERSION = f"{uname().system}"
-    WORKERS = min(
-        32,
-        (cpu_count() or 0) + 4,
-    )
+    _client: list
+    lock: Any
+    loop: Optional[AbstractEventLoop]
+    send_log: Any
 
     def __init__(
         self,
@@ -87,43 +84,45 @@ class PytelClient(Raw):
             bool
         ] = None,
         ipv6: Optional[bool] = None,
-        workers: Optional[
-            int
-        ] = WORKERS,
         app_version: Optional[
             str
-        ] = APP_VERSION,
-        device_model: Optional[
-            str
-        ] = DEVICE_MODEL,
-        system_version: Optional[
-            str
-        ] = SYSTEM_VERSION,
+        ] = None,
+        workers: Any = None,
+        system_version: Any = None,
+        device_model: Any = None,
         *args,
-        **kwargs,
+        **kwargs: Any,
     ):
         kwargs["api_id"] = api_id
         kwargs["api_hash"] = api_hash
         kwargs[
             "session_string"
         ] = session_string
-        kwargs["lang_code"] = "en"
-        kwargs["in_memory"] = True
-        kwargs["ipv6"] = False
+        kwargs[
+            "app_version"
+        ] = app_version
+        kwargs["workers"] = workers
+        kwargs[
+            "system_version"
+        ] = system_version
+        kwargs[
+            "device_model"
+        ] = device_model
+        kwargs[
+            "lang_code"
+        ] = lang_code.lower()
+        kwargs["in_memory"] = in_memory
+        kwargs["ipv6"] = ipv6
 
-        super().__init__(**kwargs)
-        from pytgcalls import (
-            GroupCallFactory,)
-
-        self.group_call = (
-            GroupCallFactory(
-                self
-            ).get_group_call()
-        )
-        self.send_log = send_log
-        self.loop = loopers
-        self.lock = Lock()
         self._client = []
+        self.send_log = pylog
+        self.lock = Lock
+        self.loop = set_event_loop(
+            loopers
+        )
+        super().__init__(
+            *args, **kwargs
+        )
 
     def instruction(
         self,
@@ -294,7 +293,7 @@ class PytelClient(Raw):
                     if (
                         not disable_errors
                     ):
-                        send_log.error(
+                        client.send_log.error(
                             excp
                         )
                         date = datetime.now(
@@ -389,7 +388,7 @@ class PytelClient(Raw):
 
         return decorator
 
-    async def _fullname(
+    async def user_fullname(
         self,
         user_id: Optional[int],
     ) -> Optional[str]:
@@ -409,7 +408,7 @@ class PytelClient(Raw):
         full_name = first_n + last_n
         return str(full_name)
 
-    async def _username(
+    async def username(
         self,
         user_id: Optional[int],
     ) -> Optional[str]:
@@ -434,7 +433,7 @@ class PytelClient(Raw):
     async def notify_login(
         self,
     ):
-        x = await self._fullname(
+        x = await self.user_fullname(
             user_id=self.me.id
         )
         self.send_log.success(
@@ -455,7 +454,7 @@ class PytelClient(Raw):
         _lc = _license
         _cpr = _copyright
         self.send_log.info(
-            f"PYTEL v.{versi}"
+            f"{self.app_version}"
         )
         self.send_log.info(
             f"Pyrogram v.{__version__} (Layer {layer})"
@@ -477,15 +476,13 @@ class PytelClient(Raw):
             await sleep(5)
             await self.join_chat(_d)
             await sleep(5)
-            await self.join_chat(
-                "@PYTELPremium"
-            )
+            await self.join_chat(cpytl)
         except Exception as excp:
             self.send_log.exception(
                 f"Exception : {excp}"
             )
 
-    async def start(
+    async def client_started(
         self,
     ):
         if self not in self._client:
@@ -513,21 +510,24 @@ class PytelClient(Raw):
                             self.me.id,
                         )
                     )
-                    await super().stop()
+                    await self.stop()
                     exit(1)
             self.send_log.success(
                 f"Successfuly, ur has been login."
             )
         except FloodWait as excp:
             await sleep(excp.value + 5)
-            await super().start()
         except Exception as excp:
             self.send_log.exception(
                 excp
             )
-            exit(1)
 
     async def stop(self, *args):
-        await super().stop()
         if self not in self._client:
             self._client.append(self)
+        try:
+            await super().stop()
+        except Exception as excp:
+            self.send_log.exception(
+                excp
+            )

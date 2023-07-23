@@ -12,7 +12,6 @@ from . import (
     pytel,
     random_prefixies,
     eor,
-    mention_html,
     attr_file,)
 
 
@@ -45,10 +44,7 @@ async def _ids(client, message):
  └ <b>DC ID</b>: <code>{}</code>
 """.format(
             check_u,
-            mention_html(
-                user_id,
-                name=f"{get_u.first_name}",
-            ),
+            get_u.mention,
             user_id,
             dc_id,
         )
@@ -69,14 +65,11 @@ async def _ids(client, message):
         )
         text = """
 <b><u>CHANNEL</b></u>
- ├ <b>Profile</b>: {}
+ ├ <b>Name</b>: {}
  ├ <b>ID</b>: <code>{}</code>
  └ <b>DC ID</b>: <code>{}</code>
 """.format(
-            mention_html(
-                channel_id,
-                name=f"{message.sender_chat.first_name}",
-            ),
+            message.sender_chat.title,
             channel_id,
             dc_id,
         )
@@ -98,14 +91,11 @@ async def _ids(client, message):
         text = ""
         text += """
 <b><u>GROUP</u></b>
- ├ <b>Profile</b>: {}
+ ├ <b>Name</b>: {}
  ├ <b>ID</b>: <code>{}</code>
  └ <b>DC ID</b>: <code>{}</code>
 """.format(
-            mention_html(
-                message.chat.id,
-                name=f"{message.chat.title}",
-            ),
+            message.chat.title,
             message.chat.id,
             dc_id,
         )
@@ -127,10 +117,7 @@ async def _ids(client, message):
  └ <b>DC ID</b>: <code>{}</code>
 """.format(
                 check_u,
-                mention_html(
-                    message.reply_to_message.from_user.id,
-                    name=f"{message.reply_to_message.from_user.first_name}",
-                ),
+                message.reply_to_message.from_user.mention,
                 message.reply_to_message.from_user.id,
                 dc_id,
             )
@@ -163,10 +150,7 @@ async def _ids(client, message):
  └ <b>DC ID</b>: <code>{}</code>
 """.format(
                 check_u,
-                mention_html(
-                    message.from_user.id,
-                    name=f"{message.from_user.first_name}",
-                ),
+                message.from_user.mention,
                 message.from_user.id,
                 dc_id,
             )
@@ -192,5 +176,5 @@ async def _ids(client, message):
 
 
 plugins_helper["info"] = {
-    f"{random_prefixies(px)}id [reply/no need]": "To get id information.",
+    f"{random_prefixies(px)}id [reply/no need]": "To get data id [user/chanel/group/file] information.",
 }

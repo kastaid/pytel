@@ -249,13 +249,6 @@ async def _anti_pm_status(
                     peer=user_info
                 )
             )
-            (
-                is_reported,
-                revoke,
-            ) = (
-                True,
-                True,
-            )
         if (
             get_pmblock_status(
                 user_id=_
@@ -267,18 +260,15 @@ async def _anti_pm_status(
                     id=user_info
                 )
             )
-            (
-                is_blocked,
-                revoke,
-            ) = (
-                True,
-                True,
-            )
 
         if (
             get_antipm_purged(user_id=_)
             == "On"
         ):
+            just_clear, revoke = (
+                True,
+                True,
+            )
             await client.send(
                 functions.messages.DeleteHistory(
                     peer=user_info,
@@ -289,7 +279,7 @@ async def _anti_pm_status(
             )
             is_purged = True
 
-        usrnm = await client._username(
+        usrnm = await client.username(
             user_id=user_info.user_id
         )
         if usrnm:
@@ -305,9 +295,19 @@ async def _anti_pm_status(
                 ]
             )
         else:
-            rpm = None
+            fmt = f"t.me/c/{user_info.user_id}/{message.id}"
+            rpm = ikmarkup(
+                [
+                    [
+                        buttons(
+                            "Link Message",
+                            url=fmt,
+                        ),
+                    ],
+                ]
+            )
 
-        full_name = await client._fullname(
+        full_name = await client.user_fullname(
             user_id=user_info.user_id
         )
         text = """

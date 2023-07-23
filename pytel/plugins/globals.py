@@ -5,10 +5,11 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from asyncio import Lock, sleep
+from asyncio import sleep
 from random import randrange
 from time import time
 from . import (
+    _GCAST_LOCKED,
     GCAST_BLACKLIST,
     ChatType,
     FloodWait,
@@ -22,9 +23,11 @@ from . import (
     random_prefixies,
     _try_purged,)
 
-_GCAST_LOCK = Lock()
 
-
+@pytel.instruction(
+    ["sgcast"],
+    supersu=["PYTEL"],
+)
 @pytel.instruction(
     ["gcast"],
     outgoing=True,
@@ -32,32 +35,15 @@ _GCAST_LOCK = Lock()
 async def _global_broadcast(
     client, message
 ):
-    if _GCAST_LOCK.locked():
+    if client:
+        user_lock = client.me.id
+    if user_lock in _GCAST_LOCKED:
         await eor(
             message,
             text="Please wait until previous **--gcast--** finished...",
         )
         return
-    async with _GCAST_LOCK:
-        if message.reply_to_message:
-            send = (
-                message.reply_to_message
-            )
-        elif len(message.command) < 2:
-            await eor(
-                message,
-                text="Give some text to Gcast or reply message.",
-            )
-            return
-        else:
-            send = message.text.split(
-                None,
-                1,
-            )[1]
-        xx = await eor(
-            message,
-            text="💬 Broadcasting...",
-        )
+    else:
         (
             start_time,
             success,
@@ -75,11 +61,38 @@ async def _global_broadcast(
         gblack = {
             *BLACKLIST,
         }
+        _GCAST_LOCKED.add(user_lock)
         async for gg in client.get_dialogs():
             if gg.chat.type in [
                 ChatType.GROUP,
                 ChatType.SUPERGROUP,
             ]:
+                if (
+                    message.reply_to_message
+                ):
+                    send = (
+                        message.reply_to_message
+                    )
+                elif (
+                    len(message.command)
+                    < 2
+                ):
+                    await eor(
+                        message,
+                        text="Give some text to Gcast or reply message.",
+                    )
+                    return
+                else:
+                    send = message.text.split(
+                        None,
+                        1,
+                    )[
+                        1
+                    ]
+                aa = await eor(
+                    message,
+                    text="💬 Start a live broadcast message..",
+                )
                 chat_id = gg.chat.id
                 if (
                     chat_id
@@ -95,7 +108,7 @@ async def _global_broadcast(
                             await sleep(
                                 randrange(
                                     6,
-                                    10,
+                                    9,
                                 )
                             )
                             success = (
@@ -114,7 +127,7 @@ async def _global_broadcast(
                             await sleep(
                                 randrange(
                                     6,
-                                    10,
+                                    9,
                                 )
                             )
                             success = (
@@ -157,7 +170,10 @@ async def _global_broadcast(
             disable_notification=True,
             disable_web_page_preview=True,
         )
-        await _try_purged(xx, 2.5)
+        _GCAST_LOCKED.discard(user_lock)
+        return await _try_purged(
+            aa, 1.5
+        )
 
 
 plugins_helper["globals"] = {

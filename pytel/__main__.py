@@ -6,7 +6,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
-from asyncio import all_tasks, sleep
+from asyncio import sleep
 from importlib import (
     import_module as import_plugins,)
 from pathlib import Path
@@ -14,7 +14,6 @@ from sys import exit
 from time import time, sleep as sl
 from tracemalloc import start
 from typing import List, Tuple
-from pyrogram import idle
 from uvloop import install
 from . import (
     __copyright__,
@@ -29,6 +28,7 @@ from .client.autopilots import (
 from .client.runmsg import (
     running_message,)
 from .logger import pylog as send_log
+from .tasks import pytasks
 
 start()
 
@@ -126,7 +126,7 @@ async def runner():
     await start_asst()
     for _ in pytl:
         try:
-            await _.start()
+            await _.client_started()
             await _.notify_login()
             await auto_pilots(
                 _,
@@ -138,6 +138,10 @@ async def runner():
             )
         except Exception as exc:
             send_log.exception(exc)
+        except KeyboardInterrupt:
+            send_log.warning(
+                "Received interrupt while connecting"
+            )
     load_plugins()
     await sleep(1.5)
     await _.flash()
@@ -145,15 +149,9 @@ async def runner():
         _copyright=f"{__copyright__}",
         _license=f"{__license__}",
     )
-    await idle()
-    for kz in pytl:
-        await kz.stop()
-        await pytel_tgb.stop()
-        kz.send_log.info(
-            "Cancelling tasks.."
-        )
-        for task in all_tasks(kz.loop):
-            task.cancel()
+    await pytasks(
+        confirm=True, client=pytl
+    )
 
 
 if __name__ == "__main__":
@@ -166,14 +164,11 @@ if __name__ == "__main__":
         except (
             TimeoutError,
             ConnectionError,
-        ):
-            pass
-        except BaseException as excp:
-            x.send_log.info(f"{excp}")
+        ) as excp:
+            send_log.warning(excp)
         finally:
             x.send_log.info(
-                "Goodbye !!!",
-                style="braches",
+                "See you next time !",
             )
             x.loop.stop()
             exit(0)

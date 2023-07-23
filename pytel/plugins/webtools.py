@@ -7,6 +7,7 @@
 
 from pyrogram.errors.exceptions.forbidden_403 import (
     ChatSendMediaForbidden,)
+from requests import get
 from . import (
     ParseMode,
     _try_purged,
@@ -16,6 +17,7 @@ from . import (
     plugins_helper,
     px,
     pytel,
+    suppress,
     random_prefixies,
     screenshots,)
 
@@ -25,7 +27,9 @@ from . import (
     outgoing=True,
 )
 async def _screenshots(client, message):
-    url = get_text(message)
+    url = get_text(
+        message, save_link=True
+    )
     if not url or not (
         is_url(url) is True
     ):
@@ -57,9 +61,9 @@ async def _screenshots(client, message):
                 x,
                 text="Uploading...",
             )
-            await client.send_photo(
+            await client.send_document(
                 z.chat.id,
-                photo=file,
+                document=file,
                 caption=(
                     "{} [PYTEL](https://github.com/kastaid/pytel)".format(
                         "Made using",
@@ -88,6 +92,74 @@ async def _screenshots(client, message):
         return
 
 
+@pytel.instruction(
+    [
+        "shorten_isgd",
+        "shorten_tiny",
+        "shorten_clck",
+    ],
+    outgoing=True,
+)
+async def _shorten_url(client, message):
+    url = get_text(
+        message, save_link=True
+    )
+    if not url or not (
+        is_url(url) is True
+    ):
+        await eor(
+            message,
+            text="Provide a valid link!",
+        )
+        return
+
+    x = await eor(
+        message,
+        text="Shorten...",
+    )
+    if (
+        message.command[0]
+        == "shorten_isgd"
+    ):
+        rsp = get(
+            "https://is.gd/create.php",
+            params={
+                "format": "simple",
+                "url": url,
+            },
+        )
+    elif (
+        message.command[0]
+        == "shorten_tiny"
+    ):
+        rsp = get(
+            "http://tinyurl.com/api-create.php",
+            params={"url": url},
+        )
+    elif (
+        message.command[0]
+        == "shorten_clck"
+    ):
+        rsp = get(
+            "https://clck.ru/--",
+            params={"url": url},
+        )
+
+    with suppress(BaseException):
+        if not rsp.ok:
+            response = rsp.text.strip()
+            await eor(x, text=response)
+            return
+        else:
+            response = rsp.text.strip()
+            text = "<b><u>SHORT URL</b></u>\n"
+            text += f" ├ <b>Input:</b> <code>{url}</code>\n"
+            text += f" └ <b>Output:</b> <code>{response}</code>"
+            await eor(x, text=text)
+            return
+
+
 plugins_helper["webtools"] = {
     f"{random_prefixies(px)}webss [url]/[reply link]": "To capture the screen on the link.",
+    f"{random_prefixies(px)}shorten_[isgd/tiny/clck] [url]/[reply link]": "To shorten your link/url.",
 }

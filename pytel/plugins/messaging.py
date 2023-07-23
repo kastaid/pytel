@@ -2,12 +2,21 @@
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
-# PLease read the GNU Affero General Public License in
+# Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
 from datetime import datetime, timedelta
 from typing import Optional
+from ..client.dbase.dbMessaging import (
+    add_schedule,
+    check_schedule,
+    check_dspam,
+    cancel_schedule,
+    clear_all_schedule,
+    add_dspam,
+    cancel_dspam,
+    clear_all_dspam,)
 from . import (
     _try_purged,
     plugins_helper,
@@ -16,45 +25,47 @@ from . import (
     random_prefixies,
     eor,
     tz,
-    suppress,
-    ParseMode,)
+    ParseMode,
+    FloodWait,)
 
-_SCHEDULE: list = []
-_DSPAM: list = []
+schedule_and_delay_example = f"""
+Command Guide Schedule and Delay
 
-schedule_example = f"""
---**Command Guide**-- ›_
+Examples:
+{random_prefixies(px)}schmsg 240 5 360 Hello
+{random_prefixies(px)}dsp 240 5 Hello
 
-__Schedule Messages__
-
-**Run ›_**
-`{random_prefixies(px)}schmsg [time in seconds: schedule] [number of messages] [time sleep in seconds] [messages: support html]`
-
-**Examples:**
-`{random_prefixies(px)}schmsg 240 5 360 Hello`
-
-```
 240    5     360   Hello
  |     |      |      |
 time, count, time, message
-```
-**Time Example:**
-`240 = 4 minute`
-__1 minute equals 60 seconds__
 
-**Message Example (HTML):**
+Time Example:
+240 = 4 minute
+1 minute equals 60 seconds
+
+Message Example (HTML):
 <spoiler>Hello World</spoiler>
 
-**HTML Support:**
+HTML Support:
 <spoiler> text </spoiler>
 <a href='url'> Hello World </a>
-<b> Text </b>
-<i> Text </i>
-<u> Text </u>
+<b> bold </b>
+<i> italic </i>
+<u> underline </u>
 <url> URL </url>
-<code> Text </code>
+<code> code </code>
 <pre> Text </pre>
 <strong> Text </strong>
+
+MARKDOWN Support:
+**bold**
+__italic__
+--underline--
+~~strike~~
+||spoiler||
+[text URL](https://pyrogram.org/)
+[text user mention](tg://user?id=123456789)
+`inline fixed-width code`
 """
 
 
@@ -97,7 +108,7 @@ async def _purge_me(client, message):
         )
 
     n = int(n)
-    if n < 1:
+    if n <= 1:
         n: int = 2
 
     chat_id = message.chat.id
@@ -144,59 +155,85 @@ async def _schedule_msg(
     chat_id: Optional[
         int
     ] = message.chat.id
-    if chat_id in list(_SCHEDULE):
+    user_id = client.me.id
+    if check_schedule(user_id, chat_id):
         await eor(
             message,
             text="Please wait until previous --schedule-- msg are finished..",
         )
         return
-    try:
-        args = message.text.split(
-            None, 4
-        )
-        schtimes = float(args[1])
-        count = int(args[2])
-        tms = float(args[3])
-        mesg = str(args[4])
-    except BaseException:
-        await eor(
-            message,
-            text=schedule_example,
-            parse_mode=ParseMode.MARKDOWN,
-        )
-        return
-    await message.delete()
-    with suppress(BaseException):
-        _SCHEDULE.append(chat_id)
+    else:
+        try:
+            args = message.text.split(
+                " ", 4
+            )
+            schtimes = float(args[1])
+            count = int(args[2])
+            tms = float(args[3])
+            mesg = str(args[4])
+        except BaseException:
+            await eor(
+                message,
+                text=schedule_and_delay_example,
+                parse_mode=ParseMode.DISABLED,
+            )
+            return
         schtimes = (
             60
-            if schtimes
-            and schtimes < 60
+            if schtimes < 60
             else schtimes
         )
         timesleep = (
-            60
-            if tms and tms < 60
-            else tms
+            60 if tms < 60 else tms
         )
-        for _ in range(count):
-            if chat_id not in list(
-                _SCHEDULE
-            ):
-                break
-            else:
-                t = datetime.now(
-                    tz
-                ) + timedelta(
-                    seconds=schtimes
-                )
-                await client.send_message(
-                    int(chat_id),
-                    text=mesg,
-                    parse_mode=ParseMode.HTML,
-                    schedule_date=t,
-                )
-                await sleep(timesleep)
+        await message.delete()
+        if count:
+            add_schedule(
+                int(user_id), chat_id
+            )
+            for _ in range(count):
+                if not check_schedule(
+                    user_id, chat_id
+                ):
+                    break
+                try:
+                    await client.send_message(
+                        int(chat_id),
+                        text=mesg,
+                        schedule_date=datetime.now(
+                            tz
+                        )
+                        + timedelta(
+                            seconds=schtimes
+                        ),
+                    )
+                    await sleep(
+                        timesleep
+                    )
+                except (
+                    FloodWait
+                ) as excp:
+                    await sleep(
+                        excp.value + 5
+                    )
+                    await client.send_message(
+                        int(chat_id),
+                        text=mesg,
+                        schedule_date=datetime.now(
+                            tz
+                        )
+                        + timedelta(
+                            seconds=schtimes
+                        ),
+                    )
+                    await sleep(
+                        timesleep
+                    )
+                except BaseException:
+                    pass
+            cancel_schedule(
+                int(user_id), chat_id
+            )
 
 
 @pytel.instruction(
@@ -207,104 +244,158 @@ async def _dspam_msg(client, message):
     chat_id: Optional[
         int
     ] = message.chat.id
-    if chat_id in list(_DSPAM):
+    user_id = client.me.id
+    if check_dspam(user_id, chat_id):
         await eor(
             message,
-            text="Please wait until previous --delay spam-- are finished..",
+            text="Please wait until previous **delay-spam** are finished..",
         )
         return
-    try:
-        args = message.text.split(
-            None, 3
+    else:
+        try:
+            args = message.text.split(
+                " ", 3
+            )
+            count = int(args[2])
+            tms = float(args[1])
+            mesg = str(args[3])
+        except BaseException:
+            await eor(
+                message,
+                text=schedule_and_delay_example,
+                parse_mode=ParseMode.DISABLED,
+            )
+            return
+        timesleep = (
+            30 if tms < 30 else tms
         )
-        count = int(args[2])
-        tms = float(args[1])
-        mesg = str(args[3])
-    except BaseException:
-        await eor(
-            message,
-            text=f"{random_prefixies(px)}dsp [seconds] [count] [text]",
-        )
-        return
-    timesleep = (
-        60 if tms and tms < 60 else tms
-    )
-    await message.delete()
-    with suppress(BaseException):
-        _DSPAM.append(chat_id)
-        for _ in range(count):
-            if chat_id not in list(
-                _DSPAM
-            ):
-                break
-            else:
-                await client.send_message(
-                    int(chat_id),
-                    text=mesg,
-                    parse_mode=ParseMode.HTML,
-                )
-                await sleep(timesleep)
+        await message.delete()
+        if count:
+            add_dspam(
+                int(user_id), chat_id
+            )
+            for _ in range(count):
+                if not check_dspam(
+                    user_id, chat_id
+                ):
+                    break
+                try:
+                    await client.send_message(
+                        int(chat_id),
+                        text=mesg,
+                    )
+                    await sleep(
+                        timesleep
+                    )
+                except (
+                    FloodWait
+                ) as excp:
+                    await sleep(
+                        excp.value + 5
+                    )
+                    await client.send_message(
+                        int(chat_id),
+                        text=mesg,
+                    )
+                    await sleep(
+                        timesleep
+                    )
+                except BaseException:
+                    pass
+            cancel_dspam(
+                int(user_id), chat_id
+            )
 
 
 @pytel.instruction(
-    ["schcancel"],
+    ["schcancel", "dspcancel"],
     outgoing=True,
 )
-async def _cancel_schedule_msg(
+async def _cancel_dspsch(
     client, message
 ):
-    chat_id: Optional[
-        int
-    ] = message.chat.id
-    x = await eor(
-        message,
-        text="Canceling schedule messages...",
-    )
-    if chat_id not in list(_SCHEDULE):
+    if (
+        message.command[0]
+        == "schcancel"
+    ):
+        x = await eor(
+            message,
+            text="Canceling schedule messages...",
+        )
+        if not check_schedule(
+            client.me.id,
+            message.chat.id,
+        ):
+            await eor(
+                x,
+                text="No current --**Schedule**-- msg are running or cancel in --schedule-- msg.",
+            )
+            return
+        cancel_schedule(
+            client.me.id,
+            message.chat.id,
+        )
         await eor(
             x,
-            text="No current --**Schedule**-- msg are running or cancel in --schedule-- msg.",
+            text="--**Schedule**-- messages has been canceled.",
         )
         return
-    _SCHEDULE.remove(chat_id)
-    await eor(
-        x,
-        text="--**Schedule**-- messages has been canceled.",
-    )
+
+    if (
+        message.command[0]
+        == "dspcancel"
+    ):
+        x = await eor(
+            message,
+            text="Canceling delay-spam messages...",
+        )
+        if not check_dspam(
+            client.me.id,
+            message.chat.id,
+        ):
+            await eor(
+                x,
+                text="No current --**Delay**-- messages are running.",
+            )
+            return
+        cancel_dspam(
+            client.me.id,
+            message.chat.id,
+        )
+        await eor(
+            x,
+            text="--**Delay**-- messages has been canceled.",
+        )
 
 
 @pytel.instruction(
-    ["dspcancel"],
+    ["clearsch", "cleardsp"],
     outgoing=True,
 )
-async def _cancel_dspam_msg(
+async def _clear_dspsch(
     client, message
 ):
-    chat_id: Optional[
-        int
-    ] = message.chat.id
-    x = await eor(
-        message,
-        text="Canceling delay-spam messages...",
-    )
-    if chat_id not in list(_DSPAM):
+    if message.command[0] == "cleardsp":
+        clear_all_dspam(client.me.id)
         await eor(
-            x,
-            text="No current --**DSpam**-- msg are running.",
+            message,
+            text="All --**Delay**-- messages has been cleared.",
         )
-        return
-    _DSPAM.remove(chat_id)
-    await eor(
-        x,
-        text="--**DSpam**-- messages has been canceled.",
-    )
+    if message.command[0] == "clearsch":
+        clear_all_schedule(client.me.id)
+        await eor(
+            message,
+            text="All --**Schedule**-- messages has been cleared.",
+        )
 
 
 plugins_helper["messaging"] = {
     f"{random_prefixies(px)}del [reply message]": "To deleted ur messages.",
     f"{random_prefixies(px)}purgeme [count]": "To purged ur messages.",
-    f"{random_prefixies(px)}schedule [seconds] [count] [seconds] [text]": "To send schedule message.",
-    f"{random_prefixies(px)}schcancel": "To cancel ur schedule message.",
-    f"{random_prefixies(px)}dsp [seconds] [count] [text]": "To send delay-spam message.",
-    f"{random_prefixies(px)}dspcancel": "To cancel ur delay-spam message.",
+    f"{random_prefixies(px)}schedule [seconds] [count] [seconds] [text]": "To send schedule message. min: 60 seconds.",
+    f"{random_prefixies(px)}dsp [seconds] [count] [text]": "To send delay-spam message. min: 30 seconds.",
+    f"{random_prefixies(px)}schcancel": "To canceled ur schedule message in chats.",
+    f"{random_prefixies(px)}dspcancel": "To canceled ur delay-spam message in chats.",
+    f"{random_prefixies(px)}cleardsp": "To cleared all delay-spam messages.",
+    f"{random_prefixies(px)}clearsch": "To cleared all schedule messages.",
 }

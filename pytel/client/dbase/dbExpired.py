@@ -7,6 +7,7 @@
 
 from datetime import datetime, timedelta
 from typing import Optional
+from ..utils import tz
 from ._BaseClient import pydb
 
 
@@ -21,11 +22,12 @@ def set_expired_days(
     days_in_month = 1
     if duration <= 12:
         days_in_month = 30 * duration
-    expire_date = (
-        datetime.now().replace(
-            microsecond=0
-        )
-        + timedelta(days=days_in_month)
+    expire_date = datetime.now(
+        tz
+    ).replace(microsecond=0).replace(
+        tzinfo=None
+    ) + timedelta(
+        days=days_in_month
     )
     exp = user_expired()
     exp.update(
@@ -54,7 +56,9 @@ async def get_expired_date(
             str(xx),
             "%Y-%m-%d %H:%M:%S",
         )
-        expired = yy - datetime.now()
+        expired = yy - datetime.now(
+            tz
+        ).replace(tzinfo=None)
         formatext = f"{expired.days}d {expired.seconds//3600}h {(expired.seconds//60)%60}m"
         return yy, str(formatext)
     return None

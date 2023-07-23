@@ -33,11 +33,11 @@ PREFIX: Union[str, List[str]] = gets(
 TimeZone: Optional[str] = gets(
     "TimeZone", ""
 )
-
-# Multi Client
 SESSION1: Optional[str] = gets(
     "SESSION1", ""
 )
+
+# Multi Client
 SESSION2: Optional[str] = gets(
     "SESSION2", ""
 )
@@ -50,11 +50,20 @@ SESSION4: Optional[str] = gets(
 SESSION5: Optional[str] = gets(
     "SESSION5", ""
 )
-
-# PRODUCTION_MODE
-PRODUCTION_MODE: Optional[bool] = gets(
-    "PRODUCTION_MODE",
-    "",
+SESSION6: Optional[str] = gets(
+    "SESSION6", ""
+)
+SESSION7: Optional[str] = gets(
+    "SESSION7", ""
+)
+SESSION8: Optional[str] = gets(
+    "SESSION8", ""
+)
+SESSION9: Optional[str] = gets(
+    "SESSION9", ""
+)
+SESSION10: Optional[str] = gets(
+    "SESSION10", ""
 )
 
 del load_dotenv, gets

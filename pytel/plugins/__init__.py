@@ -27,7 +27,8 @@ from pyrogram.raw.functions import (
 from pytelibs import (
     _chpytel,
     developer,
-    GCAST_BLACKLIST,)
+    GCAST_BLACKLIST,
+    _GCAST_LOCKED,)
 from validators.url import url as is_url
 from pytel import pytel, pytel_tgb, pytl
 from .. import __license__, start_time
