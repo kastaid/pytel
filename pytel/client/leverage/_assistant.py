@@ -58,7 +58,7 @@ Our privacy policy may change from time to time.
             [
                 buttons(
                     "🔒 Privacy & Policy",
-                    callback_data="privacy",
+                    callback_data="start_privacy",
                 ),
                 buttons(
                     "Gen Session 🚀",
@@ -79,11 +79,11 @@ Our privacy policy may change from time to time.
             [
                 buttons(
                     "Back",
-                    callback_data="home",
+                    callback_data="start_home",
                 ),
                 buttons(
                     "Close",
-                    callback_data="cls",
+                    callback_data="start_cls",
                 ),
             ],
         ]

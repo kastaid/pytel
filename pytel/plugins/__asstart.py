@@ -5,6 +5,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
+from re import match
 from pyrogram.types import CallbackQuery
 from ..client.dbase.dbStartAsst import (
     checks_users,
@@ -63,15 +64,25 @@ async def _asst_home(client, message):
         )
 
 
-@pytel_tgb.on_callback_query()
+@pytel_tgb.on_callback_query(
+    filters.regex(r"start_(.*?)")
+)
 async def _cb_asst(
     client, cq: CallbackQuery
 ):
-    ts = cq.data.lower()
-    if ts == "cls":
+    start_data = match(
+        r"start_cls", cq.data
+    )
+    start_hm = match(
+        r"start_home", cq.data
+    )
+    start_prvc = match(
+        r"start_privacy", cq.data
+    )
+    if start_data:
         with suppress(BaseException):
             await cq.message.delete()
-    elif ts == "home":
+    elif start_hm:
         with suppress(BaseException):
             await cq.message.edit(
                 Assistant.START.format(
@@ -80,7 +91,7 @@ async def _cb_asst(
                 disable_web_page_preview=True,
                 reply_markup=Assistant.home_buttons,
             )
-    elif ts == "privacy":
+    elif start_prvc:
         with suppress(BaseException):
             await cq.message.edit(
                 Assistant.PRIVACY,
