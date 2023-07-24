@@ -66,4 +66,9 @@ SESSION10: Optional[str] = gets(
     "SESSION10", ""
 )
 
+# GH PERSONAL ACCESS TOKEN
+GH_PAT: Optional[str] = gets(
+    "GH_PAT", ""
+)
+
 del load_dotenv, gets

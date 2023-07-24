@@ -28,6 +28,7 @@ from pytgcalls import (
     __version__ as pytgver,)
 from version import __version__ as b_ver
 from . import (
+    GH_PAT,
     ChatSendInlineForbidden,
     BotResponseTimeout,
     QueryIdInvalid,
@@ -448,7 +449,9 @@ async def _updates(client, message):
         (
             stdout,
             stderr,
-        ) = RunningCommand("git pull")
+        ) = RunningCommand(
+            f"git pull https://{GH_PAT}@github.com/kastaid/pytel"
+        )
         if (
             "Already up to date."
             in str(stdout)
