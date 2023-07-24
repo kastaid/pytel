@@ -18,7 +18,8 @@ from .leverage import (
     ikmarkup,
     attr_file,
     legally_required,
-    channel_groups,)
+    channel_groups,
+    Assistant,)
 from .pyclient import (
     PytelClient,
     loopers,)

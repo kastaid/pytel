@@ -244,7 +244,7 @@ async def _anti_pm_status(
             )
             == "On"
         ):
-            await client.send(
+            await client.invoke(
                 functions.messages.ReportSpam(
                     peer=user_info
                 )
@@ -255,7 +255,7 @@ async def _anti_pm_status(
             )
             == "On"
         ):
-            await client.send(
+            await client.invoke(
                 functions.contacts.Block(
                     id=user_info
                 )
@@ -269,7 +269,7 @@ async def _anti_pm_status(
                 True,
                 True,
             )
-            await client.send(
+            await client.invoke(
                 functions.messages.DeleteHistory(
                     peer=user_info,
                     max_id=32,

@@ -67,6 +67,7 @@ class PytelClient(Raw):
     Client :: PYTEL
     """
 
+    client: Any
     _client: list
     lock: Any
     loop: Optional[AbstractEventLoop]
@@ -114,6 +115,7 @@ class PytelClient(Raw):
         kwargs["in_memory"] = in_memory
         kwargs["ipv6"] = ipv6
 
+        self.client = Raw
         self._client = []
         self.send_log = pylog
         self.lock = Lock
@@ -209,7 +211,7 @@ class PytelClient(Raw):
             func: Callable,
         ) -> Callable:
             async def wrapper(
-                client: PytelClient,
+                client,
                 message: Message,
             ) -> Callable:
                 user_id = client.me.id
@@ -517,6 +519,7 @@ class PytelClient(Raw):
             )
         except FloodWait as excp:
             await sleep(excp.value + 5)
+            await super().start()
         except Exception as excp:
             self.send_log.exception(
                 excp

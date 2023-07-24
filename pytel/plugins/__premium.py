@@ -385,20 +385,3 @@ async def _del_premium_user(
 (c) @kastaid #pytel
 """
     await xy.edit_text(text)
-
-
-@pytel_tgb.on_callback_query(
-    filters.regex("cls")
-)
-async def commands_callbacc(
-    client,
-    cq: CallbackQuery,
-):
-    if (
-        cq.from_user.id == int(OWNER_ID)
-    ) or (
-        cq.from_user.id
-        in list(developer)
-    ):
-        await cq.message.delete()
-    return None

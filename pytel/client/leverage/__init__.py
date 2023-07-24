@@ -12,6 +12,7 @@ from ._asserts import (
     get_text,
     replied,
     attr_file,)
+from ._assistant import Assistant
 from ._filters import (
     legally_required,
     channel_groups,)

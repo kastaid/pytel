@@ -13,9 +13,7 @@ from pyrogram.errors.exceptions.bad_request_400 import (
     MessageIdInvalid,)
 from pyrogram.raw.all import layer
 from version import __version__ as versi
-from ..config import (
-    PREFIX,
-    LOGCHAT_ID,)
+from ..config import PREFIX, LOGCHAT_ID
 from .dbase.dbLogger import (
     already_logger,
     check_logger,)

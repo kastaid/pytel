@@ -33,6 +33,7 @@ from validators.url import url as is_url
 from pytel import pytel, pytel_tgb, pytl
 from .. import __license__, start_time
 from ..client import (
+    Assistant,
     plugins_helper,
     time_formatter,
     plugins_button,

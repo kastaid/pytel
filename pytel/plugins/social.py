@@ -72,7 +72,7 @@ async def _socmed(client, message):
     del_his = await client.resolve_peer(
         smd
     )
-    return await client.send(
+    return await client.invoke(
         DeleteHistory(
             peer=del_his,
             max_id=0,

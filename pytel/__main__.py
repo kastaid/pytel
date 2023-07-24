@@ -79,6 +79,7 @@ def load_plugins():
     _ = (
         "__init__",
         "__premium",
+        "__asstart",
     )
     for plugin in plugins:
         try:
@@ -101,9 +102,9 @@ def load_plugins():
     loaded_msg = ">> Loaded success!!\nPlugins: {}, Commands: {}\n\n{}\n\n>> Time taken {}".format(
         plugins_helper.count,
         plugins_helper.total,
-        "|".join(plugins).replace(
-            "__premium", ""
-        ),
+        "|".join(plugins)
+        .replace("__premium", "")
+        .replace("__asstart", ""),
         loaded_time,
     )
     send_log.info(loaded_msg)
