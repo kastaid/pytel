@@ -2,7 +2,7 @@
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
-# PLease read the GNU Affero General Public License in
+# Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import Lock
@@ -24,8 +24,6 @@ from pyrogram.types import (
     InlineQueryResultArticle,
     InputTextMessageContent,
     CallbackQuery,)
-from pytgcalls import (
-    __version__ as pytgver,)
 from version import __version__ as b_ver
 from . import (
     GH_PAT,
@@ -132,12 +130,7 @@ def _ialive() -> Optional[str]:
         + "</code> \n"
     )
     text_active += (
-        "› <code>Pytgcalls:</code> <code>"
-        + str(pytgver)
-        + "</code> \n"
-    )
-    text_active += (
-        "› <code>Pytel Version:</code> <code>"
+        "› <code>Pytel:</code> <code>"
         + str(b_ver)
         + "</code> \n----------------------------------------\n"
     )
@@ -189,7 +182,7 @@ def sys_stats():
     ).percent
     process = psutil.Process(getpid())
     stats = f"""
-PYTEL-Premium
+PYTEL-Premium ( Client )
 -----------------------
 UPTIME: {time_formatter((time() - start_time) * 1000)}
 BOT: {round(process.memory_info()[0] / 1024 ** 2)} MB

@@ -2,6 +2,7 @@ wheel
 setuptools
 frozenlist
 requests
+openai
 psutil
 pyrogram
 pytelibs

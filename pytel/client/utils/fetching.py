@@ -18,6 +18,8 @@ from typing import (
     Set,
     Tuple,
     Union,)
+from urllib.parse import (
+    urlparse as urllibparse,)
 from uuid import uuid4
 from aiofiles import open
 from aiohttp import (
@@ -30,6 +32,7 @@ from pytz import (
     timezone,
     country_names,)
 from version import __version__ as versi
+from .misc import humanboolean
 
 
 def get_random_hex(
@@ -300,6 +303,172 @@ async def fetch_adzan(
     return str(text)
 
 
+async def fetch_ipinfo(
+    str_ip: Optional[str],
+) -> Optional[str]:
+    url = f"http://ip-api.com/json/{str_ip}?fields=status,message,continent,country,countryCode,regionName,city,zip,lat,lon,timezone,currency,isp,mobile,query"
+    response = await fetching(
+        url, re_json=True
+    )
+    if not response:
+        text = (
+            "{}".format("Try again now")
+            + "!"
+        )
+        return text
+    if (
+        str(
+            response.get("status")
+        ).lower()
+        == "success"
+    ):
+        coordinates = (
+            str(
+                response.get("lat")
+                or ""
+            )
+            + ","
+            + str(
+                response.get("lon")
+                or ""
+            )
+        )
+        query = response.get("query")
+        city = (
+            response.get("city") or "?"
+        )
+        regional_name = (
+            response.get("regionName")
+            or "?"
+        )
+        country = (
+            response.get("country")
+            or "?"
+        )
+        country_code = (
+            response.get("countryCode")
+            or "?"
+        )
+        currency = (
+            response.get("currency")
+            or "?"
+        )
+        continent = (
+            response.get("continent")
+            or "?"
+        )
+        cc_timezone = (
+            response.get("timezone")
+            or "?"
+        )
+        isp_ = (
+            response.get("isp") or "?"
+        )
+        is_mobile = humanboolean(
+            response.get("mobile")
+        )
+        gmaps = f"https://www.google.com/maps?q={coordinates}"
+
+        text = (
+            "<b><u>"
+            + "{}".format(
+                "IP Address Information"
+            )
+            + "</u></b>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("IP")
+            + f":</b> <code>{query}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("City")
+            + f":</b> <code>{city}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("Region")
+            + f":</b> <code>{regional_name}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("Country")
+            + f":</b> <code>{country}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format(
+                "Country Code"
+            )
+            + f":</b> <code>{country_code}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("Currency")
+            + f":</b> <code>{currency}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("Continent")
+            + f":</b> <code>{continent}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("Coordinates")
+            + f":</b> <code>{coordinates}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("Time Zone")
+            + f":</b> <code>{cc_timezone}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("ISP")
+            + f":</b> <code>{isp_}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("Mobile")
+            + f":</b> <code>{is_mobile}</code>\n"
+        )
+        text += (
+            "└  <b>"
+            + "{}".format("Map")
+            + f":</b> <code>{gmaps}</code>\n"
+        )
+    else:
+        query = response.get("query")
+        status = response.get("status")
+        message = response.get(
+            "message"
+        )
+        text = (
+            "<b><u>"
+            + "{}".format(
+                "IP Address Information"
+            )
+            + "</u></b>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("IP")
+            + f":</b> <code>{query}</code>\n"
+        )
+        text += (
+            "├  <b>"
+            + "{}".format("Status")
+            + f":</b> <code>{status}</code>\n"
+        )
+        text += (
+            "└  <b>"
+            + "{}".format("Message")
+            + f":</b> <code>{message}</code>\n"
+        )
+    return text
+
+
 async def fetch_weather(
     str_city: Optional[str],
 ) -> Optional[str]:
@@ -466,6 +635,33 @@ async def fetch_weather(
     text += f"<u><b>{desc}</b></u>\n"
     text += f"└ {cityname}, {fullcountry_names} {time}"
     text += f"\n\n(c) @kastaid #pytel"
+
+    return text
+
+
+async def fetch_dns(
+    domain_str: Optional[str],
+) -> Optional[str]:
+    hostname = ".".join(
+        urllibparse(
+            domain_str
+        ).netloc.split(".")[-2:]
+    )
+    url = (
+        f"https://da.gd/dns/{hostname}"
+    )
+    response = await fetching(url)
+    if not response:
+        text = (
+            "{}".format("Can't fetches")
+            + f" <b>{hostname}</b> DNS."
+        )
+    else:
+        text = (
+            "<b>DNS "
+            + "{}".format("records")
+            + f" {hostname}</b>\n\n<pre>{response.strip()}</pre>"
+        )
 
     return text
 

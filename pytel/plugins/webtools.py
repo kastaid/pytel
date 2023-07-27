@@ -13,11 +13,14 @@ from . import (
     _try_purged,
     eor,
     get_text,
+    is_ipv4,
     is_url,
     plugins_helper,
     px,
     pytel,
     suppress,
+    fetch_ipinfo,
+    fetch_dns,
     random_prefixies,
     screenshots,)
 
@@ -159,7 +162,59 @@ async def _shorten_url(client, message):
             return
 
 
+@pytel.instruction(
+    ["ipinfo"],
+    outgoing=True,
+)
+async def _ip_info(client, message):
+    ipv = get_text(
+        message, save_link=True
+    )
+    if not ipv or not (
+        is_ipv4(ipv) is True
+    ):
+        await eor(
+            message,
+            text="Provide a valid IP Address!",
+        )
+        return
+    x = await eor(
+        message,
+        text="Fetches IP Address...",
+    )
+    str_ip = await fetch_ipinfo(ipv)
+    if str_ip:
+        await eor(x, text=str_ip)
+
+
+@pytel.instruction(
+    ["dns", "domain"],
+    outgoing=True,
+)
+async def _domain_ns(client, message):
+    url = get_text(
+        message, save_link=True
+    )
+    if not url or not (
+        is_url(url) is True
+    ):
+        await eor(
+            message,
+            text="Provide a valid domain url!",
+        )
+        return
+    x = await eor(
+        message,
+        text="Fetches DNS...",
+    )
+    dn_server = await fetch_dns(url)
+    if dn_server:
+        await eor(x, text=dn_server)
+
+
 plugins_helper["webtools"] = {
     f"{random_prefixies(px)}webss [url]/[reply link]": "To capture the screen on the link.",
     f"{random_prefixies(px)}shorten_[isgd/tiny/clck] [url]/[reply link]": "To shorten your link/url.",
+    f"{random_prefixies(px)}dns / {random_prefixies(px)}domain [url]/[reply link]": "To get DNS ( Domain Name Server )",
+    f"{random_prefixies(px)}ipinfo [ip address]": "To get information IP Address.",
 }

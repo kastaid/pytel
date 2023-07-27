@@ -29,10 +29,13 @@ from pytelibs import (
     developer,
     GCAST_BLACKLIST,
     _GCAST_LOCKED,)
+from validators.ip_address import (
+    ipv4 as is_ipv4,)
 from validators.url import url as is_url
 from pytel import pytel, pytel_tgb, pytl
 from .. import __license__, start_time
 from ..client import (
+    ChatGPT,
     Assistant,
     plugins_helper,
     time_formatter,
@@ -45,6 +48,8 @@ from ..client import (
     LE,
     fetch_adzan,
     fetch_weather,
+    fetch_dns,
+    fetch_ipinfo,
     mention_html,
     mention_markdown,
     get_blacklisted,

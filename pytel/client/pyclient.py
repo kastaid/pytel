@@ -211,7 +211,7 @@ class PytelClient(Raw):
             func: Callable,
         ) -> Callable:
             async def wrapper(
-                client,
+                client: PytelClient,
                 message: Message,
             ) -> Callable:
                 user_id = client.me.id

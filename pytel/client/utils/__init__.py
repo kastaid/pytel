@@ -6,12 +6,15 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
+from .apichatgpt import ChatGPT
 from .apilyrics import (
     LyricsEngine as LE,)
 from .fetching import (
     fetch_adzan,
     get_blacklisted,
     screenshots,
+    fetch_ipinfo,
+    fetch_dns,
     fetch_weather,)
 from .helper import (
     plugins_helper,

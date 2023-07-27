@@ -24,9 +24,12 @@ from .pyclient import (
     PytelClient,
     loopers,)
 from .utils import (
+    ChatGPT,
     LE,
     fetch_adzan,
+    fetch_dns,
     fetch_weather,
+    fetch_ipinfo,
     humanboolean,
     get_blacklisted,
     screenshots,

@@ -249,6 +249,8 @@ async def _anti_pm_status(
                     peer=user_info
                 )
             )
+            is_reported = True
+
         if (
             get_pmblock_status(
                 user_id=_
@@ -260,6 +262,7 @@ async def _anti_pm_status(
                     id=user_info
                 )
             )
+            is_blocked = True
 
         if (
             get_antipm_purged(user_id=_)

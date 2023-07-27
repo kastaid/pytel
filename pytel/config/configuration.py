@@ -71,4 +71,9 @@ GH_PAT: Optional[str] = gets(
     "GH_PAT", ""
 )
 
+# ChatGPT API_KEY
+AI_KEY: Optional[str] = gets(
+    "AI_KEY", ""
+)
+
 del load_dotenv, gets
