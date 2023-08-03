@@ -239,7 +239,6 @@ async def _locked_group(
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_restricted"],
 )
 async def _locktypes(client, message):
     text = (
