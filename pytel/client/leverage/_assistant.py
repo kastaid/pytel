@@ -20,7 +20,7 @@ class Assistant:
 We provide services with various features
 from Telegram Base.
 
-If you want to know more, please contact the contact below.
+If you want to know more, please contact click the left end button below.
 
 <code>Copyright (C) 2023-present kastaid</code>
 """
@@ -38,17 +38,14 @@ If you want to know more, please contact the contact below.
     PRIVACY = """
 <b>PYTEL</b> has been made to protect and preserve privacy as best as possible.
 
-
 <b>We currently collect and process a personal information following:</b>
-  • <u>Telegram User ID</u>
-  • <u>Telegram Username</u> ( <i>if u've</i> )
-  <b>Note:</b> <i>These are your public telegram details. We do not know your "real" details.</i>
-
+  • Telegram User ID
+  • Telegram Username
+<b>Note:</b> <i>These are your public telegram details. We do not know your "real" details.</i>
 
 <b>Why we collect and process the personal information:</b>
-  • <u>To stats a total users used this bot.</u>
-  • <u>To make a broadcasting target correctly.</u>
-
+  • To stats a total users used this bot.
+  • To make a broadcasting target correctly.
 
 Our privacy policy may change from time to time.
 """

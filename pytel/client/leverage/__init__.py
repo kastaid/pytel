@@ -7,6 +7,8 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
 from ._asserts import (
+    user_and_reason,
+    extract_user,
     _try_purged,
     eor,
     get_text,

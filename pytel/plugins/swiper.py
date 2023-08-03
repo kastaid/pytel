@@ -23,7 +23,7 @@ from . import (
 
 
 @pytel.instruction(
-    ["swipper"],
+    ["swiper"],
     outgoing=True,
 )
 async def _swipper(client, message):
@@ -39,7 +39,7 @@ async def _swipper(client, message):
         )
     x = await eor(
         message,
-        text="Swipper...",
+        text="Swiper no swiping...",
     )
     if url.startswith("https"):
         if "?single" in url:
@@ -69,7 +69,7 @@ async def _swipper(client, message):
             except RPCError:
                 await eor(
                     x,
-                    text="#RPCError Something problems...",
+                    text="You must first join the target channel.",
                 )
                 return
             try:
@@ -99,7 +99,7 @@ async def _swipper(client, message):
             except RPCError:
                 await eor(
                     x,
-                    text="#RPCError Something problems...",
+                    text="You must first join the target channel.",
                 )
             if (
                 ms.type
@@ -228,6 +228,6 @@ async def downloads_media(
             remove(animation)
 
 
-plugins_helper["swipper"] = {
-    f"{random_prefixies(px)}swipper [link messages media channel]": "To swipper media private in channels.",
+plugins_helper["swiper"] = {
+    f"{random_prefixies(px)}swiper [link messages media channel]": "To get files on a private channel. ( You must first join the target channel )",
 }

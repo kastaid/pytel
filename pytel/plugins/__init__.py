@@ -28,7 +28,12 @@ from pytelibs import (
     _chpytel,
     developer,
     GCAST_BLACKLIST,
-    _GCAST_LOCKED,)
+    GUCAST_BLACKLIST,
+    _GCAST_LOCKED,
+    _GUCAST_LOCKED,
+    _GBAN_LOCKED,
+    _UNGBAN_LOCKED,
+    LOCK_TYPES,)
 from validators.ip_address import (
     ipv4 as is_ipv4,)
 from validators.url import url as is_url
@@ -39,6 +44,8 @@ from ..client import (
     Assistant,
     plugins_helper,
     time_formatter,
+    user_and_reason,
+    extract_user,
     plugins_button,
     unpack_inline,
     _try_purged,
@@ -52,6 +59,8 @@ from ..client import (
     fetch_ipinfo,
     mention_html,
     mention_markdown,
+    get_spamwatch_banned,
+    get_cas_banned,
     get_blacklisted,
     random_prefixies,
     screenshots,
@@ -63,6 +72,7 @@ from ..client import (
     humanboolean,
     legally_required,
     channel_groups,
+    short_dict,
     pydb,)
 from ..config import (
     PREFIX as px,

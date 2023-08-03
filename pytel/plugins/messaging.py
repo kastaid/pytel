@@ -90,6 +90,10 @@ async def _delete(client, message):
 
 
 @pytel.instruction(
+    ["devpurged"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
     ["purgeme"],
     outgoing=True,
 )

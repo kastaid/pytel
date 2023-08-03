@@ -6,9 +6,48 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Any
 from ..utils import tz
 from ._BaseClient import pydb
+
+
+def countdown_to_datetime(
+    expired: Any,
+) -> Optional[str]:
+    days = expired.days
+    seconds = expired.seconds
+    hours = int(seconds / 3600)
+    minutes = int(
+        (seconds - hours * 3600) / 60
+    )
+    seconds = (
+        seconds
+        - hours * 3600
+        - minutes * 60
+    )
+
+    result = str(days) + (
+        " Day, "
+        if days == 1
+        else " Days, "
+    )
+    result += str(hours) + (
+        " Hour, "
+        if hours == 1
+        else " Hours, "
+    )
+    result += str(minutes) + (
+        " Minute, "
+        if minutes == 1
+        else " Minutes, "
+    )
+    result += str(seconds) + (
+        " Second."
+        if seconds == 1
+        else " Seconds."
+    )
+
+    return str(result)
 
 
 def user_expired():
@@ -59,9 +98,14 @@ async def get_expired_date(
         expired = yy - datetime.now(
             tz
         ).replace(tzinfo=None)
-        formatext = f"{expired.days}d {expired.seconds//3600}h {(expired.seconds//60)%60}m"
-        return yy, str(formatext)
-    return None
+        #        formatext = f"{expired.days}d {expired.seconds//3600}h {(expired.seconds//60)%60}m"
+        return (
+            yy,
+            countdown_to_datetime(
+                expired
+            ),
+        )
+    return None, None
 
 
 def rem_expired(

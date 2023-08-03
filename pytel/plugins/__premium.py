@@ -43,7 +43,7 @@ async def _get_status_user(
     from_user: int,
 ) -> str:
     pyprem, status = (
-        "py-",
+        "",
         "",
     )
     (
@@ -65,16 +65,21 @@ async def _get_status_user(
         ) = await get_expired_date(
             int(from_user)
         )
+        pyprem = (
+            "active-"
+            if expired and time_left
+            else "inactive-"
+        )
 
         uptime = time_formatter(
             (time() - start_time) * 1000
         )
         text = f"""
-<u><b>PYTEL-Premium</b></u>
-  └ <u><b>Status</b></u>: {pyprem}[<u><b>{status}</u></b>]
-       ├ <b>Uptime</b>: <code>{uptime}</code>
-       ├ <b>Expired</b>: {expired}
-       └ <b>Time Left</b>: {time_left}
+<u><b>PYTEL-Premium</b></u> 🇮🇩
+<u> └</u> <b>Status</b>: {pyprem}[ <u><b>{status}</u></b> ]
+ ├ <b>Uptime</b>: <code>{uptime}</code>
+ ├ <b>Expired</b>: {expired}
+ └ <b>Time Left</b>: {time_left}
 
 (c) @kastaid #pytel
 """

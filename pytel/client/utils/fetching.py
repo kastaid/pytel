@@ -34,6 +34,17 @@ from pytz import (
 from version import __version__ as versi
 from .misc import humanboolean
 
+_SPAMWATCH_CACHE = TTLCache(
+    maxsize=512,
+    ttl=120,
+    timer=perf_counter,
+)  # 2 mins
+_CAS_CACHE = TTLCache(
+    maxsize=512,
+    ttl=120,
+    timer=perf_counter,
+)  # 2 mins
+
 
 def get_random_hex(
     length: int = 12,
@@ -714,3 +725,43 @@ def celcius(
     temperat: str = f"{temperature}"
     temp = temperat.split(".")
     return temp[0]
+
+
+async def get_spamwatch_banned(
+    user_id: Optional[int],
+) -> Optional[bool]:
+    if user_id in _SPAMWATCH_CACHE:
+        return _SPAMWATCH_CACHE.get(
+            user_id
+        )
+    url = f"https://notapi.vercel.app/api/spamwatch?id={user_id}"
+    response = await fetching(
+        url, re_json=True
+    )
+    if not response:
+        _SPAMWATCH_CACHE[
+            user_id
+        ] = False
+        return False
+    _SPAMWATCH_CACHE[user_id] = bool(
+        response.get("id")
+    )
+    return bool(response.get("id"))
+
+
+async def get_cas_banned(
+    user_id: Optional[int],
+) -> Optional[bool]:
+    if user_id in _CAS_CACHE:
+        return _CAS_CACHE.get(user_id)
+    url = f"https://api.cas.chat/check?user_id={user_id}"
+    response = await fetching(
+        url, re_json=True
+    )
+    if not response:
+        _CAS_CACHE[user_id] = False
+        return False
+    _CAS_CACHE[user_id] = response.get(
+        "ok"
+    )
+    return response.get("ok")

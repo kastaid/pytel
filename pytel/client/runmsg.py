@@ -17,6 +17,7 @@ from ..config import PREFIX, LOGCHAT_ID
 from .dbase.dbLogger import (
     already_logger,
     check_logger,)
+from .utils import random_prefixies
 
 _SEND_LOCK = Lock()
 
@@ -27,6 +28,9 @@ _TEXT = """
 ├ <b>Layer :</b>  <i>{}</i>
 ├ <b>Pyrogram :</b>  <i>{}</i>
 └ <b>Prefix :</b> <code>{}</code>
+
+<b><u>How to check expired</u> ?</b>
+└ <code>{}status</code> <b>:</b> <i>To check ur expired</i>.
 
 (c) @kastaid #pytel
 """
@@ -57,6 +61,9 @@ async def running_message(self, p):
                         layer,
                         __version__,
                         "".join(PREFIX),
+                        random_prefixies(
+                            PREFIX
+                        ),
                     ),
                     parse_mode=ParseMode.HTML,
                     disable_notification=False,

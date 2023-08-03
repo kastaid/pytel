@@ -48,6 +48,10 @@ from pytelibs import (
     _l,
     developer,
     cpytl,)
+from pytgcalls.group_call_factory import (
+    GroupCallFactory,)
+from pytgcalls.mtproto_client_type import (
+    MTProtoClientType,)
 from .. import loopers
 from ..config import LOGCHAT_ID, PREFIX
 from ..logger import pylog
@@ -72,6 +76,7 @@ class PytelClient(Raw):
     lock: Any
     loop: Optional[AbstractEventLoop]
     send_log: Any
+    group_call: Any
 
     def __init__(
         self,
@@ -122,6 +127,15 @@ class PytelClient(Raw):
         self.loop = set_event_loop(
             loopers
         )
+        self.group_call = GroupCallFactory(
+            self,
+            MTProtoClientType.PYROGRAM,
+            enable_logs_to_console=False,
+            path_to_log_file=None,
+        ).get_file_group_call(
+            input_filename="",
+            play_on_repeat=False,
+        )
         super().__init__(
             *args, **kwargs
         )
@@ -144,6 +158,9 @@ class PytelClient(Raw):
         admin_only: Union[
             bool, bool
         ] = False,
+        privileges: Callable[
+            ..., Any
+        ] = None,
         disable_errors: Union[
             bool, bool
         ] = False,
@@ -182,6 +199,8 @@ class PytelClient(Raw):
                 if PREFIX
                 else "."
             )
+        if privileges is None:
+            privileges = []
         if supersu is None:
             supersu = []
         if "PYTEL" in supersu:
@@ -236,6 +255,12 @@ class PytelClient(Raw):
                     send_to = None
 
                 if admin_only:
+                    me = await client.get_chat_member(
+                        message.chat.id,
+                        (
+                            await client.get_me()
+                        ).id,
+                    )
                     if (
                         message.chat.type
                         != ChatType.SUPERGROUP
@@ -244,12 +269,6 @@ class PytelClient(Raw):
                             "This command can be used in supergroups only."
                         )
                         return
-                    me = await client.get_chat_member(
-                        message.chat.id,
-                        (
-                            await client.get_me()
-                        ).id,
-                    )
                     if (
                         me.status
                         not in (
@@ -261,6 +280,60 @@ class PytelClient(Raw):
                             "I must be admin to execute this Command"
                         )
                         return
+
+                if (
+                    "can_restricted"
+                    in privileges
+                ):
+                    me = await client.get_chat_member(
+                        message.chat.id,
+                        (
+                            await client.get_me()
+                        ).id,
+                    )
+                    if (
+                        not me.privileges.can_restrict_members
+                    ):
+                        await message.reply(
+                            "I don't have the privilege to restricting people."
+                        )
+                        return
+                if (
+                    "can_pinned"
+                    in privileges
+                ):
+                    me = await client.get_chat_member(
+                        message.chat.id,
+                        (
+                            await client.get_me()
+                        ).id,
+                    )
+                    if (
+                        not me.privileges.can_pin_messages
+                    ):
+                        await message.reply(
+                            "I don't have the privilege to pinned messages."
+                        )
+                        return
+
+                if (
+                    "can_manage_video_chats"
+                    in privileges
+                ):
+                    me = await client.get_chat_member(
+                        message.chat.id,
+                        (
+                            await client.get_me()
+                        ).id,
+                    )
+                    if (
+                        not me.privileges.can_manage_video_chats
+                    ):
+                        await message.reply(
+                            "I don't have the privilege to access video chats.."
+                        )
+                        return
+
                 if (
                     supergroups
                     and message.chat.type

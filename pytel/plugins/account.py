@@ -5,6 +5,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
+from pyrogram import enums
 from pyrogram.raw import functions
 from . import (
     eor,
@@ -12,6 +13,7 @@ from . import (
     px,
     get_text,
     pytel,
+    suppress,
     random_prefixies,)
 
 
@@ -104,7 +106,84 @@ async def _set_name_bio(
         return
 
 
+@pytel.instruction(
+    ["mydialogs"],
+    outgoing=True,
+)
+async def _my_dialogs(client, message):
+    x = await eor(
+        message, text="Please wait..."
+    )
+    u, g, sg, c, b, admin_chat = (
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+    )
+    adm = await client.get_me()
+    async for dialog in client.get_dialogs():
+        if (
+            dialog.chat.type
+            == enums.ChatType.PRIVATE
+        ):
+            u = u + 1
+        elif (
+            dialog.chat.type
+            == enums.ChatType.BOT
+        ):
+            b = b + 1
+        elif (
+            dialog.chat.type
+            == enums.ChatType.GROUP
+        ):
+            g = g + 1
+        elif (
+            dialog.chat.type
+            == enums.ChatType.SUPERGROUP
+        ):
+            sg = sg + 1
+            user_s = await dialog.chat.get_member(
+                int(adm.id)
+            )
+            if user_s.status in (
+                enums.ChatMemberStatus.OWNER,
+                enums.ChatMemberStatus.ADMINISTRATOR,
+            ):
+                admin_chat = (
+                    admin_chat + 1
+                )
+        elif (
+            dialog.chat.type
+            == enums.ChatType.CHANNEL
+        ):
+            c = c + 1
+
+    text = """
+<b><u>DIALOGS STATISTICS</u></b>
+ ├ <b>Private Messages:</b> {} Users and {} Bots.
+ ├ <b>Are in:</b> {} Groups.
+ ├ <b>Are in:</b> {} Super Groups.
+ ├ <b>Are in:</b> {} Channels.
+ └ <b>Admin in:</b> {} Chats.
+"""
+    with suppress(Exception):
+        await eor(
+            x,
+            text=text.format(
+                u,
+                b,
+                g,
+                sg,
+                c,
+                admin_chat,
+            ),
+        )
+
+
 plugins_helper["account"] = {
+    f"{random_prefixies(px)}mydialogs": "To get my dialogue statistics.",
     f"{random_prefixies(px)}setmode [offline/online/off/on]": "To setting ur status to be Online or Offline.",
     f"{random_prefixies(px)}setbio [text/reply]": "To updates ur bio. ( Max 70 characters )",
     f"{random_prefixies(px)}setname [first name] [last name]": "To updates ur name.",

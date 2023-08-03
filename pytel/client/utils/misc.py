@@ -60,6 +60,17 @@ def mention_markdown(user_id, name):
     )
 
 
+def short_dict(
+    dct: Optional[dict],
+    reverse: Optional[bool] = False,
+) -> Optional[dict]:
+    return dict(
+        sorted(
+            dct.items(), reverse=reverse
+        )
+    )
+
+
 def humanboolean(
     x: Optional[bool] = False,
 ) -> Optional[str]:

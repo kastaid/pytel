@@ -8,6 +8,8 @@
 """
 from .dbase import pydb
 from .leverage import (
+    user_and_reason,
+    extract_user,
     _try_purged,
     eor,
     get_text,
@@ -40,4 +42,7 @@ from .utils import (
     mention_markdown,
     random_prefixies,
     time_formatter,
+    short_dict,
+    get_spamwatch_banned,
+    get_cas_banned,
     tz,)

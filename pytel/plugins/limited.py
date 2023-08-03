@@ -51,7 +51,7 @@ async def _limited(client, message):
         x,
         text=f"`{status.text}`",
     )
-    await client.send(
+    await client.invoke(
         DeleteHistory(
             peer=history,
             max_id=0,

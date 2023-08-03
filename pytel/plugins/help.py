@@ -2,7 +2,7 @@
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
-# PLease read the GNU Affero General Public License in
+# Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep, Lock
@@ -228,106 +228,185 @@ async def _(
                         ),
                     ]
                 ]
-                try:
-                    await cq.edit_message_text(
-                        text=text,
-                        reply_markup=ikmarkup(
-                            button
-                        ),
-                        disable_web_page_preview=True,
-                    )
-                except (
-                    MessageNotModified,
-                    FloodWait,
-                ) as excp:
+                for _ in pytel._client:
                     if (
-                        excp.ID
-                        == "FLOOD_WAIT_X"
+                        cq.from_user.id
+                        == int(_.me.id)
                     ):
-                        await sleep(
-                            excp.value
-                        )
+                        try:
+                            await cq.edit_message_text(
+                                text=text,
+                                reply_markup=ikmarkup(
+                                    button
+                                ),
+                                disable_web_page_preview=True,
+                            )
+                            return
+                        except (
+                            MessageNotModified,
+                            FloodWait,
+                        ) as excp:
+                            if (
+                                excp.ID
+                                == "FLOOD_WAIT_X"
+                            ):
+                                await sleep(
+                                    excp.value
+                                )
+                            elif (
+                                excp.ID
+                                == "MESSAGE_NOT_MODIFIED"
+                            ):
+                                await sleep(
+                                    0.1
+                                )
                     elif (
-                        excp.ID
-                        == "MESSAGE_NOT_MODIFIED"
+                        cq.from_user.id
+                        != int(_.me.id)
                     ):
-                        await sleep(0.1)
+                        text = "You're not allowed."
+                        await client.answer_callback_query(
+                            cq.id,
+                            text,
+                            show_alert=True,
+                        )
+                        return
 
         elif prev_page:
             curr_page = int(
                 prev_page[1]
             )
-            try:
-                await cq.edit_message_text(
-                    text=plugins_text,
-                    reply_markup=ikmarkup(
-                        plugins_button(
-                            curr_page
-                            - 1,
-                            plugins_helper,
-                            "help",
-                        )
-                    ),
-                )
-            except (
-                MessageNotModified,
-                FloodWait,
-            ) as excp:
+            for _ in pytel._client:
                 if (
-                    excp.ID
-                    == "FLOOD_WAIT_X"
+                    cq.from_user.id
+                    == int(_.me.id)
                 ):
-                    await sleep(
-                        excp.value + 3
-                    )
+                    try:
+                        await cq.edit_message_text(
+                            text=plugins_text,
+                            reply_markup=ikmarkup(
+                                plugins_button(
+                                    curr_page
+                                    - 1,
+                                    plugins_helper,
+                                    "help",
+                                )
+                            ),
+                        )
+                        return
+                    except (
+                        MessageNotModified,
+                        FloodWait,
+                    ) as excp:
+                        if (
+                            excp.ID
+                            == "FLOOD_WAIT_X"
+                        ):
+                            await sleep(
+                                excp.value
+                                + 3
+                            )
+                        elif (
+                            excp.ID
+                            == "MESSAGE_NOT_MODIFIED"
+                        ):
+                            await sleep(
+                                0.1
+                            )
                 elif (
-                    excp.ID
-                    == "MESSAGE_NOT_MODIFIED"
+                    cq.from_user.id
+                    != int(_.me.id)
                 ):
-                    await sleep(0.1)
+                    text = "You're not allowed."
+                    await client.answer_callback_query(
+                        cq.id,
+                        text,
+                        show_alert=True,
+                    )
+                    return
 
         elif next_page:
             nx_page = int(next_page[1])
-            try:
-                await cq.edit_message_text(
-                    text=plugins_text,
-                    reply_markup=ikmarkup(
-                        plugins_button(
-                            nx_page + 1,
-                            plugins_helper,
-                            "help",
-                        )
-                    ),
-                )
-            except (
-                MessageNotModified,
-                FloodWait,
-            ) as excp:
+            for _ in pytel._client:
                 if (
-                    excp.ID
-                    == "FLOOD_WAIT_X"
+                    cq.from_user.id
+                    == int(_.me.id)
                 ):
-                    await sleep(
-                        excp.value + 3
-                    )
+                    try:
+                        await cq.edit_message_text(
+                            text=plugins_text,
+                            reply_markup=ikmarkup(
+                                plugins_button(
+                                    nx_page
+                                    + 1,
+                                    plugins_helper,
+                                    "help",
+                                )
+                            ),
+                        )
+                        return
+                    except (
+                        MessageNotModified,
+                        FloodWait,
+                    ) as excp:
+                        if (
+                            excp.ID
+                            == "FLOOD_WAIT_X"
+                        ):
+                            await sleep(
+                                excp.value
+                                + 3
+                            )
+                        elif (
+                            excp.ID
+                            == "MESSAGE_NOT_MODIFIED"
+                        ):
+                            await sleep(
+                                0.1
+                            )
                 elif (
-                    excp.ID
-                    == "MESSAGE_NOT_MODIFIED"
+                    cq.from_user.id
+                    != int(_.me.id)
                 ):
-                    await sleep(0.1)
+                    text = "You're not allowed."
+                    await client.answer_callback_query(
+                        cq.id,
+                        text,
+                        show_alert=True,
+                    )
+                    return
 
         elif back_page:
-            with suppress(FloodWait):
-                await cq.edit_message_text(
-                    text=plugins_text,
-                    reply_markup=ikmarkup(
-                        plugins_button(
-                            0,
-                            plugins_helper,
-                            "help",
+            for _ in pytel._client:
+                if (
+                    cq.from_user.id
+                    == int(_.me.id)
+                ):
+                    with suppress(
+                        FloodWait
+                    ):
+                        await cq.edit_message_text(
+                            text=plugins_text,
+                            reply_markup=ikmarkup(
+                                plugins_button(
+                                    0,
+                                    plugins_helper,
+                                    "help",
+                                )
+                            ),
                         )
-                    ),
-                )
+                        return
+                elif (
+                    cq.from_user.id
+                    != int(_.me.id)
+                ):
+                    text = "You're not allowed."
+                    await client.answer_callback_query(
+                        cq.id,
+                        text,
+                        show_alert=True,
+                    )
+                    return
 
         elif close_page:
             cq.data.split()
@@ -353,6 +432,18 @@ async def _(
                             message_id
                         ),
                     )
+                    return
+                elif (
+                    cq.from_user.id
+                    != int(_.me.id)
+                ):
+                    text = "Only senders can close this inline."
+                    await client.answer_callback_query(
+                        cq.id,
+                        text,
+                        show_alert=True,
+                    )
+                    return
 
 
 plugins_helper["help"] = {

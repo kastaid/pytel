@@ -14,6 +14,8 @@ from sys import exit
 from time import time, sleep as sl
 from tracemalloc import start
 from typing import List, Tuple
+from pyrogram.errors.exceptions.flood_420 import (
+    FloodWait,)
 from uvloop import install
 from . import (
     __copyright__,
@@ -116,11 +118,14 @@ async def start_asst():
     )
     try:
         await pytel_tgb.start()
-        send_log.success(
-            "Successful, Started-On Asisstant."
-        )
+    except FloodWait as flood:
+        await sleep(flood.value + 5)
+        await pytel_tgb.start()
     except Exception as excp:
         send_log.exception(excp)
+    send_log.success(
+        "Successful, Started-On Asisstant."
+    )
 
 
 async def runner():

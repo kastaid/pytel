@@ -31,7 +31,7 @@ class PytelAI:
         openai.api_key = self.api_key
         openai.api_base = self.api_base
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",
             messages=[
                 {
                     "role": "user",
@@ -45,8 +45,13 @@ class PytelAI:
             return response["choices"][
                 0
             ]["message"]["content"]
-        if response["detail"]:
+        elif response["detail"]:
             return response["detail"]
+        elif (
+            "Invalid response"
+            in response
+        ):
+            return response
 
     def images(
         self, query: Optional[str]
@@ -62,8 +67,13 @@ class PytelAI:
             return response["data"][0][
                 "url"
             ]
-        if response["detail"]:
+        elif response["detail"]:
             return response["detail"]
+        elif (
+            "Invalid response"
+            in response
+        ):
+            return response
 
     def tts(self, query: Optional[str]):
         headers = {
@@ -77,8 +87,13 @@ class PytelAI:
         ).json()
         if response["url"]:
             return response["url"]
-        if response["detail"]:
+        elif response["detail"]:
             return response["detail"]
+        elif (
+            "Invalid response"
+            in response
+        ):
+            return response
 
     def transaudio(
         self, audiofile: Any
@@ -96,6 +111,11 @@ class PytelAI:
             )
             if trans["text"]:
                 return trans["text"]
+            elif (
+                "Invalid response"
+                in trans
+            ):
+                return trans
 
 
 ChatGPT = PytelAI(

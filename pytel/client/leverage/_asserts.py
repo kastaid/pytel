@@ -9,6 +9,8 @@ from asyncio import sleep
 from contextlib import suppress
 from inspect import getfullargspec
 from typing import Optional, Union
+from pyrogram.enums import (
+    MessageEntityType,)
 from pyrogram.types import Message
 
 
@@ -123,3 +125,106 @@ def attr_file(
                     message_type,
                 )
                 return obj
+
+
+async def extract_userid(
+    client, message, text: str
+):
+    def is_int(text: str):
+        try:
+            int(text)
+        except ValueError:
+            return False
+        return True
+
+    text = text.strip()
+
+    if is_int(text):
+        return int(text)
+
+    entities = message.entities
+    if len(entities) < 2:
+        return (
+            await client.get_users(text)
+        ).id
+    entity = entities[1]
+    if (
+        entity.type
+        == MessageEntityType.MENTION
+    ):
+        return (
+            await client.get_users(text)
+        ).id
+    if (
+        entity.type
+        == MessageEntityType.TEXT_MENTION
+    ):
+        return entity.user.id
+    return None
+
+
+async def user_and_reason(
+    client, message, sender_chat=False
+):
+    args, text = (
+        message.text.strip().split(),
+        message.text,
+    )
+    user, reason = None, None
+    if message.reply_to_message:
+        reply = message.reply_to_message
+        # reply to a message and no reason
+        if not reply.from_user:
+            if (
+                reply.sender_chat
+                and reply.sender_chat
+                != message.chat.id
+                and sender_chat
+            ):
+                id_ = (
+                    reply.sender_chat.id
+                )
+            else:
+                return None, None
+        else:
+            id_ = reply.from_user.id
+
+        if len(args) < 2:
+            reason = None
+        else:
+            reason = text.split(
+                None, 1
+            )[1]
+        return id_, reason
+
+    # not reply and not reason
+    if len(args) == 2:
+        user = text.split(None, 1)[1]
+        return (
+            await extract_userid(
+                client, message, user
+            ),
+            None,
+        )
+
+    # not reply and reason
+    if len(args) > 2:
+        user, reason = text.split(
+            None, 2
+        )[1:]
+        return (
+            await extract_userid(
+                client, message, user
+            ),
+            reason,
+        )
+
+    return user, reason
+
+
+async def extract_user(client, message):
+    return (
+        await user_and_reason(
+            client, message
+        )
+    )[0]
