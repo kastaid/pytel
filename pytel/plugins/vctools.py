@@ -5,6 +5,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
+from asyncio import gather
 from random import randint
 from re import sub, search
 from typing import Optional, Any
@@ -251,15 +252,24 @@ async def _video_chats_joined(
             gc = sub(
                 "\\s+(.*)$", r"", gc
             )
-            gc = search(
-                r"/c/(.*)/", gc
-            ) or search(
-                r"t.me/(.*)/", gc
+            gc = (
+                search(r"/c/(.*)/", gc)
+                or search(
+                    r"/c/(.*)", gc
+                )
+                or search(
+                    r"t.me/(.*)/", gc
+                )
+                or search(
+                    r"t.me/(.*)", gc
+                )
             )
-            gc: int = (
-                "-100" + gc.group(1)
-                if int(gc.group(1))
-                else "@" + gc.group(1)
+            gc = (
+                f"-100{gc.group(1)}"
+                if isinstance(
+                    gc.group(1), int
+                )
+                else f"@{gc.group(1)}"
             )
     try:
         chat = await client.get_chat(gc)
@@ -272,31 +282,41 @@ async def _video_chats_joined(
     with suppress(ValueError):
         chat_id = int(chat.id)
 
-    if not (
-        await get_group_call(
-            client,
-            message,
-            chat_ids=chat_id,
-        )
-    ):
+    group_call = await get_group_call(
+        client,
+        message,
+        chat_ids=chat_id,
+    )
+    if not group_call:
         await eor(
             x,
             text="Video chats not available.",
         )
         return
-    try:
-        await client.group_call.start(
-            chat_id
-        )
-    except Exception as excp:
-        client.send_log.exception(excp)
-        await eor(
-            x, text=f"Exception: {excp}"
-        )
-        return
 
-    text = f"<u><b>{chat.title}</b></u>\n└ <b>Joined video chats.</b>"
-    await eor(x, text=text)
+    par = await get_partici(
+        client, group_call
+    )
+    check = []
+    check += [
+        i.id for i in par.users if i.id
+    ]
+    if client.me.id in check:
+        await eor(
+            x,
+            text=f"<u><b>{chat.title}</b></u>\n└ <b>You're not in Video Chats.</b>",
+        )
+        check.remove()
+        return
+    else:
+        with suppress(Exception):
+            await client.group_call.start(
+                chat_id
+            )
+
+        text = f"<u><b>{chat.title}</b></u>\n└ <b>Joined video chats.</b>"
+        await eor(x, text=text)
+        return
 
 
 @pytel.instruction(
@@ -329,15 +349,24 @@ async def _video_chats_leaving(
             gc = sub(
                 "\\s+(.*)$", r"", gc
             )
-            gc = search(
-                r"/c/(.*)/", gc
-            ) or search(
-                r"t.me/(.*)/", gc
+            gc = (
+                search(r"/c/(.*)/", gc)
+                or search(
+                    r"/c/(.*)", gc
+                )
+                or search(
+                    r"t.me/(.*)/", gc
+                )
+                or search(
+                    r"t.me/(.*)", gc
+                )
             )
-            gc: int = (
-                "-100" + gc.group(1)
-                if int(gc.group(1))
-                else "@" + gc.group(1)
+            gc = (
+                f"-100{gc.group(1)}"
+                if isinstance(
+                    gc.group(1), int
+                )
+                else f"@{gc.group(1)}"
             )
     try:
         chat = await client.get_chat(gc)
@@ -350,29 +379,50 @@ async def _video_chats_leaving(
     with suppress(ValueError):
         chat_id = int(chat.id)
 
-    if not (
-        await get_group_call(
-            client,
-            message,
-            chat_ids=chat_id,
-        )
-    ):
+    group_call = await get_group_call(
+        client,
+        message,
+        chat_ids=chat_id,
+    )
+    if not group_call:
         await eor(
             x,
             text="Video chats not available.",
         )
         return
-    try:
-        await client.group_call.stop()
-    except Exception as excp:
-        client.send_log.exception(excp)
+    par = await get_partici(
+        client, group_call
+    )
+    if int(par.count) > 0:
+        check: list = []
+        for u in par.users:
+            check.append(u.id)
+            if client.me.id in check:
+                with suppress(
+                    Exception
+                ):
+                    text = f"<u><b>{chat.title}</b></u>\n└ <b>Left video chats.</b>"
+                    await gather(
+                        client.group_call.leave_current_group_call(),
+                        eor(
+                            x, text=text
+                        ),
+                    )
+                    #        await client.group_call.stop()
+                    check.remove(u.id)
+                    return
+            else:
+                await eor(
+                    x,
+                    text=f"<u><b>{chat.title}</b></u>\n└ <b>You're not in Video Chats.</b>",
+                )
+                return
+    else:
         await eor(
-            x, text=f"Exception: {excp}"
+            x,
+            text=f"<u><b>{chat.title}</b></u>\n└ <b>You're not in Video Chats.</b>",
         )
         return
-
-    text = f"<u><b>{chat.title}</b></u>\n└ <b>Left video chats.</b>"
-    await eor(x, text=text)
 
 
 @pytel.instruction(
@@ -405,15 +455,24 @@ async def _video_chats_information(
             gc = sub(
                 "\\s+(.*)$", r"", gc
             )
-            gc = search(
-                r"/c/(.*)/", gc
-            ) or search(
-                r"t.me/(.*)/", gc
+            gc = (
+                search(r"/c/(.*)/", gc)
+                or search(
+                    r"/c/(.*)", gc
+                )
+                or search(
+                    r"t.me/(.*)/", gc
+                )
+                or search(
+                    r"t.me/(.*)", gc
+                )
             )
-            gc: int = (
-                "-100" + gc.group(1)
-                if int(gc.group(1))
-                else "@" + gc.group(1)
+            gc = (
+                f"-100{gc.group(1)}"
+                if isinstance(
+                    gc.group(1), int
+                )
+                else f"@{gc.group(1)}"
             )
     try:
         chat = await client.get_chat(gc)
@@ -513,5 +572,5 @@ plugins_helper["vctools"] = {
     f"{random_prefixies(px)}stopvc / spvc": "To stopped video chats/channel.",
     f"{random_prefixies(px)}joinvc / jvc [url/link message/username/id or not]": "To joined video chats/channel.",
     f"{random_prefixies(px)}leftvc / lvc [url/link message/username/id or not]": "To left video chats/channel.",
-    f"{random_prefixies(px)}infovc / ivc": "To get information video chats/channel.",
+    f"{random_prefixies(px)}infovc / ivc [url/link message/username/id or not]": "To get information video chats/channel.",
 }

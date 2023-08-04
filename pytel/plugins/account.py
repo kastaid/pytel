@@ -29,32 +29,32 @@ async def _online_offfline(
             None, 1
         )
         if mode[1] in ["online", "on"]:
+            status = "Online"
+            await eor(
+                message,
+                text=f"✅ Success, ur status is <u>{status}</u>",
+            )
             # Status Online
             await client.invoke(
                 query=functions.account.UpdateStatus(
                     offline=False
                 ),
             )
-            status = "Online"
-            await eor(
-                message,
-                text=f"✅ Success, ur status is <u>{status}</u>",
-            )
             return
         if mode[1] in [
             "offline",
             "off",
         ]:
+            status = "Offline"
+            await eor(
+                message,
+                text=f"✅ Success, ur status is <u>{status}</u>",
+            )
             # Status Offline
             await client.invoke(
                 query=functions.account.UpdateStatus(
                     offline=True
                 ),
-            )
-            status = "Offline"
-            await eor(
-                message,
-                text=f"✅ Success, ur status is <u>{status}</u>",
             )
             return
 
@@ -68,6 +68,12 @@ async def _set_name_bio(
 ):
     args = get_text(message)
     if message.command[0] == "setbio":
+        if len(args) >= 70:
+            await eor(
+                message,
+                text="Max 70 Characters.",
+            )
+            return
         await client.update_profile(
             bio=args
         )

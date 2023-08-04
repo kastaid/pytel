@@ -24,9 +24,11 @@ from pyrogram.types import (
     InlineQueryResultArticle,
     InputTextMessageContent,
     CallbackQuery,)
+from speedtest import Speedtest
 from version import __version__ as b_ver
 from . import (
     GH_PAT,
+    ChatSendMediaForbidden,
     ChatSendInlineForbidden,
     BotResponseTimeout,
     QueryIdInvalid,
@@ -49,6 +51,7 @@ from . import (
     buttons,
     ikmarkup,
     filters,
+    size_bytes,
     suppress,)
 
 lock = Lock()
@@ -194,6 +197,64 @@ DISK: {disk}%
 Copyright (C) 2023-present kastaid
 """
     return stats
+
+
+@pytel.instruction(
+    ["speedtest", "speed"],
+    outgoing=True,
+)
+async def _speedtest_net(
+    client, message
+):
+    x = await eor(
+        message,
+        text="<i>Initializing Speedtest...</i>",
+    )
+    test = Speedtest()
+    test.get_best_server()
+    test.download()
+    test.upload()
+    test.results.share()
+    result = test.results.dict()
+    path = result["share"]
+    string_speed = f"""
+➲ <b><i>SPEEDTEST INFO</i></b>
+┠ <b>Upload:</b> <code>{size_bytes(result['upload'] / 8)}/s</code>
+┠ <b>Download:</b>  <code>{size_bytes(result['download'] / 8)}/s</code>
+┠ <b>Ping:</b> <code>{result['ping']} ms</code>
+┠ <b>Time:</b> <code>{result['timestamp']}</code>
+┠ <b>Data Sent:</b> <code>{size_bytes(int(result['bytes_sent']))}</code>
+┖ <b>Data Received:</b> <code>{size_bytes(int(result['bytes_received']))}</code>
+
+➲ <b><i>SPEEDTEST SERVER</i></b>
+┠ <b>Name:</b> <code>{result['server']['name']}</code>
+┠ <b>Country:</b> <code>{result['server']['country']}, {result['server']['cc']}</code>
+┠ <b>Sponsor:</b> <code>{result['server']['sponsor']}</code>
+┠ <b>Latency:</b> <code>{result['server']['latency']}</code>
+┠ <b>Latitude:</b> <code>{result['server']['lat']}</code>
+┖ <b>Longitude:</b> <code>{result['server']['lon']}</code>
+
+➲ <b><i>CLIENT DETAILS</i></b>
+┠ <b>IP Address:</b> <code>{result['client']['ip']}</code>
+┠ <b>Latitude:</b> <code>{result['client']['lat']}</code>
+┠ <b>Longitude:</b> <code>{result['client']['lon']}</code>
+┠ <b>Country:</b> <code>{result['client']['country']}</code>
+┠ <b>ISP:</b> <code>{result['client']['isp']}</code>
+┖ <b>ISP Rating:</b> <code>{result['client']['isprating']}</code>
+"""
+    try:
+        await client.send_photo(
+            message.chat.id,
+            photo=path,
+            caption=string_speed,
+        )
+        return await _try_purged(x, 1.5)
+    except ChatSendMediaForbidden:
+        await client.send_message(
+            message.chat.id,
+            text=string_speed,
+        )
+        return await _try_purged(x, 1.5)
 
 
 @pytel.instruction(
@@ -517,7 +578,8 @@ async def _repo(client, message):
 
 
 plugins_helper["bot"] = {
-    f"{random_prefixies(px)}expired / {random_prefixies(px)}status": "To check expired.",
+    f"{random_prefixies(px)}speed": "To check speed networking.",
+    f"{random_prefixies(px)}expired / {random_prefixies(px)}status": "To check status expired.",
     f"{random_prefixies(px)}alive / {random_prefixies(px)}on": "Check alive & version.",
     f"{random_prefixies(px)}ping / {random_prefixies(px)}pong": "Check how long it takes to ping.",
     f"{random_prefixies(px)}update": "To update ur source.",

@@ -18,6 +18,7 @@ from ._assistant import Assistant
 from ._filters import (
     legally_required,
     channel_groups,)
+from ._gensess import AstGenerate
 from ._inline import (
     plugins_button,
     unpack_inline,

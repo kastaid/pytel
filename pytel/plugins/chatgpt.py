@@ -97,7 +97,6 @@ async def _openai(client, message):
                 message.chat.id,
                 photo=resp,
                 caption=cap,
-                disable_web_page_preview=True,
             )
             await _try_purged(x, 1.5)
             return
@@ -122,7 +121,6 @@ async def _openai(client, message):
                 message.chat.id,
                 audio=resp,
                 caption=cap,
-                disable_web_page_preview=True,
             )
             await _try_purged(x, 1.5)
             return

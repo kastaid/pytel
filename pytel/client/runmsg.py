@@ -36,7 +36,7 @@ _TEXT = """
 """
 
 
-async def running_message(self, p):
+async def running_message(self):
     async with _SEND_LOCK:
         try:
             if self:
@@ -53,7 +53,7 @@ async def running_message(self, p):
                     )
                 )
                 log_id = log_data[0]
-                await p.send_message(
+                await self.send_message(
                     int(int(log_id)),
                     text=_TEXT.format(
                         getpid(),

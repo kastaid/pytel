@@ -18,6 +18,7 @@ from pyrogram.errors.exceptions.bad_request_400 import (
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
 from pyrogram.errors.exceptions.forbidden_403 import (
+    ChatSendMediaForbidden,
     ChatSendInlineForbidden,)
 from pyrogram.raw import functions
 from pyrogram.raw.all import layer
@@ -42,6 +43,7 @@ from .. import __license__, start_time
 from ..client import (
     ChatGPT,
     Assistant,
+    AstGenerate,
     plugins_helper,
     time_formatter,
     user_and_reason,
@@ -73,6 +75,7 @@ from ..client import (
     legally_required,
     channel_groups,
     short_dict,
+    size_bytes,
     pydb,)
 from ..config import (
     PREFIX as px,

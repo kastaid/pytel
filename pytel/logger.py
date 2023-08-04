@@ -101,6 +101,7 @@ getLogger(
 ).setLevel(CRITICAL)
 
 getLogger("urllib3").disabled = True
+getLogger("pytgcalls").disabled = True
 getLogger(
     "urllib3.connectionpool"
 ).disabled = True

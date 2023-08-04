@@ -24,6 +24,7 @@ try:
     from shutil import rmtree
     from sys import exit
     from time import time
+    import pyroaddon
     from .client import PytelClient
     from .config import (
         API_HASH, API_ID, SESSION1,

@@ -14,6 +14,8 @@ from sys import exit
 from time import time, sleep as sl
 from tracemalloc import start
 from typing import List, Tuple
+from pyrogram.errors.exceptions.bad_request_400 import (
+    PersistentTimestampInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
 from uvloop import install
@@ -105,7 +107,7 @@ def load_plugins():
         plugins_helper.count,
         plugins_helper.total,
         "|".join(plugins)
-        .replace("__premium", "")
+        .replace("|__premium", "")
         .replace("__asstart", ""),
         loaded_time,
     )
@@ -139,9 +141,7 @@ async def runner():
                 pytel_tgb,
             )
             await sleep(2)
-            await running_message(
-                _, pytel_tgb
-            )
+            await running_message(_)
         except Exception as exc:
             send_log.exception(exc)
         except KeyboardInterrupt:
@@ -167,6 +167,11 @@ if __name__ == "__main__":
     for x in pytl:
         try:
             x.run_in_loop(runner())
+        except (
+            PersistentTimestampInvalid,
+            OSError,
+        ):
+            pass
         except (
             TimeoutError,
             ConnectionError,

@@ -6,11 +6,10 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
-from pyrogram.errors.exceptions.forbidden_403 import (
-    ChatSendMediaForbidden,)
 from pyrogram.raw.functions.messages import (
     DeleteHistory,)
 from . import (
+    ChatSendMediaForbidden,
     _try_purged,
     eor,
     get_text,

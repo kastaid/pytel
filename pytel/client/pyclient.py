@@ -127,6 +127,7 @@ class PytelClient(Raw):
         self.loop = set_event_loop(
             loopers
         )
+        self.listening = {}
         self.group_call = GroupCallFactory(
             self,
             MTProtoClientType.PYROGRAM,

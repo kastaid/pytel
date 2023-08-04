@@ -5,18 +5,51 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
+import asyncio
+from os import remove, cpu_count
+from platform import uname
 from re import match
-from pyrogram.types import CallbackQuery
+from pyrogram import Client
+from pyrogram.enums.chat_member_status import ChatMemberStatus
+from pyrogram.errors import (
+    ApiIdInvalid,
+    PhoneNumberInvalid,
+    PhoneCodeInvalid,
+    PhoneCodeExpired,
+    SessionPasswordNeeded,
+    PasswordHashInvalid,
+    UserNotParticipant,)
+from pyrogram.types import (
+    CallbackQuery,
+    Message,)
+from pytelibs import (
+    __version__ as pyver,)
+from ..client.dbase.dbExpired import (
+    user_expired,)
 from ..client.dbase.dbStartAsst import (
     checks_users,
     added_users,)
 from . import (
     Assistant,
+    AstGenerate,
     OWNER_ID,
+    ParseMode,
+    _chpytel,
     pytel_tgb,
     suppress,
     filters,)
 
+APP_VERSION = f"PYTEL-Premium v.{pyver}"
+WORKERS = min(
+    64, (cpu_count() or 0) + 8
+)
+SYSTEM_VERSION = f"{uname().system}"
+DEVICE_MODEL = f"{uname().machine}"
+_MEMBERS = [
+    ChatMemberStatus.OWNER,
+    ChatMemberStatus.ADMINISTRATOR,
+    ChatMemberStatus.MEMBER,
+]
 
 @pytel_tgb.on_message(
     filters.command(
@@ -27,41 +60,107 @@ from . import (
     & ~filters.forwarded
 )
 async def _asst_home(client, message):
-    await message.reply(
-        Assistant.START.format(
-            message.from_user.mention,
-        ),
-        quote=False,
-        disable_web_page_preview=True,
-        reply_markup=Assistant.home_buttons,
-    )
-    fullname = (
-        message.from_user.first_name
-        + message.from_user.last_name
-        if message.from_user.last_name
-        else message.from_user.first_name
-    )
-    username = (
-        f"@{message.from_user.username}"
-        if message.from_user.username
-        else "None"
-    )
-    if checks_users(
-        message.from_user.id
-    ):
-        return
-    else:
-        added_users(
-            message.from_user.id
+    user_id = message.from_user.id
+    try:
+        mem = await client.get_chat_member(
+            _chpytel[0],
+            user_id=user_id,
         )
-        await client.send_message(
-            int(OWNER_ID),
-            Assistant.start_text_from_user.format(
-                fullname,
-                message.from_user.id,
-                username,
+        is_join = mem.status in _MEMBERS
+    except UserNotParticipant:
+        is_join = False
+    except Exception as excp:
+        is_join = False
+        client.send_log.exception(excp)
+
+    if is_join:
+        await message.reply(
+            Assistant.START.format(
+                message.from_user.mention,
             ),
+            quote=False,
+            disable_web_page_preview=True,
+            reply_markup=Assistant.home_buttons,
         )
+        fullname = (
+            message.from_user.first_name
+            + message.from_user.last_name
+            if message.from_user.last_name
+            else message.from_user.first_name
+        )
+        username = (
+            f"@{message.from_user.username}"
+            if message.from_user.username
+            else "None"
+        )
+        if checks_users(
+            message.from_user.id
+        ):
+            return
+        else:
+            added_users(
+                message.from_user.id
+            )
+            await client.send_message(
+                int(OWNER_ID),
+                Assistant.start_text_from_user.format(
+                    fullname,
+                    message.from_user.id,
+                    username,
+                ),
+            )
+    else:
+        await message.reply(
+            Assistant.FSUBSCRIBE.format(
+                message.from_user.mention,
+            ),
+            quote=False,
+            disable_web_page_preview=True,
+            reply_markup=Assistant.fsub_buttons,
+        )
+
+
+@pytel_tgb.on_callback_query(
+    filters.regex(r"subs_(.*?)")
+)
+async def _cb_asst_subs(
+    client, cq: CallbackQuery
+):
+    subs_done = match(
+        r"subs_done", cq.data
+    )
+    if subs_done:
+        user_id = cq.from_user.id
+        try:
+            mem = await client.get_chat_member(
+               _chpytel[0],
+               user_id=user_id,
+            )
+            is_join = mem.status in _MEMBERS
+        except UserNotParticipant:
+            is_join = False
+        except Exception as excp:
+            is_join = False
+            client.send_log.exception(excp)
+        if not is_join:
+            text = """
+Anda masih belum bergabung di Channel PYTEL-Premium 🇮🇩
+Harap bergabung terlebih dahulu.
+"""
+            await cq.answer(
+               text,
+               show_alert=True,
+            )
+        else:
+            await cq.message.delete()
+            await cq.message.reply(
+                Assistant.START.format(
+                    cq.from_user.mention,
+                ),
+                quote=False,
+                disable_web_page_preview=True,
+                reply_markup=Assistant.home_buttons,
+            )
 
 
 @pytel_tgb.on_callback_query(
@@ -78,6 +177,9 @@ async def _cb_asst(
     )
     start_prvc = match(
         r"start_privacy", cq.data
+    )
+    start_buy = match(
+        r"start_buy", cq.data
     )
     if start_data:
         with suppress(BaseException):
@@ -98,3 +200,542 @@ async def _cb_asst(
                 disable_web_page_preview=True,
                 reply_markup=Assistant.privacy_buttons,
             )
+    elif start_buy:
+        with suppress(BaseException):
+            await cq.message.edit(
+                Assistant.BUY,
+                disable_web_page_preview=True,
+                reply_markup=Assistant.buy_buttons,
+            )
+
+
+@pytel_tgb.on_callback_query(
+    filters.regex(r"payment_(.*?)")
+)
+async def _cb_asst_payment(
+    client, cq: CallbackQuery
+):
+    payment_cancel = (
+        payment_dana
+    ) = match(
+        r"payment_cancel", cq.data
+    )
+    payment_dana = match(
+        r"payment_dana", cq.data
+    )
+    payment_confirm_dana = match(
+        r"payment_confirm_dana", cq.data
+    )
+    payment_ovo = match(
+        r"payment_ovo", cq.data
+    )
+    payment_confirm_ovo = match(
+        r"payment_confirm_ovo", cq.data
+    )
+    if payment_cancel:
+        with suppress(BaseException):
+            await cq.message.delete()
+            await cq.message.reply(
+                Assistant.START.format(
+                    cq.from_user.mention,
+                ),
+                quote=False,
+                disable_web_page_preview=True,
+                reply_markup=Assistant.home_buttons,
+            )
+            return
+    elif payment_dana:
+        with suppress(BaseException):
+            await cq.message.delete()
+            await client.send_photo(
+                int(cq.from_user.id),
+                photo="resources/payments/DANA.jpg",
+                caption=Assistant.PAYMENT_DANA.format(
+                    cq.from_user.mention,
+                ),
+                reply_markup=Assistant.payment_dana_buttons,
+                protect_content=False,
+            )
+    elif payment_ovo:
+        with suppress(BaseException):
+            await cq.message.delete()
+            await cq.message.reply(
+                Assistant.PAYMENT_OVO.format(
+                    cq.from_user.mention,
+                ),
+                disable_web_page_preview=True,
+                reply_markup=Assistant.payment_ovo_buttons,
+            )
+    elif payment_confirm_dana:
+        with suppress(BaseException):
+            if (
+                not cq.from_user.username
+            ):
+                text = "Mohon pasang Username Anda untuk mengkonfirmasi pembayaran."
+                await client.answer_callback_query(
+                    cq.id,
+                    text,
+                    show_alert=True,
+                    cache_time=300,
+                )
+                return
+            else:
+                if cq.from_user.id:
+                    await cq.message.delete()
+                    try:
+                        await payment_listener(
+                            client,
+                            cq.message,
+                            cq,
+                            via="DANA",
+                        )
+                    except (
+                        Exception
+                    ) as excp:
+                        client.send_log.exception(
+                            excp
+                        )
+
+    elif payment_confirm_ovo:
+        with suppress(BaseException):
+            if (
+                not cq.from_user.username
+            ):
+                text = "Mohon pasang Username Anda untuk mengkonfirmasi pembayaran."
+                await client.answer_callback_query(
+                    cq.id,
+                    text,
+                    show_alert=True,
+                )
+                return
+            else:
+                if cq.from_user.id:
+                    await cq.message.delete()
+                    try:
+                        await payment_listener(
+                            client,
+                            cq.message,
+                            cq,
+                            via="OVO",
+                        )
+                    except (
+                        Exception
+                    ) as excp:
+                        client.send_log.exception(
+                            excp
+                        )
+
+
+async def payment_listener(
+    client, m: Message, cq, via: str
+):
+    if via == "DANA":
+        r = await cq.message.reply(
+            "Silahkan kirimkan bukti Screenshoot pembayaran Anda.",
+        )
+        try:
+            msg = await client.listen(
+                cq.from_user.id,
+                filters.user(
+                    cq.from_user.id
+                )
+                & filters.private,
+                timeout=300,
+            )
+        except asyncio.TimeoutError:
+            msg = await client.ask(
+                cq.from_user.id,
+                filters.user(
+                    cq.from_user.id
+                )
+                & filters.private,
+                timeout=300,
+            )
+        if msg.photo:
+            f_dana = await client.download_media(
+                msg.photo
+            )
+            bkt_dana = (
+                await client.send_photo(
+                    int(OWNER_ID),
+                    photo=f_dana,
+                )
+            )
+            remove(f_dana)
+            notify_buy = f"""
+#BUYER #STATUS #CONFIRM
+
+User ID: <code>{cq.from_user.id}</code>
+Username: @{cq.from_user.username}
+via: <b>DANA</b>
+
+(c) @kastaid #pytel
+"""
+            await client.send_message(
+                int(OWNER_ID),
+                text=notify_buy,
+                reply_to_message_id=bkt_dana.id,
+            )
+            text = """
+Mohon Tunggu, Seller akan memeriksa pembayaran Anda.
+Jika Pembayaran Anda Terbukti, Anda akan mendapatkan Notifikasi
+dari sini.
+"""
+            await cq.answer(
+                text,
+                show_alert=True,
+                cache_time=300,
+            )
+
+        else:
+            await cq.answer(
+                "Mohon maaf, kirimkan pembayaran berupa Photo.",
+                show_alert=True,
+                cache_time=300,
+            )
+            text = """
+<u><b>PAYMENT DANA</b></u>
+
+Silahkan kirim ulang pembayaran Anda.
+Tekan Confirm untuk melanjutkan.
+"""
+            await cq.message.reply(
+                text,
+                reply_markup=Assistant.payment_dana_buttons,
+            )
+
+        await r.delete()
+
+    elif via == "OVO":
+        r = await cq.message.reply(
+            "Silahkan kirimkan bukti Screenshoot pembayaran Anda.",
+        )
+        try:
+            msg = await client.listen(
+                cq.from_user.id,
+                filters.user(
+                    cq.from_user.id
+                )
+                & filters.private,
+                timeout=300,
+            )
+        except asyncio.TimeoutError:
+            msg = await client.listen(
+                cq.from_user.id,
+                filters.user(
+                    cq.from_user.id
+                )
+                & filters.private,
+                timeout=300,
+            )
+        if msg.photo:
+            f_ovo = await client.download_media(
+                msg.photo
+            )
+            bkt_ovo = (
+                await client.send_photo(
+                    int(OWNER_ID),
+                    photo=f_ovo,
+                )
+            )
+            remove(f_ovo)
+            notify_buy = f"""
+#BUYER #STATUS #CONFIRM
+
+User ID: <code>{cq.from_user.id}</code>
+Username: @{cq.from_user.username}
+via: <b>OVO</b>
+
+(c) @kastaid #pytel
+"""
+            await client.send_message(
+                int(OWNER_ID),
+                text=notify_buy,
+                reply_to_message_id=bkt_ovo.id,
+            )
+            text = """
+Mohon Tunggu, Seller akan memeriksa pembayaran Anda.
+Jika Pembayaran Anda Terbukti, Anda akan mendapatkan Notifikasi
+dari sini.
+"""
+            await cq.answer(
+                text,
+                show_alert=True,
+                cache_time=300,
+            )
+        else:
+            await cq.answer(
+                "Mohon maaf, kirimkan pembayaran berupa Photo.",
+                show_alert=True,
+                cache_time=300,
+            )
+            text = """
+<u><b>PAYMENT OVO</b></u>
+
+Silahkan kirim ulang bukti pembayaran Anda.
+Tekan Confirm untuk melanjutkan.
+"""
+            await cq.message.reply(
+                text,
+                reply_markup=Assistant.payment_ovo_buttons,
+            )
+
+        await r.delete()
+
+
+@pytel_tgb.on_callback_query(
+    filters.regex(r"generate_(.*?)")
+)
+async def _cb_asst_generate(
+    client, cq: CallbackQuery
+):
+    gen_back = match(
+        r"generate_back", cq.data
+    )
+    generate_session = match(
+        r"generate_session", cq.data
+    )
+    generate_tutorial = match(
+        r"generate_tutorial", cq.data
+    )
+    generate_continue = match(
+        r"generate_continue", cq.data
+    )
+    if gen_back:
+        with suppress(Exception):
+            await cq.message.delete()
+            await cq.message.reply(
+                Assistant.START.format(
+                    cq.from_user.mention,
+                ),
+                quote=False,
+                disable_web_page_preview=True,
+                reply_markup=Assistant.home_buttons,
+            )
+            return
+    elif generate_session:
+        with suppress(Exception):
+            user_id = cq.from_user.id
+            if not user_expired().get(
+                int(user_id)
+            ):
+                text = """
+Mohon maaf, Anda bukan bagian dari PYTEL-Premium.
+Silahkan lakukan Transaksi jika ingin membuat String Session.
+"""
+                await cq.answer(
+                    text,
+                    show_alert=True,
+                    cache_time=300,
+                )
+                return
+            else:
+                await cq.message.delete()
+                await cq.message.reply(
+                    AstGenerate.HOME.format(
+                        cq.from_user.mention,
+                    ),
+                    disable_web_page_preview=True,
+                    reply_markup=AstGenerate.gen_buttons,
+                )
+                return
+
+    elif generate_tutorial:
+        with suppress(Exception):
+            await cq.message.delete()
+            await cq.message.reply(
+                AstGenerate.GEN_TUTORIAL,
+                disable_web_page_preview=True,
+                reply_markup=AstGenerate.gen_tu_buttons,
+            )
+
+    elif generate_continue:
+        with suppress(Exception):
+            await cq.message.delete()
+        try:
+            await _generate_pytel_session(
+                client, cq.message
+            )
+        except Exception as excp:
+            client.send_log.exception(
+                excp
+            )
+
+
+async def _generate_pytel_session(
+    bot, msg: Message
+):
+    user_id = msg.chat.id
+    api_id_msg = await bot.ask(
+        user_id,
+        "Kirimkan <u><b>API_ID</b></u> Anda.\n\nTekan /cancel untuk membatalkan proses.",
+        filters=filters.text,
+    )
+    if await cancelled(api_id_msg):
+        return
+    try:
+        api_id = int(api_id_msg.text)
+    except ValueError:
+        await api_id_msg.reply(
+            "<u><b>API_ID</b></u> tidak valid (harus angka semua).\nSilahkan ulang kembali!",
+            quote=True,
+            reply_markup=AstGenerate.gen_buttons,
+        )
+        return
+    api_hash_msg = await bot.ask(
+        user_id,
+        "Kirimkan <u><b>API_HASH</b></u> Anda.\n\nTekan /cancel untuk membatalkan proses.",
+        filters=filters.text,
+    )
+    if await cancelled(api_hash_msg):
+        return
+    api_hash = api_hash_msg.text
+    phone_number_msg = await bot.ask(
+        user_id,
+        "Kirimkan <u><b>No. Handphone</b></u> (Telegram) Anda.\n<b>Jangan Lupa Pakai Code Negara, Contoh: `+62`\n\nTekan /cancel untuk membatalkan proses.",
+        filters=filters.text,
+    )
+    if await cancelled(
+        phone_number_msg
+    ):
+        return
+    phone_number = phone_number_msg.text
+    if not phone_number.startswith("+"):
+        await api_id_msg.reply(
+            "<u><b>No. Handphone</b></u> tidak valid (harus menggunakan code negara).\nSilahkan ulang kembali!",
+            quote=True,
+            reply_markup=AstGenerate.gen_buttons,
+        )
+        return
+    await msg.reply(
+        "Sedang mengirimkan OTP..."
+    )
+    client = Client(
+        name=f"pytel_{user_id}",
+        api_id=api_id,
+        api_hash=api_hash,
+        in_memory=True,
+        lang_code="en",
+        ipv6=False,
+        app_version=APP_VERSION,
+        system_version=SYSTEM_VERSION,
+        device_model=DEVICE_MODEL,
+        workers=WORKERS,
+    )
+    await client.connect()
+    try:
+        code = await client.send_code(
+            phone_number
+        )
+    except ApiIdInvalid:
+        await msg.reply(
+            "<u><b>API_ID</b></u> dan <u><b>API_HASH</b></u> kombinasi tidak valid.\nSilahkan ulang kembali!",
+            reply_markup=AstGenerate.gen_buttons,
+        )
+        return
+    except PhoneNumberInvalid:
+        await msg.reply(
+            "<u><b>No. Handphone</b></u> tidak valid.\nSilahkan ulang kembali!",
+            reply_markup=AstGenerate.gen_buttons,
+        )
+        return
+    try:
+        text = """
+Silahkan check kode OTP di official Telegram.
+Jika ada, kirim OTP kesini. Untuk format kode silahkan check dibawah ini.
+
+<b>Catatan:</b>
+Misalkan kode nya <code>12345</code>
+kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
+"""
+        phone_code_msg = await bot.ask(
+            user_id,
+            text,
+            filters=filters.text,
+            timeout=600,
+        )
+        if await cancelled(
+            phone_code_msg
+        ):
+            return
+    except asyncio.TimeoutError:
+        await msg.reply(
+            "Limit waktu telah habis dalam 10 menit.\nSilahkan ulang kembali!",
+            reply_markup=AstGenerate.gen_buttons,
+        )
+        return
+    phone_code = (
+        phone_code_msg.text.replace(
+            " ", ""
+        )
+    )
+    try:
+        await client.sign_in(
+            phone_number,
+            code.phone_code_hash,
+            phone_code,
+        )
+    except PhoneCodeInvalid:
+        await msg.reply(
+            "Kode OTP tidak valid.\nSilahkan ulang kembali!",
+            reply_markup=AstGenerate.gen_buttons,
+        )
+        return
+    except PhoneCodeExpired:
+        await msg.reply(
+            "Kode OTP telah kadaluarsa.\nSilahkan ulang kembali!",
+            reply_markup=AstGenerate.gen_buttons,
+        )
+        return
+    except SessionPasswordNeeded:
+        try:
+            two_step_msg = await bot.ask(
+                user_id,
+                "Akun Anda mengaktifkan verifikasi 2 Langkah.\nSilahkan kirimkan kata sandi akun Anda.",
+                filters=filters.text,
+                timeout=300,
+            )
+        except asyncio.TimeoutError:
+            await msg.reply(
+                "Limit waktu telah habis dalam 5 menit.\nSilahkan ulang kembali!",
+                reply_markup=AstGenerate.gen_buttons,
+            )
+            return
+        try:
+            password = two_step_msg.text
+            await client.check_password(
+                password=password
+            )
+            if await cancelled(
+                api_id_msg
+            ):
+                return
+        except PasswordHashInvalid:
+            await two_step_msg.reply(
+                "Kata sandi Akun Anda salah.\nSilahkan ulang kembali!",
+                reply_markup=AstGenerate.gen_buttons,
+            )
+            return
+    string_session = (
+        await client.export_session_string()
+    )
+    text = f"<b>PYTEL</b> <u>PYROGRAM SESSION</u>\n\n<b>STRING:</b>\n<code>{string_session}</code>\n\n(c) @kastaid #pytel - @PYTELPremiumBot"
+    with suppress(KeyError):
+        await client.send_message(
+            "me",
+            text,
+            parse_mode=ParseMode.HTML,
+        )
+    await client.disconnect()
+    await bot.send_message(
+        msg.chat.id,
+        "✅ Selesai, Pembuatan String telah berhasil.\nSilahkan check Pesan Tersimpan.",
+    )
+
+
+async def cancelled(msg):
+    if "/cancel" in msg.text:
+        await msg.reply(
+            "Pembuatan String Telah Dibatalkan!"
+        )
+        return True

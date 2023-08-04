@@ -5,7 +5,10 @@ requests
 openai
 psutil
 pyrogram
+pyroaddon
 pytelibs
+speedtest-cli
+Pytanggalmerah
 
 # --- setup ---
 
@@ -23,7 +26,6 @@ loguru==0.7.0
 pathlib==1.0.1
 python-dotenv==1.0.0
 pytgcalls==3.0.0.dev24
-Pytanggalmerah
 localdb.json==1.0
 lxml==4.9.2
 uvloop==0.17.0

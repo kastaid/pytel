@@ -33,7 +33,6 @@ from . import (
     buttons,
     filters,
     developer,
-    _chpytel,
     ikmarkup,
     legally_required,
     channel_groups,)
@@ -195,6 +194,7 @@ async def _premstat_inline(
 @pytel_tgb.on_message(
     legally_required
     & channel_groups
+    & filters.private
     & filters.command(
         "setpremium",
         prefixes=list(px),
@@ -317,6 +317,10 @@ Want to be extended? wait until it expires.
 
 <u>Thank you very much loyal Customer</u>.
 
+<b>Note:</b>
+Tekan Tombol Generate Session 🚀
+Untuk mengaktifkan PYTEL-Premium.
+
 (c) @kastaid #pytel
 """
     await _try_purged(xy, 1.5)
@@ -324,26 +328,34 @@ Want to be extended? wait until it expires.
         [
             [
                 buttons(
-                    "💳 Buy Now",
-                    url="t.me/not4us",
+                    "Generate Session 🚀",
+                    callback_data="generate_session",
+                ),
+            ],
+            [
+                buttons(
+                    "🌐 Channel 🌐",
+                    url="t.me/PYTELPremium/47",
                 ),
             ],
         ]
     )
-    frwd = await client.send_animation(
-        message.chat.id,
-        animation="resources/kastaid/pytel_checkout.gif",
-        caption=text,
-        unsave=False,
-        reply_markup=rpm,
-        protect_content=True,
-    )
-    await frwd.copy(_chpytel[0])
+    with suppress(Exception):
+        yy = await client.send_animation(
+            message.chat.id,
+            animation="resources/kastaid/pytel_checkout.gif",
+            caption=text,
+            unsave=False,
+            reply_markup=rpm,
+            protect_content=True,
+        )
+        await yy.copy(x.id)
 
 
 @pytel_tgb.on_message(
     legally_required
     & channel_groups
+    & filters.private
     & filters.command(
         "delpremium",
         prefixes=list(px),
