@@ -258,7 +258,7 @@ async def _speedtest_net(
 
 
 @pytel.instruction(
-    ["ping", "pong"],
+    ["dping", "devping"],
     supersu=["PYTEL"],
     force_edit=False,
     supergroups=True,

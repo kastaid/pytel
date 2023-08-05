@@ -10,7 +10,8 @@ from os import remove, cpu_count
 from platform import uname
 from re import match
 from pyrogram import Client
-from pyrogram.enums.chat_member_status import ChatMemberStatus
+from pyrogram.enums.chat_member_status import (
+    ChatMemberStatus,)
 from pyrogram.errors import (
     ApiIdInvalid,
     PhoneNumberInvalid,
@@ -50,6 +51,7 @@ _MEMBERS = [
     ChatMemberStatus.ADMINISTRATOR,
     ChatMemberStatus.MEMBER,
 ]
+
 
 @pytel_tgb.on_message(
     filters.command(
@@ -133,23 +135,27 @@ async def _cb_asst_subs(
         user_id = cq.from_user.id
         try:
             mem = await client.get_chat_member(
-               _chpytel[0],
-               user_id=user_id,
+                _chpytel[0],
+                user_id=user_id,
             )
-            is_join = mem.status in _MEMBERS
+            is_join = (
+                mem.status in _MEMBERS
+            )
         except UserNotParticipant:
             is_join = False
         except Exception as excp:
             is_join = False
-            client.send_log.exception(excp)
+            client.send_log.exception(
+                excp
+            )
         if not is_join:
             text = """
 Anda masih belum bergabung di Channel PYTEL-Premium 🇮🇩
 Harap bergabung terlebih dahulu.
 """
             await cq.answer(
-               text,
-               show_alert=True,
+                text,
+                show_alert=True,
             )
         else:
             await cq.message.delete()

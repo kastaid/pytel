@@ -260,14 +260,13 @@ async def _(
                                 await sleep(
                                     0.1
                                 )
-#                    else:
-#                        text = "You're not allowed."
-#                        await client.answer_callback_query(
-#                            cq.id,
-#                            text,
-#                            show_alert=True,
-#                        )
-
+        #                    else:
+        #                        text = "You're not allowed."
+        #                        await client.answer_callback_query(
+        #                            cq.id,
+        #                            text,
+        #                            show_alert=True,
+        #                        )
 
         elif prev_page:
             curr_page = int(
@@ -310,13 +309,13 @@ async def _(
                             await sleep(
                                 0.1
                             )
-#                else:
-#                    text = "You're not allowed."
-#                    await client.answer_callback_query(
-#                        cq.id,
-#                        text,
-#                        show_alert=True,
-#                    )
+        #                else:
+        #                    text = "You're not allowed."
+        #                    await client.answer_callback_query(
+        #                        cq.id,
+        #                        text,
+        #                        show_alert=True,
+        #                    )
 
         elif next_page:
             nx_page = int(next_page[1])
@@ -357,13 +356,13 @@ async def _(
                             await sleep(
                                 0.1
                             )
-#                else:
-#                    text = "You're not allowed."
-#                    await client.answer_callback_query(
-#                        cq.id,
-#                        text,
-#                        show_alert=True,
-#                    )
+        #                else:
+        #                    text = "You're not allowed."
+        #                    await client.answer_callback_query(
+        #                        cq.id,
+        #                        text,
+        #                        show_alert=True,
+        #                    )
 
         elif back_page:
             for _ in pytel._client:
@@ -385,13 +384,13 @@ async def _(
                             ),
                         )
                         return
-#                else:
-#                    text = "You're not allowed."
-#                    await client.answer_callback_query(
-#                        cq.id,
-#                        text,
-#                        show_alert=True,
-#                    )
+        #                else:
+        #                    text = "You're not allowed."
+        #                    await client.answer_callback_query(
+        #                        cq.id,
+        #                        text,
+        #                        show_alert=True,
+        #                    )
 
         elif close_page:
             cq.data.split()
@@ -418,6 +417,8 @@ async def _(
                         ),
                     )
                     return
+
+
 #                else:
 #                    text = "Only senders can close this inline."
 #                    await client.answer_callback_query(

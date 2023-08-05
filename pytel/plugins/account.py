@@ -5,8 +5,12 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
+from asyncio import sleep
 from pyrogram import enums
 from pyrogram.raw import functions
+from pyrogram.raw.functions.messages import (
+    DeleteHistory,
+    StartBot,)
 from . import (
     eor,
     plugins_helper,
@@ -188,7 +192,56 @@ async def _my_dialogs(client, message):
         )
 
 
+@pytel.instruction(
+    ["dlimit", "devlimit"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
+    [
+        "limit",
+        "limited",
+    ],
+    outgoing=True,
+)
+async def _limited(client, message):
+    spambot = "@SpamBot"
+    await client.unblock_user(spambot)
+    x = await eor(
+        message,
+        text="Getting information...",
+    )
+    history = await client.resolve_peer(
+        spambot
+    )
+    resp = await client.invoke(
+        StartBot(
+            bot=history,
+            peer=history,
+            random_id=client.rnd_id(),
+            start_param="start",
+        )
+    )
+    await sleep(1.6)
+    status = await client.get_messages(
+        spambot,
+        resp.updates[1].message.id + 1,
+    )
+    await eor(
+        x,
+        text=f"`{status.text}`",
+    )
+    await client.invoke(
+        DeleteHistory(
+            peer=history,
+            max_id=0,
+            revoke=True,
+        )
+    )
+    return
+
+
 plugins_helper["account"] = {
+    f"{random_prefixies(px)}limit / limited": "To check ur account is limited or not.",
     f"{random_prefixies(px)}mydialogs": "To get my dialogue statistics.",
     f"{random_prefixies(px)}setmode [offline/online/off/on]": "To setting ur status to be Online or Offline.",
     f"{random_prefixies(px)}setbio [text/reply]": "To updates ur bio. ( Max 70 characters )",
