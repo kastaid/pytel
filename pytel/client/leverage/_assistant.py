@@ -64,12 +64,12 @@ Our privacy policy may change from time to time.
     BUY = """
 Untuk pembayaran <b>PYTEL-Premium</b> tertera pada tombol dibawah ini, selain dari pada tombol dibawah ini adalah <u><b>Fake</b></u> / <u><b>Scam</b></u>.
 
-<b>Disclaimer & Garansi:</b>
-Untuk garansi, hanya berlaku untuk deploy ulang gara-gara Akun Anda Terhapus atau ganti ke akun lain.
+<b>Disclaimer & Warranty:</b>
+Untuk warranty, hanya berlaku untuk deploy ulang gara-gara Akun Anda Terhapus atau ganti ke akun lain.
 <i>Tidak berlaku ketika akun Anda Terhapus, lalu meminta Seller menggantikkan Akunnya.</i>
 
-<b>Note ( Garansi ) :</b>
-<i>Garansi berjalan selama masa Expired berlangsung!</i>
+<b>Note ( Warranty ) :</b>
+<i>Warranty berjalan selama masa Expired berlangsung!</i>
 """
 
     PAYMENT_DANA = """
