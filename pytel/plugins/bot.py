@@ -483,7 +483,7 @@ async def restarting(
 
 
 @pytel.instruction(
-    ["update"],
+    ["devupdate", "dupdate"],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
