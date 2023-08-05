@@ -1,4 +1,4 @@
-# pytel < https://t.me/kastaid >
+2# pytel < https://t.me/kastaid >
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
@@ -521,7 +521,6 @@ async def _updates(client, message):
             "From https://github.com/kastaid/pytel"
             in str(stderr)
         ):
-            await client.lock.acquire()
             yy = await eor(
                 x,
                 text=f"<u><b>Updating</u>!!</b>\nInstall requirements...",
@@ -532,7 +531,6 @@ async def _updates(client, message):
                 RunningCommand(
                     "pip3 install -U -r main.txt"
                 )
-            client.lock.release()
             xy = await eor(
                 yy,
                 text=f"Update successfuly.\nRestarting, wait for 1 minutes.",
