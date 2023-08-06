@@ -38,7 +38,8 @@ from . import (
     _chpytel,
     pytel_tgb,
     suppress,
-    filters,)
+    filters,
+    send_log,)
 
 APP_VERSION = f"PYTEL-Premium v.{pyver}"
 WORKERS = min(
@@ -73,7 +74,7 @@ async def _asst_home(client, message):
         is_join = False
     except Exception as excp:
         is_join = False
-        client.send_log.exception(excp)
+        send_log.exception(excp)
 
     if is_join:
         await message.reply(
@@ -145,7 +146,7 @@ async def _cb_asst_subs(
             is_join = False
         except Exception as excp:
             is_join = False
-            client.send_log.exception(
+            send_log.exception(
                 excp
             )
         if not is_join:
@@ -298,7 +299,7 @@ async def _cb_asst_payment(
                     except (
                         Exception
                     ) as excp:
-                        client.send_log.exception(
+                        send_log.exception(
                             excp
                         )
 
@@ -327,7 +328,7 @@ async def _cb_asst_payment(
                     except (
                         Exception
                     ) as excp:
-                        client.send_log.exception(
+                        send_log.exception(
                             excp
                         )
 
@@ -563,7 +564,7 @@ Silahkan lakukan Transaksi jika ingin membuat String Session.
                 client, cq.message
             )
         except Exception as excp:
-            client.send_log.exception(
+            send_log.exception(
                 excp
             )
 
@@ -583,7 +584,7 @@ async def _generate_pytel_session(
         api_id = int(api_id_msg.text)
     except ValueError:
         await api_id_msg.reply(
-            "<u><b>API_ID</b></u> tidak valid (harus angka semua).\nSilahkan ulang kembali!",
+            "<u><b>API_ID</b></u> tidak valid (harus angka semua).\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
             quote=True,
             reply_markup=AstGenerate.gen_buttons,
         )
@@ -608,7 +609,7 @@ async def _generate_pytel_session(
     phone_number = phone_number_msg.text
     if not phone_number.startswith("+"):
         await api_id_msg.reply(
-            "<u><b>No. Handphone</b></u> tidak valid (harus menggunakan code negara).\nSilahkan ulang kembali!",
+            "<u><b>No. Handphone</b></u> tidak valid (harus menggunakan code negara).\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
             quote=True,
             reply_markup=AstGenerate.gen_buttons,
         )
@@ -635,20 +636,20 @@ async def _generate_pytel_session(
         )
     except ApiIdInvalid:
         await msg.reply(
-            "<u><b>API_ID</b></u> dan <u><b>API_HASH</b></u> kombinasi tidak valid.\nSilahkan ulang kembali!",
+            "<u><b>API_ID</b></u> dan <u><b>API_HASH</b></u> kombinasi tidak valid.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
             reply_markup=AstGenerate.gen_buttons,
         )
         return
     except PhoneNumberInvalid:
         await msg.reply(
-            "<u><b>No. Handphone</b></u> tidak valid.\nSilahkan ulang kembali!",
+            "<u><b>No. Handphone</b></u> tidak valid.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
             reply_markup=AstGenerate.gen_buttons,
         )
         return
     try:
         text = """
-Silahkan check kode OTP di official Telegram.
-Jika ada, kirim OTP kesini. Untuk format kode silahkan check dibawah ini.
+Silahkan check kode OTP dari official Telegram.
+Jika ada, kirim OTP kesini. Kirim kode OTP dengan format dibawah ini.
 
 <b>Catatan:</b>
 Misalkan kode nya <code>12345</code>
@@ -666,7 +667,7 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
             return
     except asyncio.TimeoutError:
         await msg.reply(
-            "Limit waktu telah habis dalam 10 menit.\nSilahkan ulang kembali!",
+            "Limit waktu telah habis dalam 10 menit.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
             reply_markup=AstGenerate.gen_buttons,
         )
         return
@@ -683,7 +684,7 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
         )
     except PhoneCodeInvalid:
         await msg.reply(
-            "Kode OTP tidak valid.\nSilahkan ulang kembali!",
+            "Kode OTP tidak valid.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
             reply_markup=AstGenerate.gen_buttons,
         )
         return
@@ -703,7 +704,7 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
             )
         except asyncio.TimeoutError:
             await msg.reply(
-                "Limit waktu telah habis dalam 5 menit.\nSilahkan ulang kembali!",
+                "Limit waktu telah habis dalam 5 menit.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
                 reply_markup=AstGenerate.gen_buttons,
             )
             return
@@ -718,7 +719,7 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
                 return
         except PasswordHashInvalid:
             await two_step_msg.reply(
-                "Kata sandi Akun Anda salah.\nSilahkan ulang kembali!",
+                "Kata sandi Akun Anda salah.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
                 reply_markup=AstGenerate.gen_buttons,
             )
             return
@@ -742,6 +743,6 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
 async def cancelled(msg):
     if "/cancel" in msg.text:
         await msg.reply(
-            "Pembuatan String Telah Dibatalkan!"
+            "Pembuatan String Telah Dibatalkan!\n\nTekan /start untuk memulai."
         )
         return True

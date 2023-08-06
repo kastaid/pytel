@@ -24,7 +24,8 @@ from . import (
         "aitext",
         "aipics",
         "aitts",
-        "aiaudio",
+        "aitranscribe",
+        "aitranslator",
     ],
     outgoing=True,
 )
@@ -59,23 +60,17 @@ async def _openai(client, message):
                     await client.send_document(
                         message.chat.id,
                         document=files,
-                        caption=f"Query: {args}",
+                        caption=f"<b>Question:</b> {args}",
                     )
                     remove(files)
-                    await _try_purged(
-                        x, 1.5
-                    )
-                    return
             else:
                 await client.send_message(
                     message.chat.id,
                     text=answer,
                     disable_notification=False,
                 )
-                await _try_purged(
-                    x, 1.5
-                )
-                return
+            await _try_purged(x, 1.5)
+            return
 
     if message.command[0] == "aipics":
         args = get_text(message)
@@ -92,12 +87,18 @@ async def _openai(client, message):
         )
         resp = ChatGPT.images(args)
         if resp:
-            cap = f"<b>Request:</b> {args.upper()}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( DALL-E )"
-            await client.send_photo(
-                message.chat.id,
-                photo=resp,
-                caption=cap,
-            )
+            try:
+                cap = f"<b>Request:</b> {args.upper()}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( DALL-E )"
+                await client.send_photo(
+                    message.chat.id,
+                    photo=resp,
+                    caption=cap,
+                )
+            except Exception:
+                await client.send_message(
+                    message.chat.id,
+                    "ChatGPT not response!!",
+                )
             await _try_purged(x, 1.5)
             return
 
@@ -122,10 +123,18 @@ async def _openai(client, message):
                 audio=resp,
                 caption=cap,
             )
-            await _try_purged(x, 1.5)
-            return
+        else:
+            await client.send_message(
+                message.chat.id,
+                "ChatGPT not response!!",
+            )
+        await _try_purged(x, 1.5)
+        return
 
-    if message.command[0] == "aiaudio":
+    if (
+        message.command[0]
+        == "aitranscribe"
+    ):
         repid = (
             message.reply_to_message.id
         )
@@ -152,11 +161,12 @@ async def _openai(client, message):
             con1 = await client.download_media(
                 con, "cache/"
             )
-            commands = "ffmpeg -y -i '{}' -vn -b:a 720k -c:a libmp3lame cache/aiaudio.mp3".format(
-                con1
+            commands = "ffmpeg -y -i '{}' -vn -b:a 720k -c:a libmp3lame cache/{}_transcribe.mp3".format(
+                con1,
+                client.me.id,
             )
             RunningCommand(commands)
-            fx = "cache/aiaudio.mp3"
+            fx = f"cache/{client.me.id}_transcribe.mp3"
 
         else:
             con = (
@@ -167,22 +177,101 @@ async def _openai(client, message):
             )
 
         if fx:
-            resp = ChatGPT.transaudio(
-                fx
+            resp = ChatGPT.audio_transmitting(
+                fx,
+                type_transmitting="transcribe",
             )
             if resp:
-                text = f"<b>Transcribe:</b> {resp}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( OpenAI )"
-                await client.send_message(
-                    message.chat.id,
-                    text=text,
-                    reply_to_message_id=repid,
-                    disable_notification=False,
-                    disable_web_page_preview=True,
-                )
+                try:
+                    text = f"<b>Transcribe:</b> {resp}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( OpenAI )"
+                    await client.send_message(
+                        message.chat.id,
+                        text=text,
+                        reply_to_message_id=repid,
+                        disable_notification=False,
+                        disable_web_page_preview=True,
+                    )
+                except Exception:
+                    await client.send_message(
+                        message.chat.id,
+                        "ChatGPT not response!!",
+                    )
+                remove(fx)
+                remove(con1)
                 await _try_purged(
                     x, 1.5
                 )
+                return
+
+    if (
+        message.command[0]
+        == "aitranslator"
+    ):
+        repid = (
+            message.reply_to_message.id
+        )
+        reaud = (
+            message.reply_to_message.audio
+            or message.reply_to_message.voice
+        )
+        if not reaud:
+            await eor(
+                message,
+                text="reply to audio file or voice note to translate audio to text using ChatGPT.",
+            )
+            return
+        x = await eor(
+            message,
+            text="Translating audio...",
+        )
+        if (
+            message.reply_to_message.voice
+        ):
+            con = (
+                message.reply_to_message.voice
+            )
+            con1 = await client.download_media(
+                con, "cache/"
+            )
+            commands = "ffmpeg -y -i '{}' -vn -b:a 720k -c:a libmp3lame cache/{}_translate.mp3".format(
+                con1, client.me.id
+            )
+            RunningCommand(commands)
+            fx = f"cache/{client.me.id}_translate.mp3"
+
+        else:
+            con = (
+                message.reply_to_message.audio
+            )
+            fx = await client.download_media(
+                con, "cache/"
+            )
+
+        if fx:
+            resp = ChatGPT.audio_transmitting(
+                fx,
+                type_transmitting="translate",
+            )
+            if resp:
+                try:
+                    text = f"<b>Translator:</b> {resp}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( Open AI )"
+                    await client.send_message(
+                        message.chat.id,
+                        text=text,
+                        reply_to_message_id=repid,
+                        disable_notification=False,
+                        disable_web_page_preview=True,
+                    )
+                except Exception:
+                    await client.send_message(
+                        message.chat.id,
+                        "ChatGPT not response!!",
+                    )
                 remove(fx)
+                remove(con1)
+                await _try_purged(
+                    x, 1.5
+                )
                 return
 
 
@@ -190,5 +279,6 @@ plugins_helper["chatgpt"] = {
     f"{random_prefixies(px)}aitext [text/reply]": "To get an answer from ChatGPT in the form of an Text.",
     f"{random_prefixies(px)}aipic [text/reply]": "To get an answer from ChatGPT in the form of an Image.",
     f"{random_prefixies(px)}aitts [text/reply]": "To get text to speech using ChatGPT.",
-    f"{random_prefixies(px)}aiaudio [reply audio/voice note]": "To transcribe audio to text using ChatGPT.",
+    f"{random_prefixies(px)}aitranscribe [reply audio/voice note]": "To transcribe audio to text using ChatGPT.",
+    f"{random_prefixies(px)}aitranslator [reply audio/voice note]": "To transtalor audio to text using ChatGPT.",
 }

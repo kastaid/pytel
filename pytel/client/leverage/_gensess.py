@@ -50,7 +50,7 @@ Tekan Tombol Lanjutkan untuk membuat String.
         [
             [
                 buttons(
-                    "🚀 Lanjut 🚀",
+                    "Lanjut",
                     callback_data="generate_continue",
                 ),
             ],
@@ -73,7 +73,7 @@ Tekan Tombol Lanjutkan untuk membuat String.
         [
             [
                 buttons(
-                    "🚀 Lanjut 🚀",
+                    "Lanjutkan",
                     callback_data="generate_continue",
                 ),
             ],

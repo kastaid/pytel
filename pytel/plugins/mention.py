@@ -64,7 +64,7 @@ async def _mention_all(client, message):
         ):
             pass
         usrnum = usrnum + 1
-        usrtxt += f"👤 <a href=tg://user?id={usr.user.id}>{usr.user.first_name}</a>\n"
+        usrtxt += f"👤 <a href=tg://user?id={usr.user.id}>{await client.user_fullname(usr.user.id)}</a>\n"
         if usrnum == 5:
             try:
                 txt = f"<b>{tx}</b>\n\n{usrtxt}\n"
@@ -73,7 +73,7 @@ async def _mention_all(client, message):
                     txt,
                     parse_mode=ParseMode.HTML,
                 )
-                await sleep(6)
+                await sleep(20)
                 usrnum = 0
                 usrtxt = ""
             except FloodWait as flood:
@@ -88,6 +88,7 @@ async def _mention_all(client, message):
                         txt,
                         parse_mode=ParseMode.HTML,
                     )
+                    await sleep(20)
                     usrnum = 0
                     usrtxt = ""
     with suppress(Exception):
@@ -129,6 +130,6 @@ async def _cancel_mention(
 
 
 plugins_helper["mention"] = {
-    f"{random_prefixies(px)}mentionall / tagall [text/reply message]": "To mention members in the group.",
+    f"{random_prefixies(px)}mentionall / tagall [text/reply message]": "To mention members in the group. ( 20 seconds 1x send messages )",
     f"{random_prefixies(px)}cmention / ctag": "To cancel the current mention.",
 }

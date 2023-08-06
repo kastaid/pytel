@@ -30,56 +30,78 @@ class PytelAI:
     ) -> Optional[str]:
         openai.api_key = self.api_key
         openai.api_base = self.api_base
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"{query}",
-                },
-            ],
-        )
-        if response["choices"][0][
-            "message"
-        ]["content"]:
-            return response["choices"][
-                0
-            ]["message"]["content"]
-        elif response["detail"]:
-            return response["detail"]
-        elif (
-            "Invalid response"
-            in response
-        ):
-            return response
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"{query}",
+                    },
+                ],
+            )
+            if response["choices"][0][
+                "message"
+            ]["content"]:
+                return response[
+                    "choices"
+                ][0]["message"][
+                    "content"
+                ]
+
+        except (
+            openai.error.APIError
+        ) as e:
+            if (
+                hasattr(e, "response")
+                and "detail"
+                in e.response
+            ):
+                return e.response[
+                    "detail"
+                ]
+            else:
+                return str(e)
 
     def images(
         self, query: Optional[str]
     ):
         openai.api_key = self.api_key
         openai.api_base = self.api_base
-        response = openai.Image.create(
-            prompt=str(query),
-            n=1,
-            size="1024x1024",
-        )
-        if response["data"][0]["url"]:
-            return response["data"][0][
-                "url"
-            ]
-        elif response["detail"]:
-            return response["detail"]
-        elif (
-            "Invalid response"
-            in response
-        ):
-            return response
+        try:
+            response = (
+                openai.Image.create(
+                    prompt=str(query),
+                    n=4,
+                    size="1024x1024",
+                )
+            )
+            for image in response[
+                "data"
+            ]:
+                return image["url"]
+        except (
+            openai.error.APIError
+        ) as e:
+            if (
+                hasattr(e, "response")
+                and "detail"
+                in e.response
+            ):
+                return e.response[
+                    "detail"
+                ]
+            else:
+                return str(e)
 
     def tts(self, query: Optional[str]):
         headers = {
             "Authorization": f"Bearer {self.api_key}"
         }
-        strings = {"text": query}
+        strings = {
+            "text": query,
+            "language": "id",
+        }
         response = post(
             "https://chimeragpt.adventblocks.cc/api/v1/audio/tts/generation",
             headers=headers,
@@ -87,35 +109,92 @@ class PytelAI:
         ).json()
         if response["url"]:
             return response["url"]
-        elif response["detail"]:
-            return response["detail"]
-        elif (
+        elif (response["detail"]) or (
             "Invalid response"
             in response
         ):
-            return response
+            return False
 
-    def transaudio(
-        self, audiofile: Any
+    def audio_transmitting(
+        self,
+        audiofile: Any,
+        type_transmitting: str = None,
     ):
         openai.api_key = self.api_key
         openai.api_base = self.api_base
-        with open(
-            audiofile, "rb"
-        ) as au_f:
-            trans = openai.Audio.transcribe(
-                file=au_f,
-                model="whisper-1",
-                response_format="text",
-                language="id",
-            )
-            if trans["text"]:
-                return trans["text"]
-            elif (
-                "Invalid response"
-                in trans
-            ):
-                return trans
+        if (
+            type_transmitting
+            == "transcribe"
+        ):
+            with open(
+                audiofile, "rb"
+            ) as au_f:
+                try:
+                    trans = openai.Audio.transcribe(
+                        file=au_f,
+                        model="whisper-1",
+                        response_format="text",
+                        language="id",
+                    )
+                    if trans["text"]:
+                        return trans[
+                            "text"
+                        ]
+                except (
+                    openai.error.APIError
+                ) as e:
+                    if (
+                        hasattr(
+                            e,
+                            "response",
+                        )
+                        and "detail"
+                        in e.response
+                    ):
+                        return (
+                            e.response[
+                                "detail"
+                            ]
+                        )
+                    else:
+                        return str(e)
+
+        if (
+            type_transmitting
+            == "translate"
+        ):
+            with open(
+                audiofile, "rb"
+            ) as au_f:
+                try:
+                    trans = openai.Audio.translate(
+                        file=au_f,
+                        model="whisper-1",
+                        response_format="text",
+                        language="id",
+                    )
+                    if trans["text"]:
+                        return trans[
+                            "text"
+                        ]
+                except (
+                    openai.error.APIError
+                ) as e:
+                    if (
+                        hasattr(
+                            e,
+                            "response",
+                        )
+                        and "detail"
+                        in e.response
+                    ):
+                        return (
+                            e.response[
+                                "detail"
+                            ]
+                        )
+                    else:
+                        return str(e)
 
 
 ChatGPT = PytelAI(

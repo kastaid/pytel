@@ -1,4 +1,4 @@
-2# pytel < https://t.me/kastaid >
+# pytel < https://t.me/kastaid >
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
