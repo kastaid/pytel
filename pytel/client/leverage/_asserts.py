@@ -8,6 +8,7 @@
 from asyncio import sleep
 from contextlib import suppress
 from inspect import getfullargspec
+from re import findall
 from typing import Optional, Union
 from pyrogram.enums import (
     MessageEntityType,)
@@ -74,7 +75,13 @@ def get_text(
         return False
     else:
         if save_link:
-            return str(text_)
+            # find link
+            link = findall(
+                "http[s]?://(?:[ a-zA-Z]|[0-9]|[$-_@.&+]|(?: %[0-9a-fA-F][0-9a-fA-F]))+",
+                text_,
+            )
+            for x in link:
+                return str(x)
         else:
             return str(text_.lower())
 
