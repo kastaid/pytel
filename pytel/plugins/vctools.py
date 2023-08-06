@@ -298,25 +298,24 @@ async def _video_chats_joined(
         client, group_call
     )
     check = []
-    check += [
-        i.id for i in par.users if i.id
-    ]
-    if client.me.id in check:
-        await eor(
-            x,
-            text=f"<u><b>{chat.title}</b></u>\n└ <b>You're not in Video Chats.</b>",
-        )
-        check.remove()
-        return
-    else:
-        with suppress(Exception):
-            await client.group_call.start(
-                chat_id
+    for i in par.users:
+        check.append(i.id)
+        if client.me.id in check:
+            await eor(
+                x,
+                text=f"<u><b>{chat.title}</b></u>\n└ <b>You're in Video Chats.</b>",
             )
+            check.remove(i.id)
+            return
+        else:
+            with suppress(Exception):
+                await client.group_call.start(
+                    chat_id
+                )
 
-        text = f"<u><b>{chat.title}</b></u>\n└ <b>Joined video chats.</b>"
-        await eor(x, text=text)
-        return
+            text = f"<u><b>{chat.title}</b></u>\n└ <b>Joined video chats.</b>"
+            await eor(x, text=text)
+            return
 
 
 @pytel.instruction(

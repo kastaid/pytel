@@ -146,9 +146,7 @@ async def _cb_asst_subs(
             is_join = False
         except Exception as excp:
             is_join = False
-            send_log.exception(
-                excp
-            )
+            send_log.exception(excp)
         if not is_join:
             text = """
 Anda masih belum bergabung di Channel PYTEL-Premium 🇮🇩
@@ -564,9 +562,7 @@ Silahkan lakukan Transaksi jika ingin membuat String Session.
                 client, cq.message
             )
         except Exception as excp:
-            send_log.exception(
-                excp
-            )
+            send_log.exception(excp)
 
 
 async def _generate_pytel_session(
