@@ -88,7 +88,7 @@ async def _openai(client, message):
         resp = ChatGPT.images(args)
         if resp:
             try:
-                cap = f"<b>Request:</b> {args.upper()}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( DALL-E )"
+                cap = f"<b>Request:</b> {args.upper()}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( DALL-E )"
                 await client.send_photo(
                     message.chat.id,
                     photo=resp,
@@ -117,7 +117,7 @@ async def _openai(client, message):
         )
         resp = ChatGPT.tts(args)
         if resp:
-            cap = f"<b>Original Text:</b> {args}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( Open AI )"
+            cap = f"<b>Original Text:</b> {args}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( Open AI )"
             await client.send_audio(
                 message.chat.id,
                 audio=resp,
@@ -183,7 +183,7 @@ async def _openai(client, message):
             )
             if resp:
                 try:
-                    text = f"<b>Transcribe:</b> {resp}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( OpenAI )"
+                    text = f"<b>Transcribe:</b> {resp}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( OpenAI )"
                     await client.send_message(
                         message.chat.id,
                         text=text,
@@ -254,7 +254,7 @@ async def _openai(client, message):
             )
             if resp:
                 try:
-                    text = f"<b>Translator:</b> {resp}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( Open AI )"
+                    text = f"<b>Translator:</b> {resp}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://openai.com'>AI ChatGPT</a> ( Open AI )"
                     await client.send_message(
                         message.chat.id,
                         text=text,

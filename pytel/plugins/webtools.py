@@ -5,8 +5,6 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from pyrogram.errors.exceptions.forbidden_403 import (
-    ChatSendMediaForbidden,)
 from requests import get
 from . import (
     ParseMode,
@@ -28,6 +26,9 @@ from . import (
 @pytel.instruction(
     ["webss"],
     outgoing=True,
+    privileges=[
+        "can_send_media_messages"
+    ],
 )
 async def _screenshots(client, message):
     url = get_text(
@@ -59,7 +60,7 @@ async def _screenshots(client, message):
         return
 
     if file:
-        try:
+        with suppress(Exception):
             z = await eor(
                 x,
                 text="Uploading...",
@@ -80,12 +81,6 @@ async def _screenshots(client, message):
                 disable_notification=True,
             )
             await _try_purged(z, 2.5)
-            return
-        except ChatSendMediaForbidden:
-            await eor(
-                z,
-                text="Sorry, <u>Chat Send Media Forbidden</u> in this Group.",
-            )
             return
     else:
         await eor(

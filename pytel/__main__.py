@@ -160,6 +160,10 @@ async def runner():
     )
 
 
+#    await _.stop()
+#    await pytel_tgb.stop()
+
+
 if __name__ == "__main__":
     print(PYTEL)
     print(__doc__)

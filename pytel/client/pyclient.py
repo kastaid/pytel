@@ -336,6 +336,34 @@ class PytelClient(Raw):
                         return
 
                 if (
+                    "can_send_media_messages"
+                    in privileges
+                ):
+                    me = await client.get_chat_member(
+                        message.chat.id,
+                        (
+                            await client.get_me()
+                        ).id,
+                    )
+                    if (
+                        me.privileges
+                    ):  # for admins
+                        pass
+                    else:
+                        perm = (
+                            await client.get_chat(
+                                message.chat.id,
+                            )
+                        ).permissions
+                        if (
+                            not perm.can_send_media_messages
+                        ):
+                            await message.reply(
+                                "<u>Chat Send Media Forbidden</u> in this Group."
+                            )
+                            return
+
+                if (
                     supergroups
                     and message.chat.type
                     not in [

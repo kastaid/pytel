@@ -93,19 +93,21 @@ getLogger("pyrogram").setLevel(ERROR)
 getLogger("pyrogram.client").setLevel(
     WARNING
 )
+getLogger("instagrapi").setLevel(ERROR)
 getLogger(
     "pyrogram.session.auth"
 ).setLevel(CRITICAL)
 getLogger(
     "pyrogram.session.session"
 ).setLevel(CRITICAL)
-
 getLogger("urllib3").disabled = True
 getLogger("pytgcalls").disabled = True
 getLogger(
     "urllib3.connectionpool"
 ).disabled = True
 getLogger("io").disabled = True
+pylog.disable("instagrapi")
+pylog.disable("pytgcalls")
 
 basicConfig(
     handlers=[InterceptHandler()],

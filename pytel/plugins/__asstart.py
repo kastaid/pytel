@@ -402,7 +402,7 @@ dari sini.
 <u><b>PAYMENT DANA</b></u>
 
 Silahkan kirim ulang pembayaran Anda.
-Tekan Confirm untuk melanjutkan.
+Tekan Confirm, lalu kirim bukti pembayaran Anda.
 """
             await cq.message.reply(
                 text,
@@ -477,8 +477,8 @@ dari sini.
             text = """
 <u><b>PAYMENT OVO</b></u>
 
-Silahkan kirim ulang bukti pembayaran Anda.
-Tekan Confirm untuk melanjutkan.
+Silahkan kirim bukti pembayaran Anda.
+Tekan Confirm, lalu kirim bukti pembayaran Anda.
 """
             await cq.message.reply(
                 text,

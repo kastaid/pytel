@@ -13,6 +13,7 @@ from ._asserts import (
     eor,
     get_text,
     replied,
+    get_chat_ids,
     attr_file,)
 from ._assistant import Assistant
 from ._filters import (

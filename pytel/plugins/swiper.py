@@ -8,8 +8,6 @@
 from os import remove
 from pyrogram.enums import ChatType
 from pyrogram.errors import RPCError
-from pyrogram.errors.exceptions.forbidden_403 import (
-    ChatSendMediaForbidden,)
 from . import (
     _try_purged,
     eor,
@@ -25,6 +23,9 @@ from . import (
 @pytel.instruction(
     ["swiper"],
     outgoing=True,
+    privileges=[
+        "can_send_media_messages"
+    ],
 )
 async def _swipper(client, message):
     url = get_text(
@@ -149,9 +150,7 @@ async def downloads_media(
         or m.caption_entities
         or None
     )
-    with suppress(
-        ChatSendMediaForbidden
-    ):
+    with suppress(Exception):
         if (m.text) or (m.sticker):
             await m.copy(
                 message.chat.id,

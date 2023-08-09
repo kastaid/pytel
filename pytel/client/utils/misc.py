@@ -5,13 +5,18 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
+from datetime import date
 from html import escape
 from random import choice
 from re import sub
 from subprocess import (
     SubprocessError,
     run,)
-from typing import List, Optional, Union
+from typing import (
+    List,
+    Optional,
+    Union,
+    Any,)
 from pytelibs import _i
 from pytz import timezone
 from pytel.config import TimeZone
@@ -176,3 +181,38 @@ def size_bytes(size_in_bytes):
         if index > 0
         else f"{size_in_bytes}B"
     )
+
+
+def subs_like_view_format(
+    num_count: Union[int, float],
+    precision=2,
+) -> Optional[str]:
+    suffixes = [
+        "",
+        "K",
+        "M",
+        "B",
+        "T",
+        "Q",
+    ]
+    m = sum(
+        [
+            abs(num_count / 1000.0**x)
+            >= 1
+            for x in range(
+                1, len(suffixes)
+            )
+        ]
+    )
+    return f"{num_count/1000.0**m:.{precision}f}{suffixes[m]}"
+
+
+def int2date(
+    argdate: Optional[int],
+) -> Optional[Any]:
+    year = int(argdate / 10000)
+    month = int((argdate % 10000) / 100)
+    day = int(argdate % 100)
+    return date(
+        year, month, day
+    ).strftime("%d %B %Y")

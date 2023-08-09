@@ -7,7 +7,6 @@
 
 from asyncio import gather
 from random import randint
-from re import sub, search
 from typing import Optional, Any
 from pyrogram import enums, Client
 from pyrogram.raw.functions.channels import (
@@ -26,6 +25,7 @@ from pyrogram.raw.types import (
 from . import (
     eor,
     get_text,
+    get_chat_ids,
     plugins_helper,
     px,
     pytel,
@@ -234,43 +234,23 @@ async def _video_chats_stop(
 async def _video_chats_joined(
     client, message
 ):
-    x = await eor(
-        message,
-        text="Joined video chats...",
-    )
-    gc = (
+    gets = (
         message.command[1]
         if len(message.command) > 1
         else message.chat.id
     )
-    if isinstance(gc, int):
-        gc: int = gc
-    else:
-        if "@" in gc:
-            gc: str = gc
-        elif "/c/" or "t.me/" in gc:
-            gc = sub(
-                "\\s+(.*)$", r"", gc
-            )
-            gc = (
-                search(r"/c/(.*)/", gc)
-                or search(
-                    r"/c/(.*)", gc
-                )
-                or search(
-                    r"t.me/(.*)/", gc
-                )
-                or search(
-                    r"t.me/(.*)", gc
-                )
-            )
-            gc = (
-                f"-100{gc.group(1)}"
-                if isinstance(
-                    gc.group(1), int
-                )
-                else f"@{gc.group(1)}"
-            )
+    gc = get_chat_ids(str(gets))
+    if not gc:
+        await eor(
+            message,
+            text="Please provide id/username/link messages of group or channel.",
+        )
+        return
+
+    x = await eor(
+        message,
+        text="Joined video chats...",
+    )
     try:
         chat = await client.get_chat(gc)
     except Exception as excp:
@@ -279,9 +259,8 @@ async def _video_chats_joined(
             x, text=f"Exception: {excp}"
         )
         return
-    with suppress(ValueError):
-        chat_id = int(chat.id)
 
+    chat_id = int(chat.id)
     group_call = await get_group_call(
         client,
         message,
@@ -330,43 +309,23 @@ async def _video_chats_joined(
 async def _video_chats_leaving(
     client, message
 ):
-    x = await eor(
-        message,
-        text="Leaving video chats...",
-    )
-    gc = (
+    gets = (
         message.command[1]
         if len(message.command) > 1
         else message.chat.id
     )
-    if isinstance(gc, int):
-        gc: int = gc
-    else:
-        if "@" in gc:
-            gc: str = gc
-        elif "/c/" or "t.me/" in gc:
-            gc = sub(
-                "\\s+(.*)$", r"", gc
-            )
-            gc = (
-                search(r"/c/(.*)/", gc)
-                or search(
-                    r"/c/(.*)", gc
-                )
-                or search(
-                    r"t.me/(.*)/", gc
-                )
-                or search(
-                    r"t.me/(.*)", gc
-                )
-            )
-            gc = (
-                f"-100{gc.group(1)}"
-                if isinstance(
-                    gc.group(1), int
-                )
-                else f"@{gc.group(1)}"
-            )
+    gc = get_chat_ids(str(gets))
+    if not gc:
+        await eor(
+            message,
+            text="Please provide id/username/link messages of group or channel.",
+        )
+        return
+
+    x = await eor(
+        message,
+        text="Leaving video chats...",
+    )
     try:
         chat = await client.get_chat(gc)
     except Exception as excp:
@@ -375,9 +334,8 @@ async def _video_chats_leaving(
             x, text=f"Exception: {excp}"
         )
         return
-    with suppress(ValueError):
-        chat_id = int(chat.id)
 
+    chat_id = int(chat.id)
     group_call = await get_group_call(
         client,
         message,
@@ -440,39 +398,23 @@ async def _video_chats_information(
         message,
         text="Getting information video chats...",
     )
-    gc = (
+    gets = (
         message.command[1]
         if len(message.command) > 1
         else message.chat.id
     )
-    if isinstance(gc, int):
-        gc: int = gc
-    else:
-        if "@" in gc:
-            gc: str = gc
-        elif "/c/" or "t.me/" in gc:
-            gc = sub(
-                "\\s+(.*)$", r"", gc
-            )
-            gc = (
-                search(r"/c/(.*)/", gc)
-                or search(
-                    r"/c/(.*)", gc
-                )
-                or search(
-                    r"t.me/(.*)/", gc
-                )
-                or search(
-                    r"t.me/(.*)", gc
-                )
-            )
-            gc = (
-                f"-100{gc.group(1)}"
-                if isinstance(
-                    gc.group(1), int
-                )
-                else f"@{gc.group(1)}"
-            )
+    gc = get_chat_ids(str(gets))
+    if not gc:
+        await eor(
+            message,
+            text="Please provide id/username/link messages of group or channel.",
+        )
+        return
+
+    x = await eor(
+        message,
+        text="Getting information video chats...",
+    )
     try:
         chat = await client.get_chat(gc)
     except Exception as excp:
@@ -481,9 +423,8 @@ async def _video_chats_information(
             x, text=f"Exception: {excp}"
         )
         return
-    with suppress(ValueError):
-        chat_id = int(chat.id)
 
+    chat_id = int(chat.id)
     group_call = await get_group_call(
         client,
         message,

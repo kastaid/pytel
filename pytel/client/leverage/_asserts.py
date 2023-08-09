@@ -8,7 +8,7 @@
 from asyncio import sleep
 from contextlib import suppress
 from inspect import getfullargspec
-from re import findall
+from re import findall, search
 from typing import Optional, Union
 from pyrogram.enums import (
     MessageEntityType,)
@@ -235,3 +235,31 @@ async def extract_user(client, message):
             client, message
         )
     )[0]
+
+
+def get_chat_ids(ct: Optional[str]):
+    if ct.startswith(
+        "100"
+    ) or ct.startswith("-100"):
+        return ct
+    elif (
+        ct.startswith("https://t.me/")
+        or ct.startswith("t.me/")
+        or ct.startswith("@")
+    ):
+        if "@" in ct:
+            return str(ct)
+        elif "/c/" in ct:
+            ct = search(
+                r"/c/(.*)/", ct
+            ) or search(r"/c/(.*)", ct)
+            return "-100" + ct.group(1)
+        elif "t.me/" in ct:
+            ct = search(
+                r"t.me/(.*)/", ct
+            ) or search(
+                r"t.me/(.*)", ct
+            )
+            return "@" + ct.group(1)
+    else:
+        return False

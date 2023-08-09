@@ -2,7 +2,7 @@ wheel
 setuptools
 frozenlist
 requests
-openai
+wget
 psutil
 pyrogram
 pyroaddon
@@ -30,3 +30,15 @@ localdb.json==1.0
 lxml==4.9.2
 uvloop==0.17.0
 validators==0.20.0
+
+# engine parser
+git+https://github.com/unknownkz/search-engine-parser@master
+
+# yt
+git+https://github.com/yt-dlp/yt-dlp
+youtube-search-python==1.6.6
+youtube-search
+
+# api
+openai
+instagrapi

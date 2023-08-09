@@ -76,4 +76,12 @@ AI_KEY: Optional[str] = gets(
     "AI_KEY", ""
 )
 
+# Instagram Account
+IG_USN: Optional[str] = gets(
+    "IG_USN", ""
+)
+IG_PASS: Optional[str] = gets(
+    "IG_PASS", ""
+)
+
 del load_dotenv, gets
