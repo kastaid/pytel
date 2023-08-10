@@ -287,19 +287,12 @@ async def _cb_asst_payment(
             else:
                 if cq.from_user.id:
                     await cq.message.delete()
-                    try:
-                        await payment_listener(
-                            client,
-                            cq.message,
-                            cq,
-                            via="DANA",
-                        )
-                    except (
-                        Exception
-                    ) as excp:
-                        send_log.exception(
-                            excp
-                        )
+                    await payment_listener(
+                        client,
+                        cq.message,
+                        cq,
+                        via="DANA",
+                    )
 
     elif payment_confirm_ovo:
         with suppress(BaseException):
@@ -316,19 +309,12 @@ async def _cb_asst_payment(
             else:
                 if cq.from_user.id:
                     await cq.message.delete()
-                    try:
-                        await payment_listener(
-                            client,
-                            cq.message,
-                            cq,
-                            via="OVO",
-                        )
-                    except (
-                        Exception
-                    ) as excp:
-                        send_log.exception(
-                            excp
-                        )
+                    await payment_listener(
+                        client,
+                        cq.message,
+                        cq,
+                        via="OVO",
+                    )
 
 
 async def payment_listener(
@@ -336,7 +322,10 @@ async def payment_listener(
 ):
     if via == "DANA":
         r = await cq.message.reply(
-            "Silahkan kirimkan bukti Screenshoot pembayaran Anda.",
+            Assistant.TEXT_PAYMENT.format(
+                cq.from_user.mention,
+                via,
+            ),
         )
         try:
             msg = await client.listen(
@@ -345,16 +334,15 @@ async def payment_listener(
                     cq.from_user.id
                 )
                 & filters.private,
-                timeout=300,
+                timeout=600,
             )
         except asyncio.TimeoutError:
-            msg = await client.ask(
-                cq.from_user.id,
-                filters.user(
-                    cq.from_user.id
-                )
-                & filters.private,
-                timeout=300,
+            await cq.message.reply(
+                Assistant.TEXT_PAYMENT_NOTIFY.format(
+                    cq.from_user.mention,
+                    via,
+                ),
+                reply_markup=Assistant.payment_dana_buttons,
             )
         if msg.photo:
             f_dana = await client.download_media(
@@ -367,20 +355,6 @@ async def payment_listener(
                 )
             )
             remove(f_dana)
-            notify_buy = f"""
-#BUYER #STATUS #CONFIRM
-
-User ID: <code>{cq.from_user.id}</code>
-Username: @{cq.from_user.username}
-via: <b>DANA</b>
-
-(c) @kastaid #pytel
-"""
-            await client.send_message(
-                int(OWNER_ID),
-                text=notify_buy,
-                reply_to_message_id=bkt_dana.id,
-            )
             text = """
 Mohon Tunggu, Seller akan memeriksa pembayaran Anda.
 Jika Pembayaran Anda Terbukti, Anda akan mendapatkan Notifikasi
@@ -391,29 +365,45 @@ dari sini.
                 show_alert=True,
                 cache_time=300,
             )
+            await client.send_message(
+                int(OWNER_ID),
+                Assistant.NOTIFY_BUYER.format(
+                    cq.from_user.id,
+                    cq.from_user.username,
+                    via,
+                ),
+                reply_to_message_id=bkt_dana.id,
+            )
+            await r.delete()
+            return
 
         else:
-            await cq.answer(
-                "Mohon maaf, kirimkan pembayaran berupa Photo.",
-                show_alert=True,
-                cache_time=300,
-            )
-            text = """
-<u><b>PAYMENT DANA</b></u>
+            text = f"""
+<u><b>PAYMENT {via}</b></u>
 
 Silahkan kirim ulang pembayaran Anda.
 Tekan Confirm, lalu kirim bukti pembayaran Anda.
 """
-            await cq.message.reply(
-                text,
-                reply_markup=Assistant.payment_dana_buttons,
+            await asyncio.gather(
+                cq.answer(
+                    "Mohon maaf, kirimkan pembayaran berupa Photo.",
+                    show_alert=True,
+                    cache_time=300,
+                ),
+                cq.message.reply(
+                    text,
+                    reply_markup=Assistant.payment_dana_buttons,
+                ),
             )
-
-        await r.delete()
+            await r.delete()
+            return
 
     elif via == "OVO":
         r = await cq.message.reply(
-            "Silahkan kirimkan bukti Screenshoot pembayaran Anda.",
+            Assistant.TEXT_PAYMENT.format(
+                cq.from_user.mention,
+                via,
+            ),
         )
         try:
             msg = await client.listen(
@@ -425,13 +415,12 @@ Tekan Confirm, lalu kirim bukti pembayaran Anda.
                 timeout=300,
             )
         except asyncio.TimeoutError:
-            msg = await client.listen(
-                cq.from_user.id,
-                filters.user(
-                    cq.from_user.id
-                )
-                & filters.private,
-                timeout=300,
+            await cq.message.reply(
+                Assistant.TEXT_PAYMENT_NOTIFY.format(
+                    cq.from_user.mention,
+                    via,
+                ),
+                reply_markup=Assistant.payment_ovo_buttons,
             )
         if msg.photo:
             f_ovo = await client.download_media(
@@ -444,20 +433,6 @@ Tekan Confirm, lalu kirim bukti pembayaran Anda.
                 )
             )
             remove(f_ovo)
-            notify_buy = f"""
-#BUYER #STATUS #CONFIRM
-
-User ID: <code>{cq.from_user.id}</code>
-Username: @{cq.from_user.username}
-via: <b>OVO</b>
-
-(c) @kastaid #pytel
-"""
-            await client.send_message(
-                int(OWNER_ID),
-                text=notify_buy,
-                reply_to_message_id=bkt_ovo.id,
-            )
             text = """
 Mohon Tunggu, Seller akan memeriksa pembayaran Anda.
 Jika Pembayaran Anda Terbukti, Anda akan mendapatkan Notifikasi
@@ -468,24 +443,37 @@ dari sini.
                 show_alert=True,
                 cache_time=300,
             )
-        else:
-            await cq.answer(
-                "Mohon maaf, kirimkan pembayaran berupa Photo.",
-                show_alert=True,
-                cache_time=300,
+            await client.send_message(
+                int(OWNER_ID),
+                Assistant.NOTIFY_BUYER.format(
+                    cq.from_user.id,
+                    cq.from_user.username,
+                    via,
+                ),
+                reply_to_message_id=bkt_ovo.id,
             )
-            text = """
-<u><b>PAYMENT OVO</b></u>
+            await r.delete()
+            return
+        else:
+            text = f"""
+<u><b>PAYMENT {via}</b></u>
 
 Silahkan kirim bukti pembayaran Anda.
 Tekan Confirm, lalu kirim bukti pembayaran Anda.
 """
-            await cq.message.reply(
-                text,
-                reply_markup=Assistant.payment_ovo_buttons,
+            await asyncio.gather(
+                cq.answer(
+                    "Mohon maaf, kirimkan pembayaran berupa Photo.",
+                    show_alert=True,
+                    cache_time=300,
+                ),
+                cq.message.reply(
+                    text,
+                    reply_markup=Assistant.payment_ovo_buttons,
+                ),
             )
-
-        await r.delete()
+            await r.delete()
+            return
 
 
 @pytel_tgb.on_callback_query(

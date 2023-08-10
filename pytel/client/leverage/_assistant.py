@@ -123,6 +123,33 @@ Jika sudah melakukan pembayaran,
 silahkan Tekan ✅ Confirm Payment.
 """
 
+    TEXT_PAYMENT = """
+Kepada {}
+Silahkan kirimkan bukti pembayaran Anda.
+( Screenshoot )
+
+Jika Anda tidak mengirimkan bukti pembayaran dalam
+kurun waktu 5 menit, maka status pembelian Anda dibatalkan secara Otomatis.
+
+<b><u>PAYMENT {}</b></u>
+"""
+
+    TEXT_PAYMENT_NOTIFY = """
+Kepada {}
+Limit waktu pembayaran Anda telah habis.
+Silahkan tekan tombol dibawah ini untuk pengiriman ulang.
+"""
+
+    NOTIFY_BUYER = """
+#BUYER #STATUS #CONFIRM
+
+User ID: <code>{}</code>
+Username: @{}
+via: <b>{}</b>
+
+(c) @kastaid #pytel
+"""
+
     home_buttons = ikmarkup(
         [
             [

@@ -4,11 +4,11 @@ frozenlist
 requests
 wget
 psutil
-pyrogram
 pyroaddon
 pytelibs
 speedtest-cli
 Pytanggalmerah
+Pillow
 
 # --- setup ---
 
@@ -24,6 +24,7 @@ cachetools==5.3.1
 GitPython==3.1.31
 loguru==0.7.0
 pathlib==1.0.1
+pyrogram==2.0.106
 python-dotenv==1.0.0
 pytgcalls==3.0.0.dev24
 localdb.json==1.0

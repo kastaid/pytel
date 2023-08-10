@@ -319,7 +319,8 @@ Want to be extended? wait until it expires.
 
 <b>Note:</b>
 Tekan Tombol Generate Session 🚀
-Untuk mengaktifkan PYTEL-Premium.
+Untuk membuat String Session Pyrogram,
+Lalu aktifkan PYTEL-Premium.
 
 (c) @kastaid #pytel
 """
@@ -330,12 +331,6 @@ Untuk mengaktifkan PYTEL-Premium.
                 buttons(
                     "Generate Session 🚀",
                     callback_data="generate_session",
-                ),
-            ],
-            [
-                buttons(
-                    "🌐 Channel 🌐",
-                    url="t.me/PYTELPremium/47",
                 ),
             ],
         ]
@@ -394,11 +389,20 @@ async def _del_premium_user(
         user_id = user.id
 
     x = await client.get_users(user_id)
-    rem_expired(int(user_id))
-    text = f"""
+    if user_expired().get(int(x.id)):
+        rem_expired(int(user_id))
+        text = f"""
 🗑 <u>Done, buyer data has been removed.</u>
  └ <b>User:</b> {x.mention}
 
 (c) @kastaid #pytel
 """
-    await xy.edit_text(text)
+        await xy.edit_text(text)
+        return
+
+    else:
+        asxc = f"""
+<u>Buyer</u> {x.mention} <u>not already in the database</u>
+"""
+        await xy.edit_text(asxc)
+        return
