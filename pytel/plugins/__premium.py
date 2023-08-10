@@ -34,8 +34,7 @@ from . import (
     filters,
     developer,
     ikmarkup,
-    legally_required,
-    channel_groups,)
+    legally_required,)
 
 
 async def _get_status_user(
@@ -87,8 +86,8 @@ async def _get_status_user(
 
 @pytel.instruction(
     [
-        "expired",
-        "status",
+        "dexpired",
+        "dstatus",
     ],
     force_edit=False,
     supergroups=True,
@@ -193,10 +192,9 @@ async def _premstat_inline(
 
 @pytel_tgb.on_message(
     legally_required
-    & channel_groups
     & filters.private
     & filters.command(
-        "setpremium",
+        ["setpremium", "setprem"],
         prefixes=list(px),
     )
 )
@@ -349,10 +347,9 @@ Lalu aktifkan PYTEL-Premium.
 
 @pytel_tgb.on_message(
     legally_required
-    & channel_groups
     & filters.private
     & filters.command(
-        "delpremium",
+        ["delpremium", "delprem"],
         prefixes=list(px),
     )
 )
