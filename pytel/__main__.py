@@ -96,6 +96,10 @@ def load_plugins():
                     "[✅]" + plugin
                 )
                 sl(0.5)
+        except KeyboardInterrupt:
+            send_log.warning(
+                "Received interrupt while installing"
+            )
         except Exception as excp:
             send_log.exception(
                 f"[❌] {plugin} : {excp} "
@@ -123,6 +127,10 @@ async def start_asst():
     except FloodWait as flood:
         await sleep(flood.value + 5)
         await pytel_tgb.start()
+    except KeyboardInterrupt:
+        send_log.warning(
+            "Received interrupt while connecting"
+        )
     except Exception as excp:
         send_log.exception(excp)
     send_log.success(
@@ -142,12 +150,12 @@ async def runner():
             )
             await sleep(2)
             await running_message(_)
-        except Exception as exc:
-            send_log.exception(exc)
         except KeyboardInterrupt:
             send_log.warning(
                 "Received interrupt while connecting"
             )
+        except Exception as exc:
+            send_log.exception(exc)
     load_plugins()
     await sleep(1.5)
     await _.flash()

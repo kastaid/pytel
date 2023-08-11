@@ -162,7 +162,7 @@ parser.add_argument(
 )
 
 
-def main() -> None:
+def main():
     args = parser.parse_args()
     if args.prod:
         print(

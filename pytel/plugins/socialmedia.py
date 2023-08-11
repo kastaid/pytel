@@ -46,6 +46,7 @@ _YOUTUBE_DLDR = """
 @pytel.instruction(
     ["ytv", "ytvdl"],
     outgoing=True,
+    supergroups=True,
     privileges=[
         "can_send_media_messages"
     ],
@@ -201,6 +202,7 @@ async def _youtube_video_dl(
 @pytel.instruction(
     ["yta", "ytadl"],
     outgoing=True,
+    supergroups=True,
     privileges=[
         "can_send_media_messages"
     ],
@@ -485,6 +487,7 @@ async def _google_searching(
 @pytel.instruction(
     ["igs", "igsearch"],
     outgoing=True,
+    supergroups=True,
     privileges=[
         "can_send_media_messages"
     ],
@@ -558,7 +561,8 @@ Copyright (C) 2023-present @kastaid
             )
             filn = f"cache/{username_ig}.jpg"
             r = getreq(
-                get_pic[0], stream=True
+                get_pic.group(0),
+                stream=True,
             )
             with open(filn, "wb") as f:
                 for (
@@ -598,6 +602,7 @@ Copyright (C) 2023-present @kastaid
 @pytel.instruction(
     ["igpdl", "igvdl"],
     outgoing=True,
+    supergroups=True,
     privileges=[
         "can_send_media_messages"
     ],
@@ -668,6 +673,7 @@ async def _instagram_dl(
 @pytel.instruction(
     ["pintdl", "pindl"],
     outgoing=True,
+    supergroups=True,
     privileges=[
         "can_send_media_messages"
     ],
@@ -724,6 +730,7 @@ async def _pinterest_dl(
 @pytel.instruction(
     ["tiktokdl", "ttdl"],
     outgoing=True,
+    supergroups=True,
     privileges=[
         "can_send_media_messages"
     ],
