@@ -635,7 +635,7 @@ async def _instagram_dl(
             type_dl="photo",
         )
         if photo:
-            caption = "Projects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( Facebook )"
+            caption = "<b><u>INSTAGRAM DOWNLOADER</b></u>\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( Facebook )"
             await client.send_photo(
                 message.chat.id,
                 photo=photo,
@@ -655,7 +655,7 @@ async def _instagram_dl(
             type_dl="video",
         )
         if video:
-            caption = "Projects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( Facebook )"
+            caption = "<b><u>INSTAGRAM DOWNLOADER</b></u>\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( Facebook )"
             await client.send_video(
                 message.chat.id,
                 video=video,
@@ -758,16 +758,6 @@ async def _tiktok_dl(client, message):
     video, audio, description = TikTok(
         tiktok_url=str_link
     )
-    if (
-        not video
-        and audio
-        and description
-    ):
-        await eor(
-            x,
-            text="Can't find Tiktok video!",
-        )
-        return
     if video:
         with suppress(Exception):
             caption = f"{description}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://tiktok.com'>Tiktok</a>"
@@ -784,6 +774,12 @@ async def _tiktok_dl(client, message):
                     audio=audio,
                     caption=caption,
                 )
+    else:
+        await eor(
+            x,
+            text="Can't find Tiktok video!",
+        )
+        return
 
     return await _try_purged(x, 1)
 

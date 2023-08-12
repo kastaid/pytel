@@ -124,10 +124,21 @@ def TikTok(
         f"https://api.douyin.wtf/api?url={tiktok_url}"
     ).json()
     if not response:
-        return False, False, False
-    video = response["video_data"][
-        "nwm_video_url"
-    ]
+        return None, None, None
+
+    if response["status"] == "failed":
+        return None, None, None
+
+    if response["video_data"][
+        "nwm_video_url_HQ"
+    ]:
+        video = response["video_data"][
+            "nwm_video_url_HQ"
+        ]
+    else:
+        video = response["video_data"][
+            "nwm_video_url"
+        ]
     if response["desc"]:
         description = response["desc"]
     else:
