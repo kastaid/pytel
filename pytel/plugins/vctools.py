@@ -394,10 +394,6 @@ async def _video_chats_leaving(
 async def _video_chats_information(
     client, message
 ):
-    x = await eor(
-        message,
-        text="Getting information video chats...",
-    )
     gets = (
         message.command[1]
         if len(message.command) > 1
