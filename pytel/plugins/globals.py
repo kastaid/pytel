@@ -10,6 +10,12 @@ from random import randrange
 from time import time
 from pyrogram.enums import (
     ChatMemberStatus,)
+from ..client.dbase.dbGBlacklist import (
+    check_blacklisted,
+    add_blacklisted,
+    rem_blacklisted,
+    rem_all_blacklisted,
+    list_blacklisted,)
 from . import (
     _GBAN_LOCKED,
     _UNGBAN_LOCKED,
@@ -31,7 +37,185 @@ from . import (
     get_blacklisted,
     random_prefixies,
     user_and_reason,
+    get_chat_ids,
     _try_purged,)
+
+
+@pytel.instruction(
+    ["addbl"],
+    outgoing=True,
+)
+async def _added_blacklisted(
+    client, message
+):
+    get_chat_group = (
+        message.command[1]
+        if len(message.command) > 1
+        else message.chat.id
+    )
+    gc = get_chat_ids(
+        str(get_chat_group)
+    )
+    if not gc:
+        await eor(
+            message,
+            text="Please provide id/username/link messages of group.",
+        )
+        return
+
+    x = await eor(
+        message,
+        text="Checking...",
+    )
+    try:
+        chat = await client.get_chat(gc)
+    except Exception as excp:
+        client.send_log.exception(excp)
+        await eor(
+            x, text=f"Exception: {excp}"
+        )
+        return
+
+    user_id = client.me.id
+    chat_name = str(chat.title)
+    chat_id = int(chat.id)
+
+    check = check_blacklisted(
+        user_id, chat_id
+    )
+    if check:
+        await eor(
+            x,
+            text="This chats already in blacklisted.",
+        )
+        return
+
+    add_blacklisted(user_id, chat_id)
+    text = f"""
+<b><u>ADDED BLACKLISTED</u></b>
+├ <b>Group Name:</b> {chat_name}
+└ <b>Group ID:</b> <code>{chat_id}</code>
+"""
+    await eor(
+        x,
+        text=text,
+    )
+
+
+@pytel.instruction(
+    ["rembl"],
+    outgoing=True,
+)
+async def _rem_blacklisted(
+    client, message
+):
+    get_chat_group = (
+        message.command[1]
+        if len(message.command) > 1
+        else message.chat.id
+    )
+    gc = get_chat_ids(
+        str(get_chat_group)
+    )
+    if not gc:
+        await eor(
+            message,
+            text="Please provide id/username/link messages of group.",
+        )
+        return
+
+    x = await eor(
+        message,
+        text="Checking...",
+    )
+    try:
+        chat = await client.get_chat(gc)
+    except Exception as excp:
+        client.send_log.exception(excp)
+        await eor(
+            x, text=f"Exception: {excp}"
+        )
+        return
+
+    user_id = client.me.id
+    chat_name = str(chat.title)
+    chat_id = int(chat.id)
+
+    check = check_blacklisted(
+        user_id, chat_id
+    )
+    if not check:
+        await eor(
+            x,
+            text="This chats not already in blacklisted.",
+        )
+        return
+
+    rem_blacklisted(user_id, chat_id)
+    text = f"""
+<b><u>REMOVE BLACKLISTED</u></b>
+├ <b>Group Name:</b> {chat_name}
+└ <b>Group ID:</b> <code>{chat_id}</code>
+"""
+    await eor(
+        x,
+        text=text,
+    )
+
+
+@pytel.instruction(
+    ["remallbl"],
+    outgoing=True,
+)
+async def _rem_all_blacklisted(
+    client, message
+):
+    if client:
+        user_id = client.me.id
+        rem_all_blacklisted(user_id)
+        text = f"""
+<b><u>REMOVING ALL BLACKLISTED CHATS</u></b>
+└ <b>Status:</b> <i>Success</i>
+"""
+        await eor(
+            message,
+            text=text,
+        )
+
+
+@pytel.instruction(
+    ["listbl"],
+    outgoing=True,
+)
+async def _lists_blacklisted(
+    client, message
+):
+    x = await eor(
+        message,
+        text="Checking...",
+    )
+    user = client.me.id
+    groups = list_blacklisted(user)
+    if not groups:
+        await eor(
+            x,
+            text="You don't have a blacklisted.",
+        )
+        return
+    text = (
+        "<u><b>BLACKLISTED CHAT</u></b>"
+    )
+    for c in groups:
+        chat = await client.get_chat(
+            int(c)
+        )
+        text += f"\n├ <code>{chat.id}</code> - {chat.title}"
+
+    if text:
+        await eor(
+            x,
+            text=text,
+        )
 
 
 @pytel.instruction(
@@ -68,6 +252,16 @@ async def _global_broadcast(
             attempts=6,
             fallbacks=GCAST_BLACKLIST,
         )
+        dbl = list_blacklisted(
+            user_lock
+        )
+        lsted = []
+        if dbl:
+            lsted += [
+                int(_) for _ in dbl
+            ]
+        else:
+            pass
         gblack = {
             *BLACKLIST,
         }
@@ -97,6 +291,12 @@ async def _global_broadcast(
                 if (
                     chat_id
                     not in gblack
+                    and (
+                        chat_id
+                        not in list(
+                            lsted
+                        )
+                    )
                 ):
                     try:
                         if (
@@ -760,6 +960,10 @@ async def _unglobal_banned(
 
 
 plugins_helper["globals"] = {
+    f"{random_prefixies(px)}addbl [id/username/link message or not]": "To added blacklisted ( gcast chats ).",
+    f"{random_prefixies(px)}rembl [id/username/link message or not]": "To remove blacklisted ( gcast chats ).",
+    f"{random_prefixies(px)}remallbl": "To removing all blacklisted ( gcast chats ).",
+    f"{random_prefixies(px)}listbl": "To get blacklisted ( gcast chats ).",
     f"{random_prefixies(px)}gcast [text/reply message]": "To broadcast a message globally to all groups u've.",
     f"{random_prefixies(px)}gucast [text/reply message]": "To broadcast a message globally to all users.",
     f"{random_prefixies(px)}gban [username/id/reply user] [reason]": "To globally banned user.",
