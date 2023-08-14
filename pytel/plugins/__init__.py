@@ -86,7 +86,6 @@ from ..client import (
 from ..config import (
     PREFIX as px,
     TimeZone,
-    GH_PAT,
     LOGCHAT_ID,
     OWNER_ID,)
 from ..logger import pylog as send_log
