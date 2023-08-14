@@ -28,7 +28,7 @@ from . import (
     FloodWait,
     ParseMode,
     eor,
-    developer,
+    _supersu,
     get_text,
     time_formatter,
     plugins_helper,
@@ -412,7 +412,7 @@ async def _global_user_broadcast(
         )
         gblack = {
             *GU_BLACKLIST,
-            *developer,
+            *_supersu,
         }
         if message.reply_to_message:
             send = (
@@ -551,7 +551,7 @@ async def _global_banned(
             text="I can't find that user.",
         )
         return
-    if (user in list(developer)) or (
+    if (user in list(_supersu)) or (
         user == int(OWNER_ID)
     ):
         return
@@ -771,7 +771,7 @@ async def _unglobal_banned(
             text="I can't find that user.",
         )
         return
-    if (user in list(developer)) or (
+    if (user in list(_supersu)) or (
         user == int(OWNER_ID)
     ):
         return

@@ -27,7 +27,7 @@ from pyrogram.raw.functions import (
     PingDelayDisconnect,)
 from pytelibs import (
     _chpytel,
-    developer,
+    _supersu,
     GCAST_BLACKLIST,
     GUCAST_BLACKLIST,
     _GCAST_LOCKED,

@@ -26,7 +26,7 @@ from . import (
     LOGCHAT_ID,
     ParseMode,
     eor,
-    developer,
+    _supersu,
     functions,
     plugins_helper,
     px,
@@ -93,7 +93,7 @@ async def _anti_pm_status(
             or message.from_user.is_contact
             or message.from_user.is_support
             or user_info.user_id
-            in list(developer)
+            in list(_supersu)
         ) or (
             message.from_user.id
             == int(OWNER_ID)

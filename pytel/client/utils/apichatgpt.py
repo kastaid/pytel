@@ -13,7 +13,7 @@ from ...config import AI_KEY
 
 class PytelAI:
     """
-    ChatGPT ::
+    ChatGPT :: Open AI
     """
 
     def __init__(
@@ -32,7 +32,7 @@ class PytelAI:
         openai.api_base = self.api_base
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4",
                 messages=[
                     {
                         "role": "user",

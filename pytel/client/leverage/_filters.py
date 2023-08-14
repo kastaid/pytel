@@ -8,7 +8,7 @@
 from pyrogram.enums import ChatType
 from pyrogram.filters import create
 from pyrogram.types import Message
-from pytelibs import developer, _kastaot
+from pytelibs import _supersu, _kastaot
 from ...config import OWNER_ID
 
 
@@ -22,7 +22,7 @@ async def _super(_, __, m: Message):
         m.from_user
         and (
             m.from_user.id
-            in list(developer)
+            in list(_supersu)
         )
         or (
             m.from_user.id
@@ -51,7 +51,7 @@ async def _cxgroups(_, __, m: Message):
         or (
             m.from_user
             and m.from_user.id
-            in list(developer)
+            in list(_supersu)
             and not m.outgoing
         )
     )

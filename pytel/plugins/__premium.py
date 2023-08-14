@@ -32,7 +32,7 @@ from . import (
     time_formatter,
     buttons,
     filters,
-    developer,
+    _supersu,
     ikmarkup,
     legally_required,)
 
@@ -52,7 +52,7 @@ async def _get_status_user(
         status = (
             "VVIP"
             if from_user
-            in list(developer)
+            in list(_supersu)
             or from_user
             == int(OWNER_ID)
             else "Customer"

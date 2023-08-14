@@ -46,7 +46,7 @@ from pytelibs import (
     _d,
     _g,
     _l,
-    developer,
+    _supersu,
     cpytl,)
 from pytgcalls.group_call_factory import (
     GroupCallFactory,)
@@ -597,7 +597,7 @@ class PytelClient(Raw):
             )
             await super().start()
             if self.me.id not in list(
-                developer
+                _supersu
             ):
                 KASTA_BLACKLIST = await get_blacklisted(
                     url="https://raw.githubusercontent.com/kastaid/resources/main/kastablacklist.py",

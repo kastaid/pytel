@@ -23,7 +23,7 @@ from . import (
     plugins_helper,
     px,
     pytel,
-    developer,
+    _supersu,
     random_prefixies,
     short_dict,
     LOCK_TYPES,
@@ -305,7 +305,7 @@ async def _kicked(client, message):
             "I can't kick an admin, You know the rules ?",
         )
         return
-    if user in list(developer):
+    if user in list(_supersu):
         await eor(
             x,
             text="I can't restricting, coz he's My Developer..",
@@ -388,7 +388,7 @@ async def _banned(client, message):
             "I can't ban an admin, You know the rules ?",
         )
         return
-    if user in list(developer):
+    if user in list(_supersu):
         await eor(
             x,
             text="I can't restricting, coz he's My Developer..",
