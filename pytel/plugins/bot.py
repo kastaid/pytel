@@ -27,7 +27,6 @@ from pyrogram.types import (
 from speedtest import Speedtest
 from version import __version__ as b_ver
 from . import (
-    GH_PAT,
     ChatSendMediaForbidden,
     ChatSendInlineForbidden,
     BotResponseTimeout,
@@ -486,10 +485,6 @@ async def restarting(
     ["devupdate", "dupdate"],
     supersu=["PYTEL"],
 )
-@pytel.instruction(
-    ["update"],
-    outgoing=True,
-)
 async def _updates(client, message):
     if lock.locked():
         await message.edit(
@@ -503,9 +498,7 @@ async def _updates(client, message):
         (
             stdout,
             stderr,
-        ) = RunningCommand(
-            f"git pull https://{GH_PAT}@github.com/kastaid/pytel"
-        )
+        ) = RunningCommand("git pull")
         if (
             "Already up to date."
             in str(stdout)

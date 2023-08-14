@@ -66,14 +66,12 @@ SESSION10: Optional[str] = gets(
     "SESSION10", ""
 )
 
-# GH PERSONAL ACCESS TOKEN
-GH_PAT: Optional[str] = gets(
-    "GH_PAT", ""
-)
-
 # ChatGPT API_KEY
 AI_KEY: Optional[str] = gets(
     "AI_KEY", ""
+)
+AI_BASE: Optional[str] = gets(
+    "AI_BASE", ""
 )
 
 # Instagram Account

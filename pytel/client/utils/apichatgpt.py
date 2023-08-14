@@ -8,7 +8,7 @@
 from typing import Optional, Any
 import openai
 from requests import post
-from ...config import AI_KEY
+from ...config import AI_KEY, AI_BASE
 
 
 class PytelAI:
@@ -199,5 +199,5 @@ class PytelAI:
 
 ChatGPT = PytelAI(
     api_key=AI_KEY,
-    api_base="https://chimeragpt.adventblocks.cc/api/v1",
+    api_base=AI_BASE,
 )

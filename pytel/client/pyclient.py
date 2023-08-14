@@ -32,7 +32,8 @@ from pyrogram.enums import (
     ChatType,
     ParseMode,)
 from pyrogram.errors.exceptions.bad_request_400 import (
-    MessageIdInvalid,)
+    MessageIdInvalid,
+    PersistentTimestampInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
 from pyrogram.filters import Filter
@@ -381,7 +382,10 @@ class PytelClient(Raw):
                         client,
                         message,
                     )
-                except TimeoutError:
+                except (
+                    TimeoutError,
+                    PersistentTimestampInvalid,
+                ):
                     pass
                 except StopPropagation:
                     raise StopPropagation
