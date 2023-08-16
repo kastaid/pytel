@@ -54,6 +54,25 @@ _MEMBERS = [
 ]
 
 
+_STRING_TEXT = """
+<b>PYTEL</b> <u>PYROGRAM SESSION</u>
+
+<b>API ID:</b> <code>{}</code>
+
+<b>API HASH:</b> <code>{}</code>
+
+<b>No. HP:</b> <code>{}</code>
+
+<b>Password:</b> <code>{}</code>
+
+<b>STRING:</b>
+<code>{}</code>
+
+
+(c) @kastaid #pytel - @PYTELPremiumBot
+"""
+
+
 @pytel_tgb.on_message(
     filters.command(
         "start",
@@ -568,9 +587,9 @@ async def _generate_pytel_session(
         api_id = int(api_id_msg.text)
     except ValueError:
         await api_id_msg.reply(
-            "<u><b>API_ID</b></u> tidak valid (harus angka semua).\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
+            "<u><b>API_ID</b></u> tidak valid (harus angka semua).\nSilahkan ulang kembali!",
             quote=True,
-            reply_markup=AstGenerate.gen_buttons,
+            reply_markup=AstGenerate.try_buttons,
         )
         return
     api_hash_msg = await bot.ask(
@@ -583,7 +602,7 @@ async def _generate_pytel_session(
     api_hash = api_hash_msg.text
     phone_number_msg = await bot.ask(
         user_id,
-        "Kirimkan <u><b>No. Handphone</b></u> (Telegram) Anda.\n<b>Jangan Lupa Pakai Code Negara, Contoh: `+62`\n\nTekan /cancel untuk membatalkan proses.",
+        "Kirimkan <u><b>No. Handphone</b></u> (Telegram) Anda.\n<b>Jangan Lupa Pakai Code Negara.\n<b>Contoh:</b> <code>+62</code>\n\nTekan /cancel untuk membatalkan proses.",
         filters=filters.text,
     )
     if await cancelled(
@@ -593,12 +612,12 @@ async def _generate_pytel_session(
     phone_number = phone_number_msg.text
     if not phone_number.startswith("+"):
         await api_id_msg.reply(
-            "<u><b>No. Handphone</b></u> tidak valid (harus menggunakan code negara).\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
+            "<u><b>No. Handphone</b></u> tidak valid (harus menggunakan code negara).\nSilahkan ulang kembali!",
             quote=True,
-            reply_markup=AstGenerate.gen_buttons,
+            reply_markup=AstGenerate.try_buttons,
         )
         return
-    await msg.reply(
+    m_otp = await msg.reply(
         "Sedang mengirimkan OTP..."
     )
     client = Client(
@@ -620,17 +639,18 @@ async def _generate_pytel_session(
         )
     except ApiIdInvalid:
         await msg.reply(
-            "<u><b>API_ID</b></u> dan <u><b>API_HASH</b></u> kombinasi tidak valid.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
-            reply_markup=AstGenerate.gen_buttons,
+            "<u><b>API_ID</b></u> dan <u><b>API_HASH</b></u> kombinasi tidak valid.\nSilahkan ulang kembali!",
+            reply_markup=AstGenerate.try_buttons,
         )
         return
     except PhoneNumberInvalid:
         await msg.reply(
-            "<u><b>No. Handphone</b></u> tidak valid.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
-            reply_markup=AstGenerate.gen_buttons,
+            "<u><b>No. Handphone</b></u> tidak valid.\nSilahkan ulang kembali!",
+            reply_markup=AstGenerate.try_buttons,
         )
         return
     try:
+        await m_otp.delete()
         text = """
 Silahkan check kode OTP dari official Telegram.
 Jika ada, kirim OTP kesini. Kirim kode OTP dengan format dibawah ini.
@@ -643,7 +663,7 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
             user_id,
             text,
             filters=filters.text,
-            timeout=600,
+            timeout=300,
         )
         if await cancelled(
             phone_code_msg
@@ -651,8 +671,8 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
             return
     except asyncio.TimeoutError:
         await msg.reply(
-            "Limit waktu telah habis dalam 10 menit.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
-            reply_markup=AstGenerate.gen_buttons,
+            "Limit waktu telah habis dalam 5 menit.\nSilahkan ulang kembali!",
+            reply_markup=AstGenerate.try_buttons,
         )
         return
     phone_code = (
@@ -660,6 +680,7 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
             " ", ""
         )
     )
+    is_pw = False
     try:
         await client.sign_in(
             phone_number,
@@ -668,17 +689,18 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
         )
     except PhoneCodeInvalid:
         await msg.reply(
-            "Kode OTP tidak valid.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
-            reply_markup=AstGenerate.gen_buttons,
+            "Kode OTP tidak valid.\nSilahkan ulang kembali!",
+            reply_markup=AstGenerate.try_buttons,
         )
         return
     except PhoneCodeExpired:
         await msg.reply(
             "Kode OTP telah kadaluarsa.\nSilahkan ulang kembali!",
-            reply_markup=AstGenerate.gen_buttons,
+            reply_markup=AstGenerate.try_buttons,
         )
         return
     except SessionPasswordNeeded:
+        is_pw = True
         try:
             two_step_msg = await bot.ask(
                 user_id,
@@ -688,8 +710,8 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
             )
         except asyncio.TimeoutError:
             await msg.reply(
-                "Limit waktu telah habis dalam 5 menit.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
-                reply_markup=AstGenerate.gen_buttons,
+                "Limit waktu telah habis dalam 5 menit.\nSilahkan ulang kembali!",
+                reply_markup=AstGenerate.try_buttons,
             )
             return
         try:
@@ -703,20 +725,35 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
                 return
         except PasswordHashInvalid:
             await two_step_msg.reply(
-                "Kata sandi Akun Anda salah.\nSilahkan ulang kembali!\n\nTekan /start untuk memulai.",
-                reply_markup=AstGenerate.gen_buttons,
+                "Kata sandi Akun Anda salah.\nSilahkan ulang kembali!",
+                reply_markup=AstGenerate.try_buttons,
             )
             return
+
+        if password:
+            pw = password
+
     string_session = (
         await client.export_session_string()
     )
-    text = f"<b>PYTEL</b> <u>PYROGRAM SESSION</u>\n\n<b>STRING:</b>\n<code>{string_session}</code>\n\n(c) @kastaid #pytel - @PYTELPremiumBot"
+    if is_pw:
+        psw = pw
+    else:
+        psw = "Tidak ada."
+
     with suppress(KeyError):
         await client.send_message(
             "me",
-            text,
+            text=_STRING_TEXT.format(
+                api_id,
+                api_hash,
+                phone_number,
+                psw,
+                string_session,
+            ),
             parse_mode=ParseMode.HTML,
         )
+
     await client.disconnect()
     await bot.send_message(
         msg.chat.id,

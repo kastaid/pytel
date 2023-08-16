@@ -46,6 +46,17 @@ Tekan Tombol Lanjutkan untuk membuat String.
 <code>Copyright (C) 2023-present kastaid</code>
 """
 
+    try_buttons = ikmarkup(
+        [
+            [
+                buttons(
+                    "Buat Ulang",
+                    callback_data="generate_continue",
+                ),
+            ],
+        ]
+    )
+
     gen_buttons = ikmarkup(
         [
             [

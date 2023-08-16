@@ -32,7 +32,7 @@ class PytelAI:
         openai.api_base = self.api_base
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-4",
+                model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "user",
