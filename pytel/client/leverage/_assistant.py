@@ -126,7 +126,7 @@ silahkan Tekan ✅ Confirm Payment.
     TEXT_PAYMENT = """
 Kepada {}
 Silahkan kirimkan bukti pembayaran Anda.
-( Screenshoot )
+( Screenshot )
 
 Jika Anda tidak mengirimkan bukti pembayaran dalam
 kurun waktu 5 menit, maka status pembelian Anda dibatalkan secara Otomatis.
