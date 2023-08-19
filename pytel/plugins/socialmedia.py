@@ -172,31 +172,40 @@ async def _youtube_video_dl(
             xx,
             text="Uploading video...",
         )
-        await client.send_video(
-            message.chat.id,
-            video=video,
-            thumb=thumbnail,
-            duration=download_data[
-                "duration"
-            ],
-            supports_streaming=True,
-            caption=_YOUTUBE_DLDR.format(
-                thumbn,
-                a_view,
-                "watched",
-                a_date,
-                a_like,
-                loots,
-                ch.replace(" ", ""),
-                ch,
-                a_subscriber,
-                "subscriber",
-            ),
-        )
-        await _try_purged(fx)
-        remove(video)
-        remove(thumbnail)
-        return
+        try:
+            await client.send_video(
+                message.chat.id,
+                video=video,
+                thumb=thumbnail,
+                duration=download_data[
+                    "duration"
+                ],
+                supports_streaming=True,
+                caption=_YOUTUBE_DLDR.format(
+                    thumbn,
+                    a_view,
+                    "watched",
+                    a_date,
+                    a_like,
+                    loots,
+                    ch.replace(" ", ""),
+                    ch,
+                    a_subscriber,
+                    "subscriber",
+                ),
+            )
+            await _try_purged(fx)
+            remove(video)
+            remove(thumbnail)
+            return
+        except BaseException as excp:
+            await eor(
+                fx,
+                text=f"Error: {excp}",
+            )
+            remove(video)
+            remove(thumbnail)
+            return
 
 
 @pytel.instruction(
@@ -322,33 +331,42 @@ async def _youtube_audio_dl(
             xx,
             text="Uploading audio...",
         )
-        await client.send_audio(
-            message.chat.id,
-            audio=audio,
-            thumb=thumbnail,
-            title=download_data[
-                "title"
-            ],
-            performer=download_data[
-                "uploader"
-            ],
-            caption=_YOUTUBE_DLDR.format(
-                thumbn,
-                a_view,
-                "watched",
-                a_date,
-                a_like,
-                loots,
-                ch.replace(" ", ""),
-                ch,
-                a_subscriber,
-                "subscriber",
-            ),
-        )
-        await _try_purged(fx)
-        remove(audio)
-        remove(thumbnail)
-        return
+        try:
+            await client.send_audio(
+                message.chat.id,
+                audio=audio,
+                thumb=thumbnail,
+                title=download_data[
+                    "title"
+                ],
+                performer=download_data[
+                    "uploader"
+                ],
+                caption=_YOUTUBE_DLDR.format(
+                    thumbn,
+                    a_view,
+                    "watched",
+                    a_date,
+                    a_like,
+                    loots,
+                    ch.replace(" ", ""),
+                    ch,
+                    a_subscriber,
+                    "subscriber",
+                ),
+            )
+            await _try_purged(fx)
+            remove(audio)
+            remove(thumbnail)
+            return
+        except BaseException as excp:
+            await eor(
+                fx,
+                text=f"Error: {excp}",
+            )
+            remove(audio)
+            remove(thumbnail)
+            return
 
 
 @pytel.instruction(
