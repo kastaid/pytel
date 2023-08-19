@@ -10,7 +10,8 @@ from mimetypes import guess_type
 from re import findall, search
 from typing import Optional, Any
 from instagrapi import (
-    Client as InstagramClient,)
+    Client as InstagramClient,
+    exceptions as exp,)
 from requests import get
 from ...config import IG_USN, IG_PASS
 
@@ -164,9 +165,25 @@ class MetaAPI:
         self.client = client
         self.ig_usn = ig_usn
         self.ig_pass = ig_pass
-        self.client.login(
-            self.ig_usn, self.ig_pass
-        )
+        try:
+            self.client.login(
+                self.ig_usn,
+                self.ig_pass,
+            )
+        except exp.TwoFactorRequired:
+            AUTH = int(
+                input(
+                    "Please enter the 2FA authentication code: "
+                )
+            )
+        try:
+            self.client.login(
+                self.ig_usn,
+                self.ig_pass,
+                AUTH,
+            )
+        except Exception as excp:
+            print(excp)
 
     def ig_download(
         self,
