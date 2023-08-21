@@ -81,5 +81,8 @@ IG_USN: Optional[str] = gets(
 IG_PASS: Optional[str] = gets(
     "IG_PASS", ""
 )
+IG_SECRET: Optional[str] = gets(
+    "IG_SECRET", ""
+)
 
 del load_dotenv, gets

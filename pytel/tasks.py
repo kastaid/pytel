@@ -24,7 +24,8 @@ signals = {
 
 
 async def pytasks(
-    confirm: Optional[bool], client: Any
+    confirm: Optional[bool],
+    client: Any,
 ):
     """
     TASKS :: Client

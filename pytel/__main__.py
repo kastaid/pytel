@@ -26,7 +26,8 @@ from . import (
     pytl,)
 from .client import (
     plugins_helper,
-    time_formatter,)
+    time_formatter,
+    Instagram,)
 from .client.autopilots import (
     auto_pilots,)
 from .client.runmsg import (
@@ -164,7 +165,8 @@ async def runner():
         _license=f"{__license__}",
     )
     await pytasks(
-        confirm=True, client=pytl
+        confirm=True,
+        client=pytl,
     )
 
 
@@ -192,6 +194,9 @@ if __name__ == "__main__":
         finally:
             x.send_log.info(
                 "See you next time !",
+            )
+            Instagram.loged_out(
+                crash=True
             )
             x.loop.stop()
             exit(0)

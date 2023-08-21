@@ -9,11 +9,16 @@ from contextlib import suppress
 from mimetypes import guess_type
 from re import findall, search
 from typing import Optional, Any
+import pyotp
 from instagrapi import (
     Client as InstagramClient,
     exceptions as exp,)
 from requests import get
-from ...config import IG_USN, IG_PASS
+from ...config import (
+    IG_USN,
+    IG_PASS,
+    IG_SECRET,)
+from ...logger import pylog
 
 
 def Pinterest(
@@ -161,29 +166,24 @@ class MetaAPI:
         client: Any,
         ig_usn: Any,
         ig_pass: Any,
+        ig_secret: Any,
     ):
         self.client = client
         self.ig_usn = ig_usn
         self.ig_pass = ig_pass
-        try:
+        self.get_secret = ig_secret
+        # 2FA Auth
+        auth = pyotp.TOTP(
+            self.get_secret
+        )
+        with suppress(
+            exp.TwoFactorRequired
+        ):
             self.client.login(
                 self.ig_usn,
                 self.ig_pass,
+                auth.now(),
             )
-        except exp.TwoFactorRequired:
-            AUTH = int(
-                input(
-                    "Please enter the 2FA authentication code: "
-                )
-            )
-        try:
-            self.client.login(
-                self.ig_usn,
-                self.ig_pass,
-                AUTH,
-            )
-        except Exception as excp:
-            print(excp)
 
     def ig_download(
         self,
@@ -226,9 +226,19 @@ class MetaAPI:
             else:
                 return False
 
+    def loged_out(
+        self, crash: Optional[bool]
+    ):
+        if crash:
+            with suppress(Exception):
+                self.client.logout()
+
 
 Instagram = MetaAPI(
-    client=InstagramClient(),
+    client=InstagramClient(
+        logger=pylog
+    ),
     ig_usn=IG_USN,
     ig_pass=IG_PASS,
+    ig_secret=IG_SECRET,
 )

@@ -365,6 +365,34 @@ class PytelClient(Raw):
                             return
 
                 if (
+                    "can_invite_users"
+                    in privileges
+                ):
+                    me = await client.get_chat_member(
+                        message.chat.id,
+                        (
+                            await client.get_me()
+                        ).id,
+                    )
+                    if (
+                        me.privileges
+                    ):  # for admins
+                        pass
+                    else:
+                        perm = (
+                            await client.get_chat(
+                                message.chat.id,
+                            )
+                        ).permissions
+                        if (
+                            not perm.can_invite_users
+                        ):
+                            await message.reply(
+                                "<u>Can't invite users</u> in here."
+                            )
+                            return
+
+                if (
                     supergroups
                     and message.chat.type
                     not in [

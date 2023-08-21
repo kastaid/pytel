@@ -14,7 +14,10 @@ from pyrogram.enums import (
 from pyrogram.errors.exceptions.bad_request_400 import (
     MessageNotModified,
     BotResponseTimeout,
-    QueryIdInvalid,)
+    QueryIdInvalid,
+    UsersTooMuch,
+    BotsTooMuch,
+    UserNotMutualContact,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
 from pyrogram.errors.exceptions.forbidden_403 import (
@@ -34,6 +37,7 @@ from pytelibs import (
     _GUCAST_LOCKED,
     _GBAN_LOCKED,
     _UNGBAN_LOCKED,
+    _INVITED_LOCKED,
     LOCK_TYPES,)
 from validators.ip_address import (
     ipv4 as is_ipv4,)

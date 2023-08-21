@@ -1,14 +1,7 @@
 wheel
 setuptools
 frozenlist
-requests
 wget
-psutil
-pyroaddon
-pytelibs
-speedtest-cli
-Pytanggalmerah
-Pillow
 
 # --- setup ---
 
@@ -25,19 +18,29 @@ GitPython==3.1.31
 loguru==0.7.0
 pathlib==1.0.1
 pyrogram==2.0.106
-python-dotenv==1.0.0
 pytgcalls==3.0.0.dev24
 localdb.json==1.0
 lxml==4.9.2
-uvloop==0.17.0
-validators==0.20.0
+
+# extended
+psutil
+Pillow
+Pytanggalmerah
+pyroaddon
+pytelibs
+pyotp
+python-dotenv
+requests
+speedtest-cli
+uvloop
+validators
 
 # engine parser
 git+https://github.com/unknownkz/search-engine-parser@master
 
 # yt
 git+https://github.com/yt-dlp/yt-dlp
-youtube-search-python==1.6.6
+youtube-search-python>=1.6.6
 youtube-search
 
 # api
