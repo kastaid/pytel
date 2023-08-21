@@ -495,5 +495,5 @@ async def _kicked_all(client, message):
 plugins_helper["addktools"] = {
     f"{random_prefixies(px)}add [id/username: list/not (limit 25 username/id)]": "To adding user/bot.",
     f"{random_prefixies(px)}addall [target: id/username/link messages]": "To adding user from target.",
-    f"{random_prefixies(px)}kickall": "To kicked all users in channel/groups.",
+    f"{random_prefixies(px)}[s]kickall (s: silent)": "To kicked all users in channel/groups.",
 }
