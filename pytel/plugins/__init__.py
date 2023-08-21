@@ -22,7 +22,8 @@ from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
 from pyrogram.errors.exceptions.forbidden_403 import (
     ChatSendMediaForbidden,
-    ChatSendInlineForbidden,)
+    ChatSendInlineForbidden,
+    UserPrivacyRestricted,)
 from pyrogram.raw import functions
 from pyrogram.raw.all import layer
 from pyrogram.raw.functions import (

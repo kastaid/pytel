@@ -16,6 +16,7 @@ from pyrogram.enums import (
 from . import (
     FloodWait,
     UserNotMutualContact,
+    UserPrivacyRestricted,
     UsersTooMuch,
     BotsTooMuch,
     _INVITED_LOCKED,
@@ -296,6 +297,16 @@ async def _invited_all(client, message):
                             )
                             return
                         except UserNotMutualContact:
+                            failed = (
+                                failed
+                                + 1
+                            )
+                        except UserPrivacyRestricted:
+                            failed = (
+                                failed
+                                + 1
+                            )
+                        except BaseException:
                             failed = (
                                 failed
                                 + 1
