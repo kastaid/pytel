@@ -33,6 +33,19 @@ PYTEL = r"""
  |_|    |___/
 """
 
+_STRING_TEXT = """
+<b>PYTEL</b> <u>PYROGRAM SESSION</u>
+
+<b>API ID:</b> <code>{}</code>
+
+<b>API HASH:</b> <code>{}</code>
+
+<b>STRING:</b>
+<code>{}</code>
+
+(c) @kastaid #pytel - @PYTELPremiumBot
+"""
+
 
 def loading():
     print(
@@ -126,7 +139,11 @@ def session():
             )
             pytel.send_message(
                 "me",
-                f"`{ss}`\n\nAbove is your Pyrogram Session String for pytel.\n**DO NOT SHARE it.**",
+                _STRING_TEXT.format(
+                    API_ID,
+                    API_HASH,
+                    ss,
+                ),
             )
             print(
                 "Session has been sent to your saved messages!"
@@ -145,7 +162,7 @@ def main():
     try:
         type_of_ss = str(
             input(
-                "\npytel using pyrogram session.\n\nDo you want to generate?\n\nEnter choice(Y/n) :  "
+                "\npytel using pyrogram session.\n\nDo you want to generate?\n\nEnter choice (Y/n) :  "
             )
         )
     except Exception as excp:
