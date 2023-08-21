@@ -294,12 +294,26 @@ class PytelClient(Raw):
                         ).id,
                     )
                     if (
-                        not me.privileges.can_restrict_members
+                        me.status
+                        not in (
+                            ChatMemberStatus.OWNER,
+                            ChatMemberStatus.ADMINISTRATOR,
+                        )
                     ):
                         await message.reply(
                             "I don't have the privilege to restricting people."
                         )
                         return
+                    else:
+                        if (
+                            me.privileges.can_restrict_members
+                        ):  # for admins
+                            pass
+                        else:
+                            await message.reply(
+                                "I don't have the privilege to restricting people."
+                            )
+                            return
                 if (
                     "can_pinned"
                     in privileges

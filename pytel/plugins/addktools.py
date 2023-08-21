@@ -6,6 +6,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep, Lock
+from contextlib import suppress
 from datetime import datetime, timedelta
 from random import randrange
 from threading import RLock
@@ -13,6 +14,8 @@ from pyrogram.enums import (
     UserStatus,
     ChatType,
     ChatMemberStatus,)
+from pyrogram.errors import (
+    UserAdminInvalid,)
 from . import (
     FloodWait,
     UserNotMutualContact,
@@ -20,6 +23,7 @@ from . import (
     UsersTooMuch,
     BotsTooMuch,
     _INVITED_LOCKED,
+    _KICKED_LOCKED,
     plugins_helper,
     px,
     pytel,
@@ -29,17 +33,27 @@ from . import (
     _try_purged,
     get_chat_ids,)
 
-_WORKER = []
+_WORKER_INVITED = []
+_WORKER_KICKED = []
 
 _LIMITED_FLOOD_TEXT = """
 <b>Your account is <u>Limited</u></b>
-Wait until it's time:
-<code>{}</code>
+
+<b><u>Wait</u></b> until it's time:
+└ ⏰ <code>{}</code>
+"""
+
+_KICKING_TEXT = """
+<b><u>KICKING USERS</b></u>
+├ <b>Status:</b> {}
+└ <b>Kicked:</b> ➖ <code>{}</code> users.
+
+<b>Failed:</b> <code>{}</code> users.
 """
 
 _ADDING_TEXT = """
 <b><u>INVITING USERS</b></u>
-├ <b>Status:</b> 🔄 <i>Running</i>
+├ <b>Status:</b> {}
 └ <b>Adding:</b> ➕ <code>{}</code> users.
 
 <b>Failed:</b> <code>{}</code> users.
@@ -47,7 +61,7 @@ _ADDING_TEXT = """
 
 
 @pytel.instruction(
-    ["invite"],
+    ["add"],
     outgoing=True,
     supergroups=True,
     privileges=["can_invite_users"],
@@ -111,13 +125,13 @@ async def _invited(client, message):
 
 
 @pytel.instruction(
-    ["dinviteall"],
+    ["daddall"],
     supersu=["PYTEL"],
     supergroups=True,
     privileges=["can_invite_users"],
 )
 @pytel.instruction(
-    ["inviteall"],
+    ["addall"],
     outgoing=True,
     supergroups=True,
     privileges=["can_invite_users"],
@@ -183,8 +197,14 @@ async def _invited_all(client, message):
             _ASYNC_INV = Lock()
             chat_id = message.chat.id
             async with _ASYNC_INV:
-                success, failed = 0, 0
-                _WORKER.append(chat_id)
+                (
+                    success,
+                    failed,
+                    run_status,
+                ) = (0, 0, False)
+                _WORKER_INVITED.append(
+                    chat_id
+                )
                 _INVITED_LOCKED.add(
                     user_lock
                 )
@@ -229,7 +249,7 @@ async def _invited_all(client, message):
                         try:
                             if (
                                 chat_id
-                                not in _WORKER
+                                not in _WORKER_INVITED
                                 and (
                                     user_lock
                                     not in _INVITED_LOCKED
@@ -237,11 +257,16 @@ async def _invited_all(client, message):
                             ):
                                 break
 
+                            running = "🔄 <i>Running</i>"
                             await xy.edit(
                                 _ADDING_TEXT.format(
+                                    running,
                                     success,
                                     failed,
                                 )
+                            )
+                            await sleep(
+                                1
                             )
 
                             await client.add_chat_members(
@@ -258,19 +283,18 @@ async def _invited_all(client, message):
                                     30,
                                 )
                             )
+                            run_status = (
+                                False
+                            )
                         except (
                             UsersTooMuch
                         ):
                             await xy.reply(
                                 "<b>Unable to add user!\nReason:</b> Too many users, the group has reached its limit.",
                             )
-                            _INVITED_LOCKED.discard(
-                                user_lock
+                            run_status = (
+                                False
                             )
-                            _WORKER.remove(
-                                chat_id
-                            )
-                            return
                         except (
                             FloodWait
                         ) as flood:
@@ -289,13 +313,9 @@ async def _invited_all(client, message):
                                     wait_for,
                                 )
                             )
-                            _INVITED_LOCKED.discard(
-                                user_lock
+                            run_status = (
+                                False
                             )
-                            _WORKER.remove(
-                                chat_id
-                            )
-                            return
                         except UserNotMutualContact:
                             failed = (
                                 failed
@@ -312,13 +332,168 @@ async def _invited_all(client, message):
                                 + 1
                             )
 
-            _WORKER.remove(chat_id)
-            _INVITED_LOCKED.discard(
+                if (
+                    chat_id
+                    in _WORKER_INVITED
+                ):
+                    run_status = True
+                    _WORKER_INVITED.remove(
+                        chat_id
+                    )
+                    _INVITED_LOCKED.discard(
+                        user_lock
+                    )
+                    if run_status:
+                        finished = "✅ <i>Finished</i>"
+                        await xy.edit(
+                            _ADDING_TEXT.format(
+                                finished,
+                                success,
+                                failed,
+                            )
+                        )
+
+
+@pytel.instruction(
+    ["dkickall", "sdkickall"],
+    supersu=["PYTEL"],
+    supergroups=True,
+    privileges=["can_restricted"],
+)
+@pytel.instruction(
+    ["kickall", "skickall"],
+    outgoing=True,
+    supergroups=True,
+    privileges=["can_restricted"],
+)
+async def _kicked_all(client, message):
+    if client:
+        user_lock = client.me.id
+    if user_lock in _KICKED_LOCKED:
+        await eor(
+            message,
+            text="Please wait until previous **--kicked users--** finished...",
+        )
+        return
+
+    await eor(
+        message, text="Checking..."
+    )
+    _RLOCKED = RLock()
+    with _RLOCKED:
+        chat_id = message.chat.id
+        _ASYNC_KICKED = Lock()
+        async with _ASYNC_KICKED:
+            (
+                success,
+                failed,
+                run_status,
+            ) = (0, 0, False)
+            _WORKER_KICKED.append(
+                chat_id
+            )
+            _KICKED_LOCKED.add(
                 user_lock
             )
+            await _try_purged(message)
+            yy = await client.send_message(
+                message.chat.id,
+                "Kicked all users...",
+            )
+            async for member in client.get_chat_members(
+                chat_id,
+            ):
+                user = member.user.id
+                try:
+                    ms = await message.chat.ban_member(
+                        user,
+                    )
+                    success = (
+                        success + 1
+                    )
+                    if (
+                        message.command[
+                            0
+                        ][0]
+                        == "s"
+                    ):
+                        with suppress(
+                            Exception
+                        ):
+                            await _try_purged(
+                                yy
+                            )
+                        await client.delete_messages(
+                            chat_id,
+                            ms.id,
+                            revoke=True,
+                        )
+                    else:
+                        running = "🔄 <i>Running</i>"
+                        await yy.edit(
+                            _KICKING_TEXT.format(
+                                running,
+                                success,
+                                failed,
+                            )
+                        )
+                    run_status = False
+                    await sleep(
+                        randrange(
+                            10, 15
+                        )
+                    )
+                except (
+                    FloodWait
+                ) as flood:
+                    wait_for = (
+                        datetime.now(tz)
+                        + timedelta(
+                            seconds=flood.value
+                        )
+                    ).strftime(
+                        "%A, %H:%M:%S"
+                    )
+                    await yy.reply(
+                        _LIMITED_FLOOD_TEXT.format(
+                            wait_for,
+                        )
+                    )
+                    run_status = False
+                except UserAdminInvalid:
+                    failed = failed + 1
+                except Exception:
+                    failed = failed + 1
+
+            if (
+                chat_id
+                in _WORKER_KICKED
+            ):
+                run_status = True
+                _WORKER_KICKED.remove(
+                    chat_id
+                )
+                _KICKED_LOCKED.discard(
+                    user_lock
+                )
+                if run_status and (
+                    message.command[0][
+                        0
+                    ]
+                    != "s"
+                ):
+                    finished = "✅ <i>Finished</i>"
+                    await yy.edit(
+                        _KICKING_TEXT.format(
+                            finished,
+                            success,
+                            failed,
+                        )
+                    )
 
 
-plugins_helper["invtools"] = {
-    f"{random_prefixies(px)}invite [id/username: list/not (limit 25)]": "To invite user/bot.",
-    f"{random_prefixies(px)}inviteall [id/username/link messages group]": "To invite user to target.",
+plugins_helper["addktools"] = {
+    f"{random_prefixies(px)}add [id/username: list/not (limit 25 username/id)]": "To adding user/bot.",
+    f"{random_prefixies(px)}addall [target: id/username/link messages]": "To adding user from target.",
+    f"{random_prefixies(px)}kickall": "To kicked all users in channel/groups.",
 }

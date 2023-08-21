@@ -39,6 +39,7 @@ from pytelibs import (
     _GBAN_LOCKED,
     _UNGBAN_LOCKED,
     _INVITED_LOCKED,
+    _KICKED_LOCKED,
     LOCK_TYPES,)
 from validators.ip_address import (
     ipv4 as is_ipv4,)
