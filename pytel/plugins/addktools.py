@@ -277,14 +277,14 @@ async def _invited_all(client, message):
                                 success
                                 + 1
                             )
+                            run_status = (
+                                False
+                            )
                             await sleep(
                                 randrange(
                                     20,
                                     30,
                                 )
-                            )
-                            run_status = (
-                                False
                             )
                         except (
                             UsersTooMuch
@@ -293,7 +293,7 @@ async def _invited_all(client, message):
                                 "<b>Unable to add user!\nReason:</b> Too many users, the group has reached its limit.",
                             )
                             run_status = (
-                                False
+                                True
                             )
                         except (
                             FloodWait
@@ -314,7 +314,7 @@ async def _invited_all(client, message):
                                 )
                             )
                             run_status = (
-                                False
+                                True
                             )
                         except UserNotMutualContact:
                             failed = (
@@ -352,6 +352,7 @@ async def _invited_all(client, message):
                                 failed,
                             )
                         )
+                        return
 
 
 @pytel.instruction(
@@ -459,7 +460,7 @@ async def _kicked_all(client, message):
                             wait_for,
                         )
                     )
-                    run_status = False
+                    run_status = True
                 except UserAdminInvalid:
                     failed = failed + 1
                 except Exception:
@@ -490,6 +491,7 @@ async def _kicked_all(client, message):
                             failed,
                         )
                     )
+                    return
 
 
 plugins_helper["addktools"] = {

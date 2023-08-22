@@ -6,6 +6,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import gather
+from os import remove
 from random import randint
 from typing import Optional, Any
 from pyrogram import enums, Client
@@ -29,6 +30,7 @@ from . import (
     plugins_helper,
     px,
     pytel,
+    _try_purged,
     suppress,
     humanboolean,
     random_prefixies,)
@@ -496,11 +498,30 @@ async def _video_chats_information(
             "Participants Count",
             par.count,
         )
-    await eor(
-        x,
-        text=_,
-    )
-    return
+
+    if len(_) >= 4096:
+        files = "cache/vcinfo.txt"
+        with open(files, "w+") as f:
+            f.write(_)
+        with suppress(BaseException):
+            caption = f"""
+<u><b>Video Chats Information</u></b>
+{chat.title}
+"""
+            await client.send_document(
+                message.chat.id,
+                document=files,
+                caption=caption,
+            )
+            await _try_purged(x)
+            remove(files)
+            return
+    else:
+        await eor(
+            x,
+            text=_,
+        )
+        return
 
 
 plugins_helper["vctools"] = {

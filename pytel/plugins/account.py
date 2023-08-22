@@ -228,7 +228,7 @@ async def _limited(client, message):
     )
     await eor(
         x,
-        text=f"`{status.text}`",
+        text=f"{status.text}",
     )
     await client.invoke(
         DeleteHistory(
