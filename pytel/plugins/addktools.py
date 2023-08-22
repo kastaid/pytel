@@ -289,6 +289,14 @@ async def _invited_all(client, message):
                         except (
                             UsersTooMuch
                         ):
+                            finished = "✅ <i>Finished</i>"
+                            await xy.edit(
+                                _ADDING_TEXT.format(
+                                    finished,
+                                    success,
+                                    failed,
+                                )
+                            )
                             await xy.reply(
                                 "<b>Unable to add user!\nReason:</b> Too many users, the group has reached its limit.",
                             )
@@ -314,6 +322,14 @@ async def _invited_all(client, message):
                                 )
                             ).strftime(
                                 "%A, %H:%M:%S"
+                            )
+                            finished = "✅ <i>Finished</i>"
+                            await xy.edit(
+                                _ADDING_TEXT.format(
+                                    finished,
+                                    success,
+                                    failed,
+                                )
                             )
                             await xy.reply(
                                 _LIMITED_FLOOD_TEXT.format(
@@ -468,6 +484,14 @@ async def _kicked_all(client, message):
                         )
                     ).strftime(
                         "%A, %H:%M:%S"
+                    )
+                    finished = "✅ <i>Finished</i>"
+                    await yy.edit(
+                        _KICKING_TEXT.format(
+                            finished,
+                            success,
+                            failed,
+                        )
                     )
                     await yy.reply(
                         _LIMITED_FLOOD_TEXT.format(
