@@ -295,6 +295,13 @@ async def _invited_all(client, message):
                             run_status = (
                                 True
                             )
+                            _WORKER_INVITED.remove(
+                                chat_id
+                            )
+                            _INVITED_LOCKED.discard(
+                                user_lock
+                            )
+                            return
                         except (
                             FloodWait
                         ) as flood:
@@ -316,6 +323,13 @@ async def _invited_all(client, message):
                             run_status = (
                                 True
                             )
+                            _WORKER_INVITED.remove(
+                                chat_id
+                            )
+                            _INVITED_LOCKED.discard(
+                                user_lock
+                            )
+                            return
                         except UserNotMutualContact:
                             failed = (
                                 failed
@@ -461,6 +475,13 @@ async def _kicked_all(client, message):
                         )
                     )
                     run_status = True
+                    _WORKER_KICKED.remove(
+                        chat_id
+                    )
+                    _KICKED_LOCKED.discard(
+                        user_lock
+                    )
+                    return
                 except UserAdminInvalid:
                     failed = failed + 1
                 except Exception:
