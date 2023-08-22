@@ -15,6 +15,7 @@ from youtubesearchpython import (
     SearchVideos,)
 from yt_dlp import YoutubeDL
 from . import (
+    Rooters,
     Instagram,
     TikTok,
     Pinterest,
@@ -167,6 +168,13 @@ async def _youtube_video_dl(
     )
     if videof:
         thumbnail = f"cache/{download_data['id']}.webp"
+        if not (
+            Rooters / thumbnail
+        ).exists():
+            thumbnail = f"cache/{download_data['id']}.jpg"
+        else:
+            thumbnail = f"cache/{download_data['id']}.webp"
+
         video = f"cache/{download_data['id']}.mp4"
         fx = await eor(
             xx,
@@ -326,6 +334,13 @@ async def _youtube_audio_dl(
     )
     if audiof:
         thumbnail = f"cache/{download_data['id']}.mp3.webp"
+        if not (
+            Rooters / thumbnail
+        ).exists():
+            thumbnail = f"cache/{download_data['id']}.mp3.jpg"
+        else:
+            thumbnail = f"cache/{download_data['id']}.mp3.webp"
+
         audio = f"cache/{download_data['id']}.mp3.mp3"
         fx = await eor(
             xx,

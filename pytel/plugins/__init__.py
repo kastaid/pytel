@@ -45,7 +45,10 @@ from validators.ip_address import (
     ipv4 as is_ipv4,)
 from validators.url import url as is_url
 from pytel import pytel, pytel_tgb, pytl
-from .. import __license__, start_time
+from .. import (
+    __license__,
+    start_time,
+    Rooters,)
 from ..client import (
     Instagram,
     TikTok,
