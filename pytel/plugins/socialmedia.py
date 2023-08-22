@@ -37,10 +37,10 @@ _YOUTUBE_DLDR = """
 <b>{}</b>
 {} x {} • {}
 
-{} 👍 - <a href='{}'>Share ➕</a>
+{} 👍ㅤ│ㅤ<a href=t.me/share/url?url={}>Share ➦</a>ㅤ│ㅤ<a href='{}'>Watch Now 🎥</a>
 
-<a href='youtube.com/c/{}'>{}</a> 🔔
-{} {}
+<b>{}</b>
+{} {} <b><a href='youtube.com/c/{}?view_as=subscriber?sub_confirmation=1'>SUBSCRIBE</a></b> 🔔
 """
 
 
@@ -196,10 +196,11 @@ async def _youtube_video_dl(
                     a_date,
                     a_like,
                     loots,
-                    ch.replace(" ", ""),
+                    loots,
                     ch,
                     a_subscriber,
                     "subscriber",
+                    ch.replace(" ", ""),
                 ),
             )
             await _try_purged(fx)
@@ -364,10 +365,11 @@ async def _youtube_audio_dl(
                     a_date,
                     a_like,
                     loots,
-                    ch.replace(" ", ""),
+                    loots,
                     ch,
                     a_subscriber,
                     "subscriber",
+                    ch.replace(" ", ""),
                 ),
             )
             await _try_purged(fx)
