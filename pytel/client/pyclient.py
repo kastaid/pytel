@@ -133,7 +133,7 @@ class PytelClient(Raw):
             self,
             MTProtoClientType.PYROGRAM,
             enable_logs_to_console=False,
-            path_to_log_file=None,
+            path_to_log_file="",
         ).get_file_group_call(
             input_filename="",
             play_on_repeat=False,
