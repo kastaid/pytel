@@ -37,10 +37,10 @@ _YOUTUBE_DLDR = """
 <b>{}</b>
 {} x {} • {}
 
-{} 👍ㅤ│ㅤ<a href=t.me/share/url?url={}>Share ➦</a>ㅤ│ㅤ<a href='{}'>Watch</a>
+{} 👍ㅤ│ㅤ<u><b><a href="t.me/share/url?url={}">Share ➦</a></u>ㅤ│ㅤ<u><a href="{}">Watch</a></b></u>
 
 <b>{}</b>
-{} {}  <b><a href='youtube.com/c/{}'>SUBSCRIBE</a></b> 🔔
+{} {}  <b><a href="youtube.com/c/{}">SUBSCRIBE</a></b> 🔔
 """
 
 
