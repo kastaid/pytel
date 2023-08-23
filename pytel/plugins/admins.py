@@ -774,9 +774,7 @@ async def _banned(client, message):
 
     try:
         mention = (
-            await client.get_users4(
-                user
-            )
+            await client.get_users(user)
         ).mention
     except IndexError:
         mention = (

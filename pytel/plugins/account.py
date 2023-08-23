@@ -315,7 +315,10 @@ async def _set_pfp(client, message):
             )
             return
 
-    elif rp.sticker and rp.sticker.file_id:
+    elif (
+        rp.sticker
+        and rp.sticker.file_id
+    ):
         file = (
             await client.download_media(
                 rp.sticker.file_id
@@ -333,9 +336,7 @@ async def _set_pfp(client, message):
                 optimize=True,
             )
             conv = "sticker.png"
-            with open(
-                conv, "rb"
-            ) as f:
+            with open(conv, "rb") as f:
                 pp = f.read()
             file_io = BytesIO(pp)
             text = "Successfuly updates ur photo profile."
