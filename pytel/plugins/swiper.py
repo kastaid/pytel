@@ -5,10 +5,10 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from os import remove
 from pyrogram.enums import ChatType
 from pyrogram.errors import RPCError
 from . import (
+    Rooters,
     _try_purged,
     eor,
     get_text,
@@ -167,7 +167,9 @@ async def downloads_media(
                 force_document=True,
                 reply_to_message_id=message.id,
             )
-            remove(photo)
+            (Rooters / photo).unlink(
+                missing_ok=True
+            )
         if m.video:
             video = await client.download_media(
                 m.video
@@ -179,7 +181,9 @@ async def downloads_media(
                 force_document=True,
                 reply_to_message_id=message.id,
             )
-            remove(video)
+            (Rooters / video).unlink(
+                missing_ok=True
+            )
         if m.document:
             file = await client.download_media(
                 m.document
@@ -191,7 +195,9 @@ async def downloads_media(
                 force_document=True,
                 reply_to_message_id=message.id,
             )
-            remove(file)
+            (Rooters / file).unlink(
+                missing_ok=True
+            )
         if m.audio:
             audio = await client.download_media(
                 m.audio
@@ -202,7 +208,9 @@ async def downloads_media(
                 caption,
                 reply_to_message_id=message.id,
             )
-            remove(audio)
+            (Rooters / audio).unlink(
+                missing_ok=True
+            )
         if m.voice:
             voice = await client.download_media(
                 m.voice
@@ -213,7 +221,9 @@ async def downloads_media(
                 caption,
                 reply_to_message_id=message.id,
             )
-            remove(voice)
+            (Rooters / voice).unlink(
+                missing_ok=True
+            )
         if m.animation:
             animation = await client.download_media(
                 m.animation
@@ -224,9 +234,11 @@ async def downloads_media(
                 caption,
                 reply_to_message_id=message.id,
             )
-            remove(animation)
+            (
+                Rooters / animation
+            ).unlink(missing_ok=True)
 
 
 plugins_helper["swiper"] = {
-    f"{random_prefixies(px)}swiper [link messages media channel]": "To get files on a private channel. ( You must first join the target channel )",
+    f"{random_prefixies(px)}swiper [link messages media/sticker/text (channel/groups)]": "To get files/text/stickers on a channel/groups. ( You must first join the target channel if channel's private )",
 }

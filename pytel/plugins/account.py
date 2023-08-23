@@ -5,13 +5,16 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from asyncio import sleep
+from asyncio import sleep, gather
+from io import BytesIO
+from PIL import Image
 from pyrogram import enums
 from pyrogram.raw import functions
 from pyrogram.raw.functions.messages import (
     DeleteHistory,
     StartBot,)
 from . import (
+    Rooters,
     eor,
     plugins_helper,
     px,
@@ -240,10 +243,136 @@ async def _limited(client, message):
     return
 
 
+@pytel.instruction(
+    ["setpp", "setpfp"],
+    outgoing=True,
+)
+async def _set_pfp(client, message):
+    rp = message.reply_to_message
+    if not rp:
+        await eor(
+            message,
+            text="Please reply to photos/video/sticker.",
+        )
+        return
+    x = await eor(
+        message,
+        text="Processing...",
+    )
+    if rp.photo:
+        file = (
+            await client.download_media(
+                rp.photo
+            )
+        )
+        try:
+            text = "Successfuly updates ur photo profile."
+            await gather(
+                client.set_profile_photo(
+                    photo=file
+                ),
+                eor(x, text=text),
+            )
+            (Rooters / file).unlink(
+                missing_ok=True
+            )
+            return
+        except BaseException as excp:
+            client.send_log.exception(
+                excp
+            )
+            await eor(
+                x,
+                text=f"Exception: {excp}",
+            )
+            return
+
+    elif rp.video:
+        file = (
+            await client.download_media(
+                rp.video
+            )
+        )
+        try:
+            text = "Successfuly updates ur video profile."
+            await gather(
+                client.set_profile_photo(
+                    photo=file
+                ),
+                eor(x, text=text),
+            )
+            (Rooters / file).unlink(
+                missing_ok=True
+            )
+            return
+        except BaseException as excp:
+            client.send_log.exception(
+                excp
+            )
+            await eor(
+                x,
+                text=f"Exception: {excp}",
+            )
+            return
+
+    elif rp.sticker and rp.sticker.file_id:
+        file = (
+            await client.download_media(
+                rp.sticker.file_id
+            )
+        )
+        if file.endswith(
+            ".webp"
+        ) or file.endswith(".png"):
+            img = Image.open(
+                file
+            ).convert("RGBA")
+            img.save(
+                "sticker.png",
+                format="PNG",
+                optimize=True,
+            )
+            conv = "sticker.png"
+            with open(
+                conv, "rb"
+            ) as f:
+                pp = f.read()
+            file_io = BytesIO(pp)
+            text = "Successfuly updates ur photo profile."
+            await gather(
+                client.set_profile_photo(
+                    photo=file_io
+                ),
+                eor(x, text=text),
+            )
+            (Rooters / file).unlink(
+                missing_ok=True
+            )
+            (Rooters / conv).unlink(
+                missing_ok=True
+            )
+            return
+
+        else:
+            await eor(
+                message,
+                text="Please reply to sticker ( type: .wepb )",
+            )
+            return
+
+    else:
+        await eor(
+            message,
+            text="Please reply to photos/video/sticker.",
+        )
+        return
+
+
 plugins_helper["account"] = {
     f"{random_prefixies(px)}limit / limited": "To check ur account is limited or not.",
     f"{random_prefixies(px)}mydialogs": "To get my dialogue statistics.",
     f"{random_prefixies(px)}setmode [offline/online/off/on]": "To setting ur status to be Online or Offline.",
     f"{random_prefixies(px)}setbio [text/reply]": "To updates ur bio. ( Max 70 characters )",
     f"{random_prefixies(px)}setname [first name] [last name]": "To updates ur name.",
+    f"{random_prefixies(px)}setpfp [reply photo/video/sticker]": "To updates ur profiles.",
 }

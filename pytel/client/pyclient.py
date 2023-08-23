@@ -346,7 +346,7 @@ class PytelClient(Raw):
                         not me.privileges.can_manage_video_chats
                     ):
                         await message.reply(
-                            "I don't have the privilege to access video chats.."
+                            "I don't have the privilege to access video chats."
                         )
                         return
 
@@ -375,6 +375,38 @@ class PytelClient(Raw):
                         ):
                             await message.reply(
                                 "<u>Chat Send Media Forbidden</u> in this Group."
+                            )
+                            return
+
+                if (
+                    "can_promote_members"
+                    in privileges
+                ):
+                    me = await client.get_chat_member(
+                        message.chat.id,
+                        (
+                            await client.get_me()
+                        ).id,
+                    )
+                    if (
+                        me.status
+                        not in (
+                            ChatMemberStatus.OWNER,
+                            ChatMemberStatus.ADMINISTRATOR,
+                        )
+                    ):
+                        await message.reply(
+                            "I don't have the privilege to promoting people."
+                        )
+                        return
+                    else:
+                        if (
+                            me.privileges.can_promote_members
+                        ):  # for admins
+                            pass
+                        else:
+                            await message.reply(
+                                "I don't have the privilege to promoting people."
                             )
                             return
 
