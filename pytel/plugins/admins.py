@@ -11,6 +11,8 @@ from pyrogram.enums import (
 from pyrogram.errors import (
     UserAdminInvalid,
     ChatNotModified,)
+from pyrogram.errors.exceptions.not_acceptable_406 import (
+    UserRestricted,)
 from pyrogram.types import (
     ChatPermissions,
     ChatPrivileges,
@@ -341,56 +343,72 @@ async def _promoted(client, message):
         )
         if message.command[0][0] == "f":
             status = "Administrator"
-            await client.promote_chat_member(
-                chat_id=chat_id,
-                user_id=user_id,
-                privileges=ChatPrivileges(
-                    can_manage_chat=True,
-                    can_delete_messages=True,
-                    can_manage_video_chats=True,
-                    can_restrict_members=True,
-                    can_change_info=True,
-                    can_invite_users=True,
-                    can_pin_messages=True,
-                    can_promote_members=True,
-                ),
-            )
-            await sleep(1.5)
-            await eor(
-                yy,
-                text=_PROMDEM_TEXT.format(
-                    _info,
-                    status,
-                    mention,
-                ),
-            )
-            return
+            try:
+                await client.promote_chat_member(
+                    chat_id=chat_id,
+                    user_id=user_id,
+                    privileges=ChatPrivileges(
+                        can_manage_chat=True,
+                        can_delete_messages=True,
+                        can_manage_video_chats=True,
+                        can_restrict_members=True,
+                        can_change_info=True,
+                        can_invite_users=True,
+                        can_pin_messages=True,
+                        can_promote_members=True,
+                    ),
+                )
+                await sleep(1.5)
+                await eor(
+                    yy,
+                    text=_PROMDEM_TEXT.format(
+                        _info,
+                        status,
+                        mention,
+                    ),
+                )
+                return
+            except UserRestricted:
+                text = "You are limited/restricted. You can't promoting this member."
+                await eor(
+                    yy,
+                    text=text,
+                )
+                return
         else:
             status = "Staff"
-            await client.promote_chat_member(
-                chat_id=chat_id,
-                user_id=user_id,
-                privileges=ChatPrivileges(
-                    can_manage_chat=True,
-                    can_delete_messages=True,
-                    can_manage_video_chats=True,
-                    can_restrict_members=True,
-                    can_change_info=False,
-                    can_invite_users=True,
-                    can_pin_messages=True,
-                    can_promote_members=False,
-                ),
-            )
-            await sleep(1)
-            await eor(
-                yy,
-                text=_PROMDEM_TEXT.format(
-                    _info,
-                    status,
-                    mention,
-                ),
-            )
-            return
+            try:
+                await client.promote_chat_member(
+                    chat_id=chat_id,
+                    user_id=user_id,
+                    privileges=ChatPrivileges(
+                        can_manage_chat=True,
+                        can_delete_messages=True,
+                        can_manage_video_chats=True,
+                        can_restrict_members=True,
+                        can_change_info=False,
+                        can_invite_users=True,
+                        can_pin_messages=True,
+                        can_promote_members=False,
+                    ),
+                )
+                await sleep(1)
+                await eor(
+                    yy,
+                    text=_PROMDEM_TEXT.format(
+                        _info,
+                        status,
+                        mention,
+                    ),
+                )
+                return
+            except UserRestricted:
+                text = "You are limited/restricted. You can't promoting this member."
+                await eor(
+                    yy,
+                    text=text,
+                )
+                return
 
 
 @pytel.instruction(

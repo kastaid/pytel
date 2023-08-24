@@ -7,7 +7,9 @@
 
 import ast
 from contextlib import suppress
+from sys import exit
 from localdb import Database
+from ...logger import pylog
 
 
 class BaseDB:
@@ -106,10 +108,14 @@ class Local(BaseDB):
     def __init__(
         self,
     ):
-        self.db = Database("pytel")
-        self.get = self.db.get
-        self.set = self.db.set
-        self.delete = self.db.delete
+        try:
+            self.db = Database("pytel")
+            self.get = self.db.get
+            self.set = self.db.set
+            self.delete = self.db.delete
+        except Exception as excp:
+            pylog.exception(excp)
+            exit(0)
         super().__init__()
 
     @property
