@@ -36,6 +36,8 @@ from pyrogram.errors.exceptions.bad_request_400 import (
     PersistentTimestampInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
+from pyrogram.errors.exceptions.internal_server_error_500 import (
+    PersistentTimestampOutdated,)
 from pyrogram.filters import Filter
 from pyrogram.handlers import (
     MessageHandler,
@@ -457,8 +459,8 @@ class PytelClient(Raw):
                         message,
                     )
                 except (
-                    TimeoutError,
                     PersistentTimestampInvalid,
+                    PersistentTimestampOutdated,
                 ):
                     pass
                 except StopPropagation:
@@ -608,9 +610,10 @@ class PytelClient(Raw):
             None,
         ],
     ) -> Any:
-        return self.loop.run_until_complete(
-            catch
-        )
+        with suppress(TimeoutError):
+            return self.loop.run_until_complete(
+                catch
+            )
 
     async def notify_login(
         self,

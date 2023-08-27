@@ -25,10 +25,13 @@ from . import (
     GUCAST_BLACKLIST,
     OWNER_ID,
     ChatType,
+    ChannelPrivate,
+    UserNotParticipant,
     FloodWait,
     ParseMode,
     eor,
     _supersu,
+    suppress,
     get_text,
     time_formatter,
     plugins_helper,
@@ -39,6 +42,28 @@ from . import (
     user_and_reason,
     get_chat_ids,
     _try_purged,)
+
+_GB_TEXT = """
+<u><b>{}</u> !!</b>
+├ <b>Users:</b> </b> <a href=tg://user?id={}>{}</a>
+└ <b>Reason:</b> {}
+
+<u>STATUS</u> ( ✅ <i>Success</i> )
+├ <b>Groups:</b> {}
+├ <b>Supergroups:</b> {}
+└ <b>Channel:</b> {}
+
+<u>STATUS</u> ( 🚫 <i>Failed</i> )
+├ <b>Groups:</b> {}
+├ <b>Supergroups:</b> {}
+└ <b>Channel:</b> {}
+
+<u>TOTAL</u>
+├ <b>Success:</b> {}
+└ <b>Failed:</b> {}
+
+(c) @kastaid #pytel
+"""
 
 
 @pytel.instruction(
@@ -518,7 +543,7 @@ async def _global_user_broadcast(
 
 
 @pytel.instruction(
-    ["devgban"],
+    ["devgban", "dgban"],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
@@ -574,108 +599,161 @@ async def _global_banned(
         if dialog.chat.type in [
             ChatType.GROUP
         ]:
-            me = await client.get_chat_member(
-                dialog.chat.id,
-                (
-                    await client.get_me()
-                ).id,
-            )
-            if me.status in (
-                ChatMemberStatus.OWNER,
-                ChatMemberStatus.ADMINISTRATOR,
+            with suppress(
+                ChannelPrivate,
+                UserNotParticipant,
             ):
-                chat_id = dialog.chat.id
-                try:
-                    await client.ban_chat_member(
-                        chat_id, user
+                me = await client.get_chat_member(
+                    dialog.chat.id,
+                    (
+                        await client.get_me()
+                    ).id,
+                )
+                if me.status in (
+                    ChatMemberStatus.OWNER,
+                    ChatMemberStatus.ADMINISTRATOR,
+                ):
+                    chat_id = (
+                        dialog.chat.id
                     )
-                    gp_success = (
-                        gp_success + 1
-                    )
-                    await sleep(0.5)
-                except (
-                    FloodWait
-                ) as flood:
-                    await sleep(
-                        flood.value
-                    )
-                    await client.ban_chat_member(
-                        chat_id, user
-                    )
-                    gp_success = (
-                        gp_success + 1
-                    )
-                    await sleep(0.5)
-                except Exception:
-                    gp_failed = (
-                        gp_failed + 1
-                    )
+                    try:
+                        await client.ban_chat_member(
+                            chat_id,
+                            user,
+                        )
+                        gp_success = (
+                            gp_success
+                            + 1
+                        )
+                        await sleep(0.5)
+                    except (
+                        FloodWait
+                    ) as flood:
+                        await sleep(
+                            flood.value
+                        )
+                        await client.ban_chat_member(
+                            chat_id,
+                            user,
+                        )
+                        gp_success = (
+                            gp_success
+                            + 1
+                        )
+                        await sleep(0.5)
+                    except (
+                        BaseException
+                    ):
+                        gp_failed = (
+                            gp_failed
+                            + 1
+                        )
 
         elif dialog.chat.type in [
             ChatType.SUPERGROUP
         ]:
-            me = await client.get_chat_member(
-                dialog.chat.id,
-                (
-                    await client.get_me()
-                ).id,
-            )
-            if me.status in (
-                ChatMemberStatus.OWNER,
-                ChatMemberStatus.ADMINISTRATOR,
+            with suppress(
+                ChannelPrivate,
+                UserNotParticipant,
             ):
-                chat_id = dialog.chat.id
-                try:
-                    await client.ban_chat_member(
-                        chat_id, user
+                me = await client.get_chat_member(
+                    dialog.chat.id,
+                    (
+                        await client.get_me()
+                    ).id,
+                )
+                if me.status in (
+                    ChatMemberStatus.OWNER,
+                    ChatMemberStatus.ADMINISTRATOR,
+                ):
+                    chat_id = (
+                        dialog.chat.id
                     )
-                    sg_success = (
-                        sg_success + 1
-                    )
-                    await sleep(0.5)
-                except (
-                    FloodWait
-                ) as flood:
-                    await sleep(
-                        flood.value
-                    )
-                    await client.ban_chat_member(
-                        chat_id, user
-                    )
-                    sg_success = (
-                        sg_success + 1
-                    )
-                    await sleep(0.5)
-                except Exception:
-                    sg_failed = (
-                        sg_failed + 1
-                    )
+                    try:
+                        await client.ban_chat_member(
+                            chat_id,
+                            user,
+                        )
+                        sg_success = (
+                            sg_success
+                            + 1
+                        )
+                        await sleep(0.5)
+                    except (
+                        FloodWait
+                    ) as flood:
+                        await sleep(
+                            flood.value
+                        )
+                        await client.ban_chat_member(
+                            chat_id,
+                            user,
+                        )
+                        sg_success = (
+                            sg_success
+                            + 1
+                        )
+                        await sleep(0.5)
+                    except (
+                        BaseException
+                    ):
+                        sg_failed = (
+                            sg_failed
+                            + 1
+                        )
 
         elif dialog.chat.type in [
             ChatType.CHANNEL
         ]:
-            chat_id = dialog.chat.id
-            try:
-                await client.ban_chat_member(
-                    chat_id, user
+            with suppress(
+                ChannelPrivate,
+                UserNotParticipant,
+            ):
+                me = await client.get_chat_member(
+                    dialog.chat.id,
+                    (
+                        await client.get_me()
+                    ).id,
                 )
-                ch_success = (
-                    ch_success + 1
-                )
-                await sleep(0.5)
-            except FloodWait as flood:
-                await sleep(flood.value)
-                await client.ban_chat_member(
-                    chat_id, user
-                )
-                ch_success = (
-                    ch_success + 1
-                )
-                await sleep(0.5)
-            except Exception:
-                ch_failed = (
-                    ch_failed + 1
-                )
+                if me.status in (
+                    ChatMemberStatus.OWNER,
+                    ChatMemberStatus.ADMINISTRATOR,
+                ):
+                    chat_id = (
+                        dialog.chat.id
+                    )
+                    try:
+                        await client.ban_chat_member(
+                            chat_id,
+                            user,
+                        )
+                        ch_success = (
+                            ch_success
+                            + 1
+                        )
+                        await sleep(0.5)
+                    except (
+                        FloodWait
+                    ) as flood:
+                        await sleep(
+                            flood.value
+                        )
+                        await client.ban_chat_member(
+                            chat_id,
+                            user,
+                        )
+                        ch_success = (
+                            ch_success
+                            + 1
+                        )
+                        await sleep(0.5)
+                    except (
+                        BaseException
+                    ):
+                        ch_failed = (
+                            ch_failed
+                            + 1
+                        )
 
     fullname = (
         await client.user_fullname(user)
@@ -694,30 +772,10 @@ async def _global_banned(
         + gp_failed
     )
     if total_success >= 0:
-        text = """
-<u><b>Globally Banned</u> !!</b>
-├ <b>Users:</b> </b> <a href=tg://user?id={}>{}</a>
-└ <b>Reason:</b> {}
-
-<u>STATUS</u> ( <i>Success</i> )
-├ <b>Groups:</b> {}
-├ <b>Supergroups:</b> {}
-└ <b>Channel:</b> {}
-
-<u>STATUS</u> ( <i>Failed</i> )
-├ <b>Groups:</b> {}
-├ <b>Supergroups:</b> {}
-└ <b>Channel:</b> {}
-
-<u>TOTAL</u>
-├ <b>Success:</b> {}
-└ <b>Failed:</b> {}
-
-(c) @kastaid #pytel
-"""
         await client.send_message(
             int(message.chat.id),
-            text=text.format(
+            text=_GB_TEXT.format(
+                "Globally Banned",
                 user,
                 fullname,
                 reason,
@@ -738,7 +796,7 @@ async def _global_banned(
 
 
 @pytel.instruction(
-    ["devungban"],
+    ["devungban", "dungban"],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
@@ -914,30 +972,10 @@ async def _unglobal_banned(
         + gp_failed
     )
     if total_success >= 0:
-        text = """
-<u><b>Un-Globally Banned</u> !!</b>
-├ <b>Users:</b> </b> <a href=tg://user?id={}>{}</a>
-└ <b>Reason:</b> {}
-
-<u>STATUS</u> ( <i>Success</i> )
-├ <b>Groups:</b> {}
-├ <b>Supergroups:</b> {}
-└ <b>Channel:</b> {}
-
-<u>STATUS</u> ( <i>Failed</i> )
-├ <b>Groups:</b> {}
-├ <b>Supergroups:</b> {}
-└ <b>Channel:</b> {}
-
-<u>TOTAL</u>
-├ <b>Success:</b> {}
-└ <b>Failed:</b> {}
-
-(c) @kastaid #pytel
-"""
         await client.send_message(
             int(message.chat.id),
-            text=text.format(
+            text=_GB_TEXT.format(
+                "Un-Globally Banned",
                 user,
                 fullname,
                 reason,

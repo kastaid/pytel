@@ -263,3 +263,25 @@ def get_chat_ids(ct: Optional[str]):
             return "@" + ct.group(1)
     else:
         return False
+
+
+def get_args(
+    message: Message,
+) -> Optional[str]:
+    msg = message.text
+    msg = (
+        msg.replace(" ", "", 1)
+        if msg[1] == " "
+        else msg
+    )
+    split = (
+        msg[1:]
+        .replace("\n", " \n")
+        .split(" ")
+    )
+    if (
+        " ".join(split[1:]).strip()
+        == ""
+    ):
+        return ""
+    return " ".join(split[1:])

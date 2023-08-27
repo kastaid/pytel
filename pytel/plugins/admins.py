@@ -11,8 +11,6 @@ from pyrogram.enums import (
 from pyrogram.errors import (
     UserAdminInvalid,
     ChatNotModified,)
-from pyrogram.errors.exceptions.not_acceptable_406 import (
-    UserRestricted,)
 from pyrogram.types import (
     ChatPermissions,
     ChatPrivileges,
@@ -20,6 +18,8 @@ from pyrogram.types import (
 from . import (
     FloodWait,
     OWNER_ID,
+    UserRestricted,
+    UserNotParticipant,
     _try_purged,
     eor,
     extract_user,
@@ -568,7 +568,10 @@ async def _muted(client, message):
     status = "Muting User"
     if message.command[0][0] == "d":
         await message.reply_to_message.delete()
-    with suppress(BaseException):
+    with suppress(
+        BaseException,
+        UserNotParticipant,
+    ):
         await message.chat.restrict_member(
             user_id,
             permissions=ChatPermissions(),
@@ -630,7 +633,10 @@ async def _unmuted(client, message):
         x,
         text="Unmuting...",
     )
-    with suppress(BaseException):
+    with suppress(
+        BaseException,
+        UserNotParticipant,
+    ):
         await message.chat.restrict_member(
             user_id,
             permissions=unmute_permissions,
@@ -723,12 +729,14 @@ async def _kicked(client, message):
         msg += (
             f"<b>Reason:</b> {reason}"
         )
-    with suppress(Exception):
-        await message.chat.ban_member(
-            user
+    with suppress(
+        Exception, UserNotParticipant
+    ):
+        await client.ban_chat_member(
+            message.chat.id, user
         )
-        await message.chat.unban_member(
-            user
+        await client.unban_chat_member(
+            message.chat.id, user
         )
     await eor(x, text=msg)
 
@@ -808,9 +816,11 @@ async def _banned(client, message):
         msg += (
             f"<b>Reason:</b> {reason}"
         )
-    with suppress(Exception):
-        await message.chat.ban_member(
-            user
+    with suppress(
+        Exception, UserNotParticipant
+    ):
+        await client.ban_chat_member(
+            message.chat.id, user
         )
     await eor(x, text=msg)
 
@@ -873,13 +883,18 @@ async def _unbanned(client, message):
         x,
         text="Unbanning...",
     )
-    with suppress(Exception):
-        await message.chat.unban_member(
-            user
+    try:
+        mention = (
+            await client.get_users(user)
+        ).mention
+    except Exception:
+        mention = user
+    with suppress(
+        Exception, UserNotParticipant
+    ):
+        await client.unban_chat_member(
+            message.chat.id, user
         )
-    mention = (
-        await client.get_users(user)
-    ).mention
     await eor(
         yy,
         text=f"Unbanned! {mention}",

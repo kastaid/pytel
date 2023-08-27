@@ -5,8 +5,8 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from os import remove
 from . import (
+    Rooters,
     ChatGPT,
     RunningCommand,
     _try_purged,
@@ -62,7 +62,11 @@ async def _openai(client, message):
                         document=files,
                         caption=f"<b>Question:</b> {args}",
                     )
-                    remove(files)
+                    (
+                        Rooters / files
+                    ).unlink(
+                        missing_ok=True
+                    )
             else:
                 await client.send_message(
                     message.chat.id,
@@ -196,8 +200,12 @@ async def _openai(client, message):
                         message.chat.id,
                         "ChatGPT not response!!",
                     )
-                remove(fx)
-                remove(con1)
+                (Rooters / fx).unlink(
+                    missing_ok=True
+                )
+                (Rooters / con1).unlink(
+                    missing_ok=True
+                )
                 await _try_purged(
                     x, 1.5
                 )
@@ -267,8 +275,12 @@ async def _openai(client, message):
                         message.chat.id,
                         "ChatGPT not response!!",
                     )
-                remove(fx)
-                remove(con1)
+                (Rooters / fx).unlink(
+                    missing_ok=True
+                )
+                (Rooters / con1).unlink(
+                    missing_ok=True
+                )
                 await _try_purged(
                     x, 1.5
                 )

@@ -17,13 +17,18 @@ from pyrogram.errors.exceptions.bad_request_400 import (
     QueryIdInvalid,
     UsersTooMuch,
     BotsTooMuch,
+    UserNotParticipant,
     UserNotMutualContact,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
 from pyrogram.errors.exceptions.forbidden_403 import (
     ChatSendMediaForbidden,
     ChatSendInlineForbidden,
+    ChatSendStickersForbidden,
     UserPrivacyRestricted,)
+from pyrogram.errors.exceptions.not_acceptable_406 import (
+    ChannelPrivate,
+    UserRestricted,)
 from pyrogram.raw import functions
 from pyrogram.raw.all import layer
 from pyrogram.raw.functions import (
@@ -40,7 +45,10 @@ from pytelibs import (
     _UNGBAN_LOCKED,
     _INVITED_LOCKED,
     _KICKED_LOCKED,
-    LOCK_TYPES,)
+    LOCK_TYPES,
+    normalize_youtube_url,
+    is_youtube_url,
+    replace_all,)
 from validators.ip_address import (
     ipv4 as is_ipv4,)
 from validators.url import url as is_url
@@ -56,6 +64,7 @@ from ..client import (
     ChatGPT,
     Assistant,
     AstGenerate,
+    Memify,
     plugins_helper,
     time_formatter,
     user_and_reason,
@@ -65,7 +74,10 @@ from ..client import (
     _try_purged,
     eor,
     get_text,
+    get_args,
     replied,
+    resize_images,
+    resize_media,
     LE,
     fetch_adzan,
     fetch_weather,
@@ -77,6 +89,8 @@ from ..client import (
     get_spamwatch_banned,
     get_cas_banned,
     get_blacklisted,
+    get_random_hex,
+    get_youtube_info,
     random_prefixies,
     screenshots,
     tz,

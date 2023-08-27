@@ -6,7 +6,6 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
-from os import remove
 from random import randrange
 from ..client.dbase.dbAntipm import (
     get_antipm_status,
@@ -22,6 +21,7 @@ from ..client.dbase.dbAntipm import (
 from ..client.dbase.dbLogger import (
     check_logger,)
 from . import (
+    Rooters,
     OWNER_ID,
     LOGCHAT_ID,
     ParseMode,
@@ -158,7 +158,9 @@ async def _anti_pm_status(
                     caption=caption,
                     force_document=True,
                 )
-                remove(file)
+                (Rooters / file).unlink(
+                    missing_ok=True
+                )
             elif (
                 message.from_user
                 and message.video
@@ -178,7 +180,9 @@ async def _anti_pm_status(
                     caption=caption,
                     force_document=True,
                 )
-                remove(file)
+                (Rooters / file).unlink(
+                    missing_ok=True
+                )
             elif (
                 message.from_user
                 and message.document
@@ -198,7 +202,9 @@ async def _anti_pm_status(
                     caption,
                     force_document=True,
                 )
-                remove(file)
+                (Rooters / file).unlink(
+                    missing_ok=True
+                )
             elif (
                 message.from_user
                 and message.audio
@@ -217,7 +223,11 @@ async def _anti_pm_status(
                     audio,
                     caption,
                 )
-                remove(audio)
+                (
+                    Rooters / audio
+                ).unlink(
+                    missing_ok=True
+                )
             elif (
                 message.from_user
                 and message.voice
@@ -236,7 +246,11 @@ async def _anti_pm_status(
                     voice,
                     caption,
                 )
-                remove(voice)
+                (
+                    Rooters / voice
+                ).unlink(
+                    missing_ok=True
+                )
 
         if (
             get_pmreport_status(

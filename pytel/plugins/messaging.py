@@ -271,7 +271,7 @@ async def _dspam_msg(client, message):
             )
             return
         timesleep = (
-            30 if tms < 30 else tms
+            6 if tms < 6 else tms
         )
         await message.delete()
         if count:
@@ -397,7 +397,7 @@ plugins_helper["messaging"] = {
     f"{random_prefixies(px)}del [reply message]": "To deleted ur messages.",
     f"{random_prefixies(px)}purgeme [count]": "To purged ur messages.",
     f"{random_prefixies(px)}schedule [seconds] [count] [seconds] [text]": "To send schedule message. min: 60 seconds.",
-    f"{random_prefixies(px)}dsp [seconds] [count] [text]": "To send delay-spam message. min: 30 seconds.",
+    f"{random_prefixies(px)}dsp [seconds] [count] [text]": "To send delay-spam message. min: 6 seconds.",
     f"{random_prefixies(px)}schcancel": "To canceled ur schedule message in chats.",
     f"{random_prefixies(px)}dspcancel": "To canceled ur delay-spam message in chats.",
     f"{random_prefixies(px)}cleardsp": "To cleared all delay-spam messages.",

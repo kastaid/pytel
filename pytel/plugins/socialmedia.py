@@ -5,7 +5,6 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from json import loads
-from os import remove
 from re import search, findall
 from requests import get as getreq
 from search_engine_parser import (
@@ -30,6 +29,9 @@ from . import (
     pytel,
     suppress,
     humanboolean,
+    normalize_youtube_url,
+    is_youtube_url,
+    get_youtube_info,
     subs_like_view_format,
     random_prefixies,)
 
@@ -66,48 +68,65 @@ async def _youtube_video_dl(
         )
         return
 
-    x = await eor(
+    xx = await eor(
         message,
         text="Processing...",
     )
-    searching = SearchVideos(
-        f"{str_link}",
-        offset=1,
-        mode="dict",
-        max_results=1,
-    )
-    links = searching.result()
-    get_video = links["search_result"]
-    loots = get_video[0]["link"]
-    thumbn = get_video[0]["title"]
-    ch = get_video[0]["channel"]
-    url = loots
-    opsi = {
-        "format": "best",
-        "addmetadata": True,
-        "key": "FFmpegMetadata",
-        "prefer_ffmpeg": True,
-        "geo_bypass": True,
-        "writethumbnail": True,
-        "writeautomaticsub": True,
-        "writesubtitles": True,
-        "subtitleslangs": "id",
-        "nocheckcertificate": True,
-        "postprocessors": [
-            {
-                "key": "FFmpegVideoConvertor",
-                "preferedformat": "mp4",
-            },
-            {
-                "key": "FFmpegSubtitlesConvertor",
-                "format": "ass",
-            },
-        ],
-        "outtmpl": "cache/%(id)s.mp4",
-        "logtostderr": False,
-        "quiet": True,
-    }
+
     try:
+        if is_youtube_url(str_link):
+            _links = (
+                normalize_youtube_url(
+                    str_link
+                )
+            )
+            info = get_youtube_info(
+                url=_links
+            )
+            str_link = info.get("title")
+
+        with suppress(ValueError):
+            searching = SearchVideos(
+                f"{str_link}",
+                offset=1,
+                mode="dict",
+                max_results=1,
+            )
+            links = searching.result()
+            get_video = links[
+                "search_result"
+            ]
+            url = get_video[0]["link"]
+            thumbn = get_video[0][
+                "title"
+            ]
+            ch = get_video[0]["channel"]
+            opsi = {
+                "format": "best",
+                "addmetadata": True,
+                "key": "FFmpegMetadata",
+                "prefer_ffmpeg": True,
+                "geo_bypass": True,
+                "writethumbnail": True,
+                "writeautomaticsub": True,
+                "writesubtitles": True,
+                "subtitleslangs": "id",
+                "nocheckcertificate": True,
+                "postprocessors": [
+                    {
+                        "key": "FFmpegVideoConvertor",
+                        "preferedformat": "mp4",
+                    },
+                    {
+                        "key": "FFmpegSubtitlesConvertor",
+                        "format": "ass",
+                    },
+                ],
+                "outtmpl": "cache/%(id)s.mp4",
+                "logtostderr": False,
+                "quiet": True,
+            }
+
         with YoutubeDL(
             opsi
         ) as yt_download:
@@ -123,12 +142,12 @@ async def _youtube_video_dl(
         if video_duration > 120:
             magazine = "120"
             await eor(
-                x,
+                xx,
                 text=f"Video longer than {video_duration} min aren't allowed.\nMust be <= {magazine} min.",
             )
             return
         xx = await eor(
-            x,
+            xx,
             text=f"Downloading <b>{thumbn}</b>",
         )
         videof = yt_download.prepare_filename(
@@ -143,6 +162,7 @@ async def _youtube_video_dl(
             text=f"YTDL Error: <pre>{excp}</pre>",
         )
         return
+
     a_like = subs_like_view_format(
         num_count=download_data[
             "like_count"
@@ -195,8 +215,8 @@ async def _youtube_video_dl(
                     "watched",
                     a_date,
                     a_like,
-                    loots,
-                    loots,
+                    url,
+                    url,
                     ch,
                     a_subscriber,
                     "subscriber",
@@ -204,16 +224,24 @@ async def _youtube_video_dl(
                 ),
             )
             await _try_purged(fx)
-            remove(video)
-            remove(thumbnail)
+            (Rooters / video).unlink(
+                missing_ok=True
+            )
+            (
+                Rooters / thumbnail
+            ).unlink(missing_ok=True)
             return
         except BaseException as excp:
             await eor(
                 fx,
                 text=f"Error: {excp}",
             )
-            remove(video)
-            remove(thumbnail)
+            (Rooters / video).unlink(
+                missing_ok=True
+            )
+            (
+                Rooters / thumbnail
+            ).unlink(missing_ok=True)
             return
 
 
@@ -238,43 +266,59 @@ async def _youtube_audio_dl(
             text="Provide a valid link youtube or text result!",
         )
         return
-    x = await eor(
+    xx = await eor(
         message,
         text="Processing...",
     )
-    searching = SearchVideos(
-        f"{str_link}",
-        offset=1,
-        mode="dict",
-        max_results=1,
-    )
-    links = searching.result()
-    get_audio = links["search_result"]
-    loots = get_audio[0]["link"]
-    get_audio[0]["duration"]
-    thumbn = get_audio[0]["title"]
-    ch = get_audio[0]["channel"]
-    url = loots
-    opsi = {
-        "format": "bestaudio/best",
-        "addmetadata": True,
-        "key": "FFmpegMetadata",
-        "writethumbnail": True,
-        "prefer_ffmpeg": True,
-        "geo_bypass": True,
-        "nocheckcertificate": True,
-        "postprocessors": [
-            {
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": "720",
-            }
-        ],
-        "outtmpl": "cache/%(id)s.mp3",
-        "quiet": True,
-        "logtostderr": False,
-    }
     try:
+        if is_youtube_url(str_link):
+            _links = (
+                normalize_youtube_url(
+                    str_link
+                )
+            )
+            info = get_youtube_info(
+                url=_links
+            )
+            str_link = info.get("title")
+
+        with suppress(BaseException):
+            searching = SearchVideos(
+                f"{str_link}",
+                offset=1,
+                mode="dict",
+                max_results=1,
+            )
+            links = searching.result()
+            get_audio = links[
+                "search_result"
+            ]
+            url = get_audio[0]["link"]
+            get_audio[0]["duration"]
+            thumbn = get_audio[0][
+                "title"
+            ]
+            ch = get_audio[0]["channel"]
+            opsi = {
+                "format": "bestaudio/best",
+                "addmetadata": True,
+                "key": "FFmpegMetadata",
+                "writethumbnail": True,
+                "prefer_ffmpeg": True,
+                "geo_bypass": True,
+                "nocheckcertificate": True,
+                "postprocessors": [
+                    {
+                        "key": "FFmpegExtractAudio",
+                        "preferredcodec": "mp3",
+                        "preferredquality": "720",
+                    }
+                ],
+                "outtmpl": "cache/%(id)s.mp3",
+                "quiet": True,
+                "logtostderr": False,
+            }
+
         with YoutubeDL(
             opsi
         ) as yt_download:
@@ -290,12 +334,12 @@ async def _youtube_audio_dl(
         if audio_duration > 120:
             magazine = "120"
             await eor(
-                x,
+                xx,
                 text=f"Audio longer than {audio_duration} min aren't allowed.\nMust be <= {magazine} min.",
             )
             return
         xx = await eor(
-            x,
+            xx,
             text=f"Downloading <b>{thumbn}</b>",
         )
         audiof = yt_download.prepare_filename(
@@ -364,8 +408,8 @@ async def _youtube_audio_dl(
                     "watched",
                     a_date,
                     a_like,
-                    loots,
-                    loots,
+                    url,
+                    url,
                     ch,
                     a_subscriber,
                     "subscriber",
@@ -373,16 +417,24 @@ async def _youtube_audio_dl(
                 ),
             )
             await _try_purged(fx)
-            remove(audio)
-            remove(thumbnail)
+            (Rooters / audio).unlink(
+                missing_ok=True
+            )
+            (
+                Rooters / thumbnail
+            ).unlink(missing_ok=True)
             return
         except BaseException as excp:
             await eor(
                 fx,
                 text=f"Error: {excp}",
             )
-            remove(audio)
-            remove(thumbnail)
+            (Rooters / audio).unlink(
+                missing_ok=True
+            )
+            (
+                Rooters / thumbnail
+            ).unlink(missing_ok=True)
             return
 
 
@@ -616,7 +668,9 @@ Copyright (C) 2023-present @kastaid
                 protect_content=True,
             )
             await _try_purged(x)
-            remove(filn)
+            (Rooters / filn).unlink(
+                missing_ok=True
+            )
             return
         else:
             await client.send_message(
@@ -676,7 +730,9 @@ async def _instagram_dl(
                 photo=photo,
                 caption=caption,
             )
-            remove(photo)
+            (Rooters / photo).unlink(
+                missing_ok=True
+            )
             return await _try_purged(x)
         else:
             await eor(
@@ -696,7 +752,9 @@ async def _instagram_dl(
                 video=video,
                 caption=caption,
             )
-            remove(video)
+            (Rooters / video).unlink(
+                missing_ok=True
+            )
             return await _try_purged(x)
         else:
             await eor(
@@ -750,7 +808,9 @@ async def _pinterest_dl(
                 caption=caption,
             )
             await _try_purged(x, 1)
-            remove(my_pin)
+            (Rooters / my_pin).unlink(
+                missing_ok=True
+            )
             return
         if type_file == "image":
             await client.send_photo(

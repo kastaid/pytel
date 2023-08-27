@@ -16,6 +16,7 @@ beautifulsoup4==4.12.2
 cachetools==5.3.1
 GitPython==3.1.31
 loguru==0.7.0
+Pillow==9.5
 pathlib==1.0.1
 pyrogram==2.0.106
 pytgcalls==3.0.0.dev24
@@ -24,12 +25,12 @@ lxml==4.9.2
 
 # extended
 psutil
-Pillow
 Pytanggalmerah
 pyroaddon
 pytelibs
 pyotp
 python-dotenv
+pymediainfo
 requests
 speedtest-cli
 uvloop

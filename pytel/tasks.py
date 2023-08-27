@@ -13,6 +13,9 @@ from signal import (
     SIGTERM,
     SIGABRT,)
 from typing import Any, Optional
+from .client.dbase.dbMessaging import (
+    clear_all_schedule,
+    clear_all_dspam,)
 from .logger import pylog
 
 signals = {
@@ -41,6 +44,8 @@ async def pytasks(
         )
         for a in client:
             pylog.info("Exiting...")
+            clear_all_dspam(a.me.id)
+            clear_all_schedule(a.me.id)
             for b in asyncio.all_tasks(
                 a.loop
             ):

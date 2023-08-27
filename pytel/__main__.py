@@ -7,6 +7,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
 from asyncio import sleep
+from contextlib import suppress
 from importlib import (
     import_module as import_plugins,)
 from pathlib import Path
@@ -179,24 +180,21 @@ if __name__ == "__main__":
     print(__doc__)
     install()
     for x in pytl:
-        try:
-            x.run_in_loop(runner())
-        except (
+        with suppress(
             PersistentTimestampInvalid,
-            OSError,
-        ):
-            pass
-        except (
             TimeoutError,
             ConnectionError,
-        ) as excp:
-            send_log.warning(excp)
-        finally:
-            x.send_log.info(
-                "See you next time !",
-            )
-            Instagram.loged_out(
-                crash=True
-            )
-            x.loop.stop()
-            exit(0)
+        ):
+            try:
+                x.run_in_loop(runner())
+            except FloodWait as flood:
+                x.send_log.info(flood)
+            finally:
+                x.send_log.info(
+                    "See you next time !",
+                )
+                Instagram.loged_out(
+                    crash=True
+                )
+                x.loop.stop()
+                exit(0)

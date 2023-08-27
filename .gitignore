@@ -161,6 +161,7 @@ cython_debug/
 
 # pytel
 !sample.env
+!image_blank.png
 cache/
 downloads/
 logs/*.log

@@ -20,7 +20,6 @@ from typing import (
     Union,)
 from urllib.parse import (
     urlparse as urllibparse,)
-from uuid import uuid4
 from aiofiles import open
 from aiohttp import (
     ClientSession,
@@ -44,12 +43,6 @@ _CAS_CACHE = TTLCache(
     ttl=120,
     timer=perf_counter,
 )  # 2 mins
-
-
-def get_random_hex(
-    length: int = 12,
-) -> str:
-    return uuid4().hex[:length]
 
 
 async def fetching(

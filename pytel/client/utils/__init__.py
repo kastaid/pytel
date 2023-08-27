@@ -12,7 +12,8 @@ from .apilyrics import (
 from .apisocialmedia import (
     Instagram,
     Pinterest,
-    TikTok,)
+    TikTok,
+    get_youtube_info,)
 from .fetching import (
     fetch_adzan,
     get_blacklisted,
@@ -26,12 +27,16 @@ from .helper import (
     plugins_helper,
     SaveDict,)
 from .misc import (
+    Memify,
     RunningCommand,
     humanboolean,
     gg_restricted,
+    get_random_hex,
     mention_html,
     mention_markdown,
     random_prefixies,
+    resize_images,
+    resize_media,
     time_formatter,
     int2date,
     short_dict,

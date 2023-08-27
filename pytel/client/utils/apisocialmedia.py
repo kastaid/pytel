@@ -8,17 +8,70 @@
 from contextlib import suppress
 from mimetypes import guess_type
 from re import findall, search
-from typing import Optional, Any
+from typing import Optional, Any, Dict
 import pyotp
 from instagrapi import (
     Client as InstagramClient,
     exceptions as exp,)
 from requests import get
+from yt_dlp import YoutubeDL
 from ...config import (
     IG_USN,
     IG_PASS,
     IG_SECRET,)
 from ...logger import pylog
+
+YOUTUBEDL_DEFAULT = {
+    "quiet": True,
+    "geo_bypass": True,
+    "nocheckcertificate": True,
+    "no_warnings": True,
+    "clean_infojson": True,
+    "ignore_no_formats_error": True,
+}
+
+
+def get_youtube_info(
+    url: str,
+) -> Dict[str, Any]:
+    ydl_opts = {
+        **YOUTUBEDL_DEFAULT,
+    }
+    with YoutubeDL(ydl_opts) as ydl:
+        try:
+            info = ydl.extract_info(
+                url, download=False
+            )
+            # del info["formats"]
+            # del info["thumbnails"]
+            # del info["requested_formats"]
+            return {
+                "id": info.get("id"),
+                "link": info.get(
+                    "webpage_url"
+                ),
+                "title": info.get(
+                    "title"
+                ).strip(),
+                "thumbnail": info.get(
+                    "thumbnail"
+                ),
+                "duration": info.get(
+                    "duration_string"
+                )
+                or "00:00",
+                "channel": info.get(
+                    "uploader"
+                )
+                or "unknown",
+                "views": info.get(
+                    "view_count", "0"
+                )
+                if "view_count" in info
+                else "0",
+            }
+        except BaseException:
+            return {}
 
 
 def Pinterest(

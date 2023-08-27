@@ -7,21 +7,30 @@
 
 from datetime import date
 from html import escape
+from math import floor
+from os import path, remove
 from random import choice
 from re import sub
 from subprocess import (
     SubprocessError,
     run,)
+from textwrap import wrap
 from typing import (
     List,
     Optional,
     Union,
     Any,)
+from uuid import uuid4
+from PIL import (
+    Image,
+    ImageDraw,
+    ImageFont,)
 from pytelibs import _i
 from pytz import timezone
 from pytel.config import TimeZone
 from pytel.logger import (
     pylog as send_log,)
+from .helper import MediaInformation
 
 tz = timezone(TimeZone)
 SIZE_UNITS = [
@@ -37,6 +46,12 @@ SIZE_UNITS = [
 
 def gg_restricted() -> None:
     RunningCommand(_i)
+
+
+def get_random_hex(
+    length: int = 12,
+) -> str:
+    return uuid4().hex[:length]
 
 
 def random_prefixies(
@@ -216,3 +231,195 @@ def int2date(
     return date(
         year, month, day
     ).strftime("%d %B %Y")
+
+
+def resize_images(image):
+    im = Image.open(image)
+    maxsize = (512, 512)
+    if (im.width and im.height) < 512:
+        size1 = im.width
+        size2 = im.height
+        if im.width > im.height:
+            scale = 512 / size1
+            size1new = 512
+            size2new = size2 * scale
+        else:
+            scale = 512 / size2
+            size1new = size1 * scale
+            size2new = 512
+        size1new = floor(size1new)
+        size2new = floor(size2new)
+        sizenew = (size1new, size2new)
+        im = im.resize(sizenew)
+    else:
+        im.thumbnail(maxsize)
+    file_name = (
+        f"image_{get_random_hex()}.png"
+    )
+    im.save(file_name, "PNG")
+    if path.exists(image):
+        remove(image)
+    return file_name
+
+
+def resize_media(
+    media: str,
+    video: bool,
+    fast_forward: bool,
+) -> str:
+    if video:
+        info_ = MediaInformation.data(
+            media
+        )
+        width = info_["pixel_sizes"][0]
+        height = info_["pixel_sizes"][1]
+        sec = info_["duration_in_ms"]
+        s = round(float(sec)) / 1000
+
+        if height == width:
+            height, width = 512, 512
+        elif height > width:
+            height, width = 512, -1
+        elif width > height:
+            height, width = -1, 512
+
+        resized_video = f"{media}.webm"
+        if fast_forward:
+            if s > 3:
+                fract_ = 3 / s
+                ff_f = round(fract_, 2)
+                set_pts_ = (
+                    ff_f - 0.01
+                    if ff_f > fract_
+                    else ff_f
+                )
+                cmd_f = f"-filter:v 'setpts={set_pts_}*PTS',scale={width}:{height}"
+            else:
+                cmd_f = f"-filter:v scale={width}:{height}"
+        else:
+            cmd_f = f"-filter:v scale={width}:{height}"
+        fps_ = float(
+            info_["frame_rate"]
+        )
+        fps_cmd = (
+            "-r 30 "
+            if fps_ > 30
+            else ""
+        )
+        cmd = f"ffmpeg -i {media} {cmd_f} -ss 00:00:00 -to 00:00:03 -an -c:v libvpx-vp9 {fps_cmd}-fs 256K {resized_video}"
+        RunningCommand(cmd)
+        remove(media)
+        return resized_video
+
+    image = Image.open(media)
+    maxsize = 512
+    scale = maxsize / max(
+        image.width, image.height
+    )
+    new_size = (
+        int(image.width * scale),
+        int(image.height * scale),
+    )
+
+    image = image.resize(
+        new_size, Image.LANCZOS
+    )
+    resized_photo = (
+        f"media_{get_random_hex()}.png"
+    )
+    image.save(resized_photo)
+    remove(media)
+    return resized_photo
+
+
+def Memify(image_path, text):
+    font_size = 12
+    stroke_width = 1
+
+    if ";" in text:
+        (
+            upper_text,
+            lower_text,
+        ) = text.split(";")
+    else:
+        upper_text = text
+        lower_text = ""
+
+    img = Image.open(
+        image_path
+    ).convert("RGBA")
+    img_info = img.info
+    image_width, image_height = img.size
+    font = ImageFont.truetype(
+        font="./resources/fonts/aria.ttf",
+        size=int(
+            image_height * font_size
+        )
+        // 100,
+    )
+    draw = ImageDraw.Draw(img)
+
+    (
+        char_width,
+        char_height,
+    ) = font.getsize("A")
+    chars_per_line = (
+        image_width // char_width
+    )
+    top_lines = wrap(
+        upper_text, width=chars_per_line
+    )
+    bottom_lines = wrap(
+        lower_text, width=chars_per_line
+    )
+
+    if top_lines:
+        y = 10
+        for line in top_lines:
+            (
+                line_width,
+                line_height,
+            ) = font.getsize(line)
+            x = (
+                image_width - line_width
+            ) / 2
+            draw.text(
+                (x, y),
+                line,
+                fill="white",
+                font=font,
+                stroke_width=stroke_width,
+                stroke_fill="black",
+            )
+            y += line_height
+
+    if bottom_lines:
+        y = (
+            image_height
+            - char_height
+            * len(bottom_lines)
+            - 15
+        )
+        for line in bottom_lines:
+            (
+                line_width,
+                line_height,
+            ) = font.getsize(line)
+            x = (
+                image_width - line_width
+            ) / 2
+            draw.text(
+                (x, y),
+                line,
+                fill="white",
+                font=font,
+                stroke_width=stroke_width,
+                stroke_fill="black",
+            )
+            y += line_height
+
+    final_image = path.join(
+        "memify.webp"
+    )
+    img.save(final_image, **img_info)
+    return final_image
