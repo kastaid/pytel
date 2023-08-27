@@ -744,6 +744,6 @@ plugins_helper["vctools"] = {
     f"{random_prefixies(px)}joinvc / jvc [url/link message/username/id or not]": "To joined video chats/channel.",
     f"{random_prefixies(px)}leftvc / lvc [url/link message/username/id or not]": "To left video chats/channel.",
     f"{random_prefixies(px)}infovc / ivc [url/link message/username/id or not]": "To get information video chats/channel.",
-    f"{random_prefixies(px)}mutevc / mvc [id//username/reply to user]": "To Muting user in video chats.",
-    f"{random_prefixies(px)}unmutevc / umvc [id//username/reply to user]": "To Unmuting user in video chats.",
+    f"{random_prefixies(px)}mutevc / mvc [id/username/reply to user]": "To Muting user in video chats.",
+    f"{random_prefixies(px)}unmutevc / umvc [id/username/reply to user]": "To Unmuting user in video chats.",
 }
