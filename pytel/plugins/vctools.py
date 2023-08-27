@@ -19,22 +19,31 @@ from pyrogram.raw.functions.phone import (
     GetGroupCall,
     CreateGroupCall,
     DiscardGroupCall,
-    GetGroupParticipants,)
+    GetGroupParticipants,
+    EditGroupCallParticipant,)
 from pyrogram.raw.types import (
     InputGroupCall,
     InputPeerChannel,
     InputPeerChat,)
 from . import (
     eor,
+    extract_user,
     get_text,
     get_chat_ids,
     plugins_helper,
     px,
     pytel,
     _try_purged,
+    _supersu,
     suppress,
     humanboolean,
     random_prefixies,)
+
+_MTVC_TEXT = """
+{}
+├ <b>Can Talk:</b> <code>{}</code>
+└ <b>Users:</b> {}
+"""
 
 
 async def get_group_call(
@@ -93,6 +102,22 @@ async def get_resvc(
         ),
     )
     return res
+
+
+async def muting_user_vc(
+    client: Client,
+    group_call: Any,
+    participant: Any,
+    muted: bool,
+) -> EditGroupCallParticipant:
+    mtd = await client.invoke(
+        EditGroupCallParticipant(
+            call=group_call,
+            participant=participant,
+            muted=muted,
+        ),
+    )
+    return mtd
 
 
 async def get_partici(
@@ -576,10 +601,149 @@ async def _video_chats_information(
             return
 
 
+@pytel.instruction(
+    [
+        "devmutevc",
+        "devunmutevc",
+        "dmvc",
+        "dumvc",
+    ],
+    supersu=["PYTEL"],
+    privileges=[
+        "can_manage_video_chats"
+    ],
+)
+@pytel.instruction(
+    [
+        "mutevc",
+        "unmutevc",
+        "mvc",
+        "umvc",
+    ],
+    outgoing=True,
+    supergroups=True,
+    privileges=[
+        "can_manage_video_chats"
+    ],
+)
+async def _muting_user_video_chats_(
+    client, message
+):
+    user_id = await extract_user(
+        client, message
+    )
+    x = await eor(
+        message,
+        text="Checking...",
+    )
+    if not user_id:
+        await eor(
+            x,
+            text="Unable to find user.",
+        )
+        return
+    if user_id == client.me.id:
+        await eor(
+            x,
+            text="Unable to muting ur self.",
+        )
+        return
+    if user_id in list(_supersu):
+        await eor(
+            x,
+            text="I can't muting, coz he's My Developer..",
+        )
+        return
+    chat_id = message.chat.id
+    group_call = await get_group_call(
+        client,
+        message,
+        chat_ids=chat_id,
+    )
+    if not group_call:
+        await eor(
+            x,
+            text="Video chats not available.",
+        )
+        return
+
+    par = await get_partici(
+        client, group_call
+    )
+    text = ""
+    if int(par.count) > 0:
+        lpar: list = []
+        for u in par.users:
+            lpar.append(u.id)
+            if user_id in lpar:
+                participant = await client.resolve_peer(
+                    user_id
+                )
+                mention = (
+                    await client.get_users(
+                        user_id
+                    )
+                ).mention
+                try:
+                    if (
+                        message.command[
+                            0
+                        ][0]
+                        == "u"
+                    ):
+                        muted = False
+                        text = "<b><u>Unmuting</u> IN VIDEO CHATS</b>"
+                    else:
+                        muted = True
+                        text = "<b><u>Muting</u> IN VIDEO CHATS</b>"
+                    await muting_user_vc(
+                        client,
+                        group_call=group_call,
+                        participant=participant,
+                        muted=muted,
+                    )
+                    await eor(
+                        x,
+                        text=_MTVC_TEXT.format(
+                            text,
+                            humanboolean(
+                                muted
+                            ),
+                            mention,
+                        ),
+                    )
+                    lpar.clear()
+                    return
+                except (
+                    Exception
+                ) as excp:
+                    await eor(
+                        x,
+                        text=f"Error: {excp}",
+                    )
+                    return
+
+            else:
+                await eor(
+                    x,
+                    text="The user is not in a video chat.",
+                )
+                lpar.clear()
+                return
+    else:
+        await eor(
+            x,
+            text="No one else in the video chat.",
+        )
+        return
+
+
 plugins_helper["vctools"] = {
     f"{random_prefixies(px)}startvc / stvc [title or not]": "To started video chats/channel.",
     f"{random_prefixies(px)}stopvc / spvc": "To stopped video chats/channel.",
     f"{random_prefixies(px)}joinvc / jvc [url/link message/username/id or not]": "To joined video chats/channel.",
     f"{random_prefixies(px)}leftvc / lvc [url/link message/username/id or not]": "To left video chats/channel.",
     f"{random_prefixies(px)}infovc / ivc [url/link message/username/id or not]": "To get information video chats/channel.",
+    f"{random_prefixies(px)}mutevc / mvc [id//username/reply to user]": "To Muting user in video chats.",
+    f"{random_prefixies(px)}unmutevc / umvc [id//username/reply to user]": "To Unmuting user in video chats.",
 }
