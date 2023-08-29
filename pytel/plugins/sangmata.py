@@ -46,7 +46,7 @@ async def _sangmata(client, message):
     )
     await sleep(3)
     async for s in client.search_messages(
-        sang
+        sang, limit=3
     ):
         try:
             if s.text:
@@ -59,7 +59,6 @@ async def _sangmata(client, message):
                     ),
                     x.delete(),
                 )
-                return
         except BaseException as excp:
             await eor(
                 x,

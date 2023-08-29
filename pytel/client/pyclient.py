@@ -14,6 +14,7 @@ from asyncio import (
 from contextlib import suppress
 from datetime import datetime
 from sys import exc_info, exit
+from time import sleep as asleep
 from traceback import format_exc as fmex
 from typing import (
     Any,
@@ -189,7 +190,7 @@ class PytelClient(Raw):
         *args,
         **kwargs,
     ) -> Callable:
-        group = -1
+        group = 0
         if command:
             command = [
                 x
@@ -458,6 +459,11 @@ class PytelClient(Raw):
                         client,
                         message,
                     )
+                except MessageIdInvalid:
+                    await message.reply(
+                        "Message command not found. Please don't delete the command message."
+                    )
+                    return
                 except (
                     PersistentTimestampInvalid,
                     PersistentTimestampOutdated,
@@ -470,6 +476,10 @@ class PytelClient(Raw):
                 ) as excp:
                     await sleep(
                         excp.value + 5
+                    )
+                    await func(
+                        client,
+                        message,
                     )
                 except (
                     Exception
@@ -552,22 +562,30 @@ class PytelClient(Raw):
                                 )
 
             for _ in self._client:
-                if force_edit:
+                try:
+                    if force_edit:
+                        _.add_handler(
+                            EditedMessageHandler(
+                                callback=wrapper,
+                                filters=filt,
+                            ),
+                            group=group,
+                        )
+
                     _.add_handler(
-                        EditedMessageHandler(
+                        MessageHandler(
                             callback=wrapper,
                             filters=filt,
                         ),
                         group=group,
                     )
+                except (
+                    FloodWait
+                ) as flood:
+                    asleep(
+                        flood.value + 3
+                    )
 
-                _.add_handler(
-                    MessageHandler(
-                        callback=wrapper,
-                        filters=filt,
-                    ),
-                    group=group,
-                )
             return wrapper
 
         return decorator

@@ -31,6 +31,9 @@ from .client import (
     Instagram,)
 from .client.autopilots import (
     auto_pilots,)
+from .client.dbase.dbMessaging import (
+    clear_all_schedule,
+    clear_all_dspam,)
 from .client.runmsg import (
     running_message,)
 from .logger import pylog as send_log
@@ -145,6 +148,9 @@ async def runner():
     for _ in pytl:
         try:
             await _.client_started()
+            # Cleared
+            clear_all_dspam(_.me.id)
+            clear_all_schedule(_.me.id)
             await _.notify_login()
             await auto_pilots(
                 _,
