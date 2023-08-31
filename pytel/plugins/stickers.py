@@ -553,7 +553,7 @@ async def _tiny_stickers(
     blank = Image.open(
         "resources/images/image_blank.png"
     )
-    if fl.endswith(".tgs"):
+    if fl.endswith((".tgs", ".webm")):
         await eor(
             x,
             text="File not supported.",

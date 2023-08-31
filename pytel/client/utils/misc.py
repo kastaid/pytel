@@ -10,7 +10,6 @@ from html import escape
 from math import floor
 from os import path, remove
 from random import choice
-from re import sub
 from subprocess import (
     SubprocessError,
     run,)
@@ -25,7 +24,11 @@ from PIL import (
     Image,
     ImageDraw,
     ImageFont,)
-from pytelibs import _i
+from pytelibs import (
+    _i,
+    replace_all,
+    _CHARACTER_NAMES,
+    SIZE_UNITS,)
 from pytz import timezone
 from pytel.config import TimeZone
 from pytel.logger import (
@@ -33,15 +36,6 @@ from pytel.logger import (
 from .helper import MediaInformation
 
 tz = timezone(TimeZone)
-SIZE_UNITS = [
-    "B",
-    "KB",
-    "MB",
-    "GB",
-    "TB",
-    "PB",
-    "EB",
-]
 
 
 def gg_restricted() -> None:
@@ -62,28 +56,41 @@ def random_prefixies(
     return str(prefixies)
 
 
-def escape_markdown(
-    text,
-):
-    escape_chars = r"\*_`\[}{"
-    return sub(
-        r"([%s])" % escape_chars,
-        r"\\\1",
-        text,
+async def mentioned(
+    client,
+    user_id,
+    use_html: bool = None,
+) -> str:
+    sep: str = ""
+    try:
+        user = await client.get_users(
+            user_id
+        )
+        fname = (
+            hasattr(user, "last_name")
+            and user.last_name
+            and f"{sep}{user.first_name} {user.last_name}"
+            or f"{sep}{user.first_name}"
+        )
+    except BaseException:
+        fname = "Anonymous"
+
+    fullname = " ".join(
+        replace_all(
+            escape(fname)
+            if use_html
+            else fname,
+            _CHARACTER_NAMES,
+        ).split()
     )
-
-
-def mention_html(user_id, name):
-    return '<a href="tg://user?id={}">{}</a>'.format(
-        user_id,
-        escape(name),
-    )
-
-
-def mention_markdown(user_id, name):
+    if use_html:
+        return "<a href=tg://user?id={}>➦{}</a>".format(
+            user_id,
+            fullname,
+        )
     return (
-        "[{}](tg://user?id={})".format(
-            escape_markdown(name),
+        "[➦{}](tg://user?id={})".format(
+            fullname,
             user_id,
         )
     )

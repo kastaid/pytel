@@ -12,7 +12,7 @@ from importlib import (
     import_module as import_plugins,)
 from pathlib import Path
 from sys import exit
-from time import time, sleep as sl
+from time import time
 from tracemalloc import start
 from typing import List, Tuple
 from pyrogram.errors.exceptions.bad_request_400 import (
@@ -76,13 +76,11 @@ def sorted_plugins() -> (
     return sorted(a_plugins)
 
 
-def load_plugins():
+async def load_plugins():
     """
     Credits : @illvart
     """
-    send_log.info(
-        "Installing plugins..."
-    )
+    send_log.info("Loading plugins...")
     plugins = sorted_plugins()
     loads = time()
     _ = (
@@ -100,7 +98,7 @@ def load_plugins():
                 send_log.success(
                     "[✅]" + plugin
                 )
-                sl(0.5)
+                await sleep(0.5)
         except KeyboardInterrupt:
             send_log.warning(
                 "Received interrupt while installing"
@@ -158,13 +156,15 @@ async def runner():
             )
             await sleep(2)
             await running_message(_)
+            await load_plugins()
+        except FloodWait as flood:
+            await sleep(flood.value + 5)
         except KeyboardInterrupt:
             send_log.warning(
                 "Received interrupt while connecting"
             )
-        except Exception as exc:
-            send_log.exception(exc)
-    load_plugins()
+        except Exception as excp:
+            send_log.exception(excp)
     await sleep(1.5)
     await _.flash()
     _._copyright(
@@ -192,9 +192,9 @@ if __name__ == "__main__":
             ConnectionError,
         ):
             try:
-                x.run_in_loop(runner())
-            except FloodWait as flood:
-                x.send_log.info(flood)
+                x.loop.run_until_complete(
+                    runner()
+                )
             finally:
                 x.send_log.info(
                     "See you next time !",

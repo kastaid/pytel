@@ -95,6 +95,17 @@ async def _asst_home(client, message):
         is_join = False
         send_log.exception(excp)
 
+    fullname = (
+        message.from_user.first_name
+        + message.from_user.last_name
+        if message.from_user.last_name
+        else message.from_user.first_name
+    )
+    username = (
+        f"@{message.from_user.username}"
+        if message.from_user.username
+        else "None"
+    )
     if is_join:
         await message.reply(
             Assistant.START.format(
@@ -103,17 +114,6 @@ async def _asst_home(client, message):
             quote=False,
             disable_web_page_preview=True,
             reply_markup=Assistant.home_buttons,
-        )
-        fullname = (
-            message.from_user.first_name
-            + message.from_user.last_name
-            if message.from_user.last_name
-            else message.from_user.first_name
-        )
-        username = (
-            f"@{message.from_user.username}"
-            if message.from_user.username
-            else "None"
         )
         if checks_users(
             message.from_user.id
@@ -132,6 +132,22 @@ async def _asst_home(client, message):
                 ),
             )
     else:
+        if checks_users(
+            message.from_user.id
+        ):
+            return
+        else:
+            added_users(
+                message.from_user.id
+            )
+            await client.send_message(
+                int(OWNER_ID),
+                Assistant.start_text_from_user.format(
+                    fullname,
+                    message.from_user.id,
+                    username,
+                ),
+            )
         await message.reply(
             Assistant.FSUBSCRIBE.format(
                 message.from_user.mention,

@@ -6,16 +6,23 @@
 
 from asyncio import sleep
 from typing import Set
+from pyrogram.enums import (
+    ChatType,
+    ChatMembersFilter,
+    ChatMemberStatus,)
 from . import (
+    Rooters,
     ParseMode,
     FloodWait,
     _try_purged,
     eor,
     get_text,
+    get_chat_ids,
     plugins_helper,
     px,
     pytel,
     suppress,
+    mentioned,
     random_prefixies,)
 
 _MENTION_LOCK: Set[int] = set()
@@ -129,7 +136,202 @@ async def _cancel_mention(
     )
 
 
+@pytel.instruction(
+    [
+        "tadmins",
+        "tadmin",
+        "listadmins",
+        "listadmin",
+        "ladm",
+    ],
+    outgoing=True,
+    supergroups=True,
+)
+async def _mention_admins(
+    client, message
+):
+    gets = get_text(message)
+    if not gets:
+        gets = message.chat.id
+    with suppress(Exception):
+        grp = get_chat_ids(str(gets))
+        if not grp:
+            await eor(
+                message,
+                text="Please provide id/username/link messages of groups.",
+            )
+            return
+
+    msg = await eor(
+        message,
+        text="<code>Checking ...</code>",
+    )
+    try:
+        chat = await client.get_chat(
+            grp
+        )
+    except Exception as excp:
+        await eor(
+            msg,
+            text=f"Exception: {excp}",
+        )
+        return
+
+    msg = await eor(
+        msg,
+        text="<code>Fetching admins...</code>",
+    )
+    _CH = [ChatType.CHANNEL]
+    _GP = [
+        ChatType.SUPERGROUP,
+        ChatType.GROUP,
+    ]
+    if chat.type in _CH:
+        await eor(
+            msg,
+            text="Can't fetching admins from channels.",
+        )
+        return
+    elif chat.type in _GP:
+        town, tadmins, badmins = (
+            [],
+            [],
+            [],
+        )
+        async for admin in client.get_chat_members(
+            chat.id,
+            filter=ChatMembersFilter.ADMINISTRATORS,
+        ):
+            _admin = [
+                ChatMemberStatus.ADMINISTRATOR
+            ]
+            _owner = [
+                ChatMemberStatus.OWNER
+            ]
+            try:
+                if (
+                    admin.status
+                    in _owner
+                ):
+                    town.append(
+                        await mentioned(
+                            client,
+                            admin.user.id,
+                            use_html=True,
+                        )
+                    )
+                elif (
+                    admin.status
+                    in _admin
+                ):
+                    if (
+                        admin.user.is_bot
+                    ):
+                        badmins.append(
+                            await mentioned(
+                                client,
+                                admin.user.id,
+                                use_html=True,
+                            )
+                        )
+                    else:
+                        tadmins.append(
+                            await mentioned(
+                                client,
+                                admin.user.id,
+                                use_html=True,
+                            )
+                        )
+
+            except (
+                BaseException
+            ) as excp:
+                await eor(
+                    msg,
+                    text=f"Error: {excp}",
+                )
+                return
+
+        tadmins.sort()
+        badmins.sort()
+        total_adm = (
+            len(tadmins)
+            + len(badmins)
+            + len(town)
+        )
+        text = "<b><u>LIST ADMINS</b></u>\n"
+        text += f" ├ {chat.title}\n"
+        text += f" └ <b>Group ID:</b> ( <code>{chat.id}</code> )\n\n"
+        text += "<b><u>OWNERS</b></u>\n"
+        if town:
+            for o in town:
+                text += (
+                    " └ {}\n\n".format(
+                        o
+                    )
+                )
+        else:
+            text += " └ Anonymous\n\n"
+        text += "<b><u>ADMINS</b></u>\n"
+        if tadmins:
+            for a in tadmins:
+                text += (
+                    " ├ {}\n".format(a)
+                )
+            text += "\n"
+        else:
+            text += " └ Anonymous\n\n"
+        text += "<b><u>BOT</b></u>\n"
+        if badmins:
+            for b in badmins:
+                text += (
+                    " ├ {}\n".format(b)
+                )
+            text += "\n"
+        else:
+            text += " └ Anonymous\n\n"
+        text += f"<b><u>TOTAL ADMINISTRATORS</b></u> <code>{total_adm}</code> account."
+        if len(text) > 4096:
+            files = (
+                "cache/list_admins.txt"
+            )
+            with open(files, "w+") as f:
+                f.write(text)
+            with suppress(
+                BaseException
+            ):
+                caption = f"""
+<u><b>LIST ADMINS</u></b>
+{chat.title}
+"""
+                await client.send_document(
+                    message.chat.id,
+                    document=files,
+                    caption=caption,
+                )
+                await _try_purged(msg)
+                (
+                    Rooters / files
+                ).unlink(
+                    missing_ok=True
+                )
+                town.clear()
+                tadmins.clear()
+                badmins.clear()
+                return
+        else:
+            await eor(
+                msg,
+                text=text,
+            )
+            town.clear()
+            tadmins.clear()
+            badmins.clear()
+            return
+
+
 plugins_helper["mention"] = {
     f"{random_prefixies(px)}mentionall / tagall [text/reply message]": "To mention members in the group. ( 20 seconds 1x send messages )",
     f"{random_prefixies(px)}cmention / ctag": "To cancel the current mention.",
+    f"{random_prefixies(px)}listadmin / tadmin [id/username/link message or not]": "To mention or get list admins in groups.",
 }

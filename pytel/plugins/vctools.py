@@ -6,11 +6,10 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import gather
-from os import remove
 from random import randint
 from threading import RLock
 from typing import Optional, Any
-from pyrogram import enums, Client
+from pyrogram import Client
 from pyrogram.raw.functions.channels import (
     GetFullChannel,)
 from pyrogram.raw.functions.messages import (
@@ -26,6 +25,7 @@ from pyrogram.raw.types import (
     InputPeerChannel,
     InputPeerChat,)
 from . import (
+    Rooters,
     eor,
     extract_user,
     get_text,
@@ -153,19 +153,28 @@ async def get_partici(
 async def _video_chats_start(
     client, message
 ):
-    flags = " ".join(
-        message.command[1:]
-    )
     x = await eor(
         message,
         text="Started video chats...",
     )
     title = get_text(message)
-    if flags == enums.ChatType.CHANNEL:
-        chat_id = message.chat.title
-    else:
-        chat_id = message.chat.id
+    chat_id = message.chat.id
+
     try:
+        group_call = (
+            await get_group_call(
+                client,
+                message,
+                chat_ids=chat_id,
+            )
+        )
+        if group_call:
+            await eor(
+                x,
+                text="Video chats available.",
+            )
+            return
+
         if not title:
             text = f"<b><u>{message.chat.title}</u></b>\n└ <b>Video chats started</b>"
             await client.invoke(
@@ -591,7 +600,11 @@ async def _video_chats_information(
                     caption=caption,
                 )
                 await _try_purged(x)
-                remove(files)
+                (
+                    Rooters / files
+                ).unlink(
+                    missing_ok=True
+                )
                 return
         else:
             await eor(

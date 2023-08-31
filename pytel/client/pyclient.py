@@ -97,6 +97,9 @@ class PytelClient(Raw):
         app_version: Optional[
             str
         ] = None,
+        no_updates: Optional[
+            bool
+        ] = None,
         workers: Any = None,
         system_version: Any = None,
         device_model: Any = None,
@@ -123,6 +126,9 @@ class PytelClient(Raw):
         ] = lang_code.lower()
         kwargs["in_memory"] = in_memory
         kwargs["ipv6"] = ipv6
+        kwargs[
+            "no_updates"
+        ] = no_updates
 
         self.client = Raw
         self._client = []
@@ -641,6 +647,9 @@ class PytelClient(Raw):
         )
         self.send_log.success(
             f"Started on {x}"
+        )
+        self.send_log.success(
+            f"Installing plugins for {x}"
         )
 
     def _copyright(
