@@ -6,10 +6,13 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
-from asyncio import sleep
+from asyncio import sleep, gather
+from concurrent.futures import (
+    ThreadPoolExecutor,)
 from contextlib import suppress
 from importlib import (
     import_module as import_plugins,)
+from multiprocessing import cpu_count
 from pathlib import Path
 from sys import exit
 from time import time
@@ -19,8 +22,11 @@ from pyrogram.errors.exceptions.bad_request_400 import (
     PersistentTimestampInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
+from pyrogram.errors.exceptions.internal_server_error_500 import (
+    HistoryGetFailed,)
 from uvloop import install
 from . import (
+    loopers,
     __copyright__,
     __license__,
     pytel_tgb,
@@ -42,7 +48,10 @@ from .tasks import pytasks
 start()
 
 Plugins: Path = Path(__file__).parent
-
+ThreadLock = ThreadPoolExecutor(
+    max_workers=cpu_count() * 1,
+    thread_name_prefix="PYTEL",
+)
 
 PYTEL = r"""
               _       _
@@ -76,7 +85,7 @@ def sorted_plugins() -> (
     return sorted(a_plugins)
 
 
-async def load_plugins():
+async def load_plugins() -> None:
     """
     Credits : @illvart
     """
@@ -103,6 +112,8 @@ async def load_plugins():
             send_log.warning(
                 "Received interrupt while installing"
             )
+        except OSError:
+            pass
         except Exception as excp:
             send_log.exception(
                 f"[❌] {plugin} : {excp} "
@@ -121,7 +132,7 @@ async def load_plugins():
     send_log.info(loaded_msg)
 
 
-async def start_asst():
+async def start_asst() -> None:
     send_log.info(
         "Starting-up Assistant."
     )
@@ -141,22 +152,25 @@ async def start_asst():
     )
 
 
-async def runner():
+async def runner() -> None:
     await start_asst()
     for _ in pytl:
         try:
+            if _.loop.is_closed():
+                _.loop.new_event_loop()
+            else:
+                pass
             await _.client_started()
-            # Cleared
-            clear_all_dspam(_.me.id)
-            clear_all_schedule(_.me.id)
             await _.notify_login()
             await auto_pilots(
                 _,
                 pytel_tgb,
             )
-            await sleep(2)
             await running_message(_)
-            await load_plugins()
+            await _.flash()
+            # Cleared
+            clear_all_dspam(_.me.id)
+            clear_all_schedule(_.me.id)
         except FloodWait as flood:
             await sleep(flood.value + 5)
         except KeyboardInterrupt:
@@ -165,36 +179,46 @@ async def runner():
             )
         except Exception as excp:
             send_log.exception(excp)
-    await sleep(1.5)
-    await _.flash()
-    _._copyright(
-        _copyright=f"{__copyright__}",
-        _license=f"{__license__}",
-    )
-    await pytasks(
-        confirm=True,
-        client=pytl,
-    )
 
-
-#    await _.stop()
-#    await pytel_tgb.stop()
+    await load_plugins()
+    await gather(
+        _._copyright(
+            _copyright=f"{__copyright__}",
+            _license=f"{__license__}",
+        ),
+        pytasks(
+            confirm=True,
+            client=pytl,
+        ),
+    )
+    ThreadLock.shutdown(wait=False)
+    for c in pytl:
+        await c.loop.shutdown_asyncgens()
+        c.loop.stop()
+        await _.stop()
+        await pytel_tgb.stop()
 
 
 if __name__ == "__main__":
     print(PYTEL)
     print(__doc__)
     install()
-    for x in pytl:
-        with suppress(
-            PersistentTimestampInvalid,
-            TimeoutError,
-            ConnectionError,
-        ):
+    with suppress(
+        ConnectionError,
+        HistoryGetFailed,
+        PersistentTimestampInvalid,
+        TimeoutError,
+    ):
+        for x in pytl:
+            if x.loop.is_closed():
+                x.loop.new_event_loop()
+            else:
+                pass
             try:
-                x.loop.run_until_complete(
+                loopers.run_until_complete(
                     runner()
                 )
+            #                loopers.run_forever()
             finally:
                 x.send_log.info(
                     "See you next time !",
@@ -202,5 +226,5 @@ if __name__ == "__main__":
                 Instagram.loged_out(
                     crash=True
                 )
-                x.loop.stop()
+                loopers.stop()
                 exit(0)

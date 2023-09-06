@@ -78,10 +78,12 @@ Untuk warranty, hanya berlaku untuk deploy ulang gara-gara Akun Anda Terhapus at
 Kepada user {}
 Silahkan lakukan transaksi sesuai list dibawah ini.
 
- • 1 Month ( 1 Bulan ) : Rp 25.000
- • 2 Month ( 2 Bulan ) : Rp 50.000
- • 3 Month ( 3 Bulan ) : Rp 75.000
- • 4 Month ( 4 Bulan ) : Rp 100.000
+ • 1 Month ( 1 Bulan ) : Rp 35.000
+ • 2 Month ( 2 Bulan ) : Rp 70.000
+ • 3 Month ( 3 Bulan ) : Rp 105.000
+ • 4 Month ( 4 Bulan ) : Rp 140.000
+ • 5 Month ( 5 Bulan ) : Rp 175.000
+ • 6 Month ( 6 Bulan ) : Rp 210.000
 
 <b>DANA</b> • <code>+6285717663312</code>
 - <code>3901085717663312</code> ( BCA ) Virtual Acc
@@ -104,10 +106,12 @@ silahkan Tekan ✅ Confirm Payment.
 Kepada user {}
 Silahkan lakukan transaksi sesuai list dibawah ini.
 
- • 1 Month ( 1 Bulan ) : Rp 25.000
- • 2 Month ( 2 Bulan ) : Rp 50.000
- • 3 Month ( 3 Bulan ) : Rp 75.000
- • 4 Month ( 4 Bulan ) : Rp 100.000
+ • 1 Month ( 1 Bulan ) : Rp 35.000
+ • 2 Month ( 2 Bulan ) : Rp 70.000
+ • 3 Month ( 3 Bulan ) : Rp 105.000
+ • 4 Month ( 4 Bulan ) : Rp 140.000
+ • 5 Month ( 5 Bulan ) : Rp 175.000
+ • 6 Month ( 6 Bulan ) : Rp 210.000
 
 <b>OVO</b> • <code>+6285717663312</code>
 - <code>39358085717663312</code> ( BCA ) Virtual Acc

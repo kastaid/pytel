@@ -33,6 +33,7 @@ python-dotenv
 pymediainfo
 requests
 speedtest-cli
+
 uvloop
 validators
 
@@ -45,5 +46,6 @@ youtube-search-python>=1.6.6
 youtube-search
 
 # api
+douyin-tiktok-scraper
 openai
 instagrapi

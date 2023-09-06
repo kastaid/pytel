@@ -72,7 +72,7 @@ class PytelAI:
             response = (
                 openai.Image.create(
                     prompt=str(query),
-                    n=4,
+                    n=1,
                     size="1024x1024",
                 )
             )

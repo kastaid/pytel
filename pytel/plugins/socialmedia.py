@@ -15,6 +15,7 @@ from youtubesearchpython import (
 from yt_dlp import YoutubeDL
 from . import (
     Rooters,
+    RAPID_KEY,
     Instagram,
     TikTok,
     Pinterest,
@@ -27,6 +28,7 @@ from . import (
     plugins_helper,
     px,
     pytel,
+    replied,
     suppress,
     humanboolean,
     normalize_youtube_url,
@@ -222,6 +224,9 @@ async def _youtube_video_dl(
                     "subscriber",
                     ch.replace(" ", ""),
                 ),
+                reply_to_message_id=replied(
+                    message
+                ),
             )
             await _try_purged(fx)
             (Rooters / video).unlink(
@@ -415,6 +420,9 @@ async def _youtube_audio_dl(
                     "subscriber",
                     ch.replace(" ", ""),
                 ),
+                reply_to_message_id=replied(
+                    message
+                ),
             )
             await _try_purged(fx)
             (Rooters / audio).unlink(
@@ -493,6 +501,9 @@ async def _youtube_searching(
         text=output,
         disable_notification=False,
         disable_web_page_preview=True,
+        reply_to_message_id=replied(
+            message
+        ),
     )
     await _try_purged(x)
 
@@ -567,6 +578,9 @@ async def _google_searching(
         text=messg,
         disable_notification=False,
         disable_web_page_preview=True,
+        reply_to_message_id=replied(
+            message
+        ),
     )
     await _try_purged(x)
 
@@ -677,6 +691,9 @@ Copyright (C) 2023-present @kastaid
                 message.chat.id,
                 text=text,
                 parse_mode=ParseMode.HTML,
+                reply_to_message_id=replied(
+                    message
+                ),
             )
             await _try_purged(x)
             return
@@ -729,6 +746,9 @@ async def _instagram_dl(
                 message.chat.id,
                 photo=photo,
                 caption=caption,
+                reply_to_message_id=replied(
+                    message
+                ),
             )
             (Rooters / photo).unlink(
                 missing_ok=True
@@ -751,6 +771,9 @@ async def _instagram_dl(
                 message.chat.id,
                 video=video,
                 caption=caption,
+                reply_to_message_id=replied(
+                    message
+                ),
             )
             (Rooters / video).unlink(
                 missing_ok=True
@@ -806,6 +829,9 @@ async def _pinterest_dl(
                 message.chat.id,
                 video=my_pin,
                 caption=caption,
+                reply_to_message_id=replied(
+                    message
+                ),
             )
             await _try_purged(x, 1)
             (Rooters / my_pin).unlink(
@@ -817,6 +843,9 @@ async def _pinterest_dl(
                 message.chat.id,
                 photo=my_pin,
                 caption=caption,
+                reply_to_message_id=replied(
+                    message
+                ),
             )
             await _try_purged(x, 1)
             return
@@ -850,25 +879,40 @@ async def _tiktok_dl(client, message):
     x = await eor(
         message, text="Processing..."
     )
-    video, audio, description = TikTok(
+    (
+        video,
+        audio,
+        description,
+    ) = await TikTok(
         tiktok_url=str_link
     )
     if video:
-        with suppress(Exception):
+        try:
             caption = f"{description}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://tiktok.com'>Tiktok</a>"
             await client.send_video(
                 message.chat.id,
                 video=video,
                 caption=caption,
+                reply_to_message_id=replied(
+                    message
+                ),
             )
-        if audio:
-            with suppress(Exception):
+            if audio:
                 caption = "Projects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://tiktok.com'>Tiktok</a>"
                 await client.send_audio(
                     message.chat.id,
                     audio=audio,
                     caption=caption,
+                    reply_to_message_id=replied(
+                        message
+                    ),
                 )
+        except Exception as excp:
+            await eor(
+                x,
+                text=f"Exception: ```{excp}```",
+            )
+            return
     else:
         await eor(
             x,
@@ -879,7 +923,109 @@ async def _tiktok_dl(client, message):
     return await _try_purged(x, 1)
 
 
+@pytel.instruction(
+    ["scl", "social"],
+    outgoing=True,
+    supergroups=True,
+)
+async def _social_links(
+    client, message
+):
+    real_name = get_text(
+        message,
+        save_link=False,
+    )
+    if not real_name:
+        await eor(
+            message,
+            text="Provide a valid real name!",
+        )
+        return
+    real_name.capitalize()
+    x = await eor(
+        message,
+        text=f"Searching for <b>{real_name}</b>...",
+    )
+    str_url = "https://social-links-search.p.rapidapi.com/search-social-links"
+    querystring = {
+        "query": real_name,
+        "social_networks": "facebook,tiktok,instagram,snapchat,twitter,youtube,linkedin,github,pinterest",
+    }
+    headers = {
+        "X-RapidAPI-Key": RAPID_KEY,
+        "X-RapidAPI-Host": "social-links-search.p.rapidapi.com",
+    }
+    resp = getreq(
+        str_url,
+        headers=headers,
+        params=querystring,
+    ).json()
+    if resp["status"] != "OK":
+        await eor(
+            x,
+            text="Could'nt fetch data users.",
+        )
+        return
+    text = "<b><u>Links Social Media</b></u>\n"
+    text += (
+        f"<b>Users:</b> {real_name}\n\n"
+    )
+    for f in resp["data"]["facebook"]:
+        text += (
+            f"<b>Facebook:</b> {f}\n"
+        )
+    for i in resp["data"]["instagram"]:
+        text += (
+            f"<b>Instagram:</b> {i}\n"
+        )
+    for t in resp["data"]["twitter"]:
+        text += f"<b>Twitter:</b> {t}\n"
+    for li in resp["data"]["linkedin"]:
+        text += (
+            f"<b>LinkedIn:</b> {li}\n"
+        )
+    for g in resp["data"]["github"]:
+        text += f"<b>Github:</b> {g}\n"
+    for y in resp["data"]["youtube"]:
+        text += f"<b>Youtube:</b> {y}\n"
+    for ti in resp["data"]["tiktok"]:
+        text += f"<b>TikTok:</b> {ti}\n"
+    for s in resp["data"]["snapchat"]:
+        text += (
+            f"<b>Snapchat:</b> {s}\n"
+        )
+
+    if len(text) >= 4096:
+        files = f"cache/{real_name}.txt"
+        with open(files, "w+") as f:
+            f.write(text)
+        with suppress(BaseException):
+            caption = f"""
+<u><b>Links Social Media</u></b>
+<b>Users:</b> {real_name}
+"""
+            await client.send_document(
+                message.chat.id,
+                document=files,
+                caption=caption,
+            )
+            await _try_purged(x)
+            (Rooters / files).unlink(
+                missing_ok=True
+            )
+            return
+    await client.send_message(
+        message.chat.id,
+        text=text,
+        reply_to_message_id=replied(
+            message
+        ),
+    )
+    return await _try_purged(x)
+
+
 plugins_helper["socialmedia"] = {
+    f"{random_prefixies(px)}social [real name]": "To get the user's social media links, start from Facebook/TikTok/Instagram/Snapchat/Twitter/Youtube/LinkedIn/Pinterest/Github.",
     f"{random_prefixies(px)}igsearch [username ig]": "To get Information User. ( Instagram )",
     f"{random_prefixies(px)}igpdl [url]/[reply link]": "To get Instagram. ( images )",
     f"{random_prefixies(px)}igvdl [url]/[reply link]": "To get Instagram. ( video/reels )",

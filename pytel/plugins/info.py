@@ -188,6 +188,10 @@ async def _user_info(client, message):
         client, message
     )
     if not user_id:
+        await eor(
+            message,
+            text="Please reply to user or gimme id/username.",
+        )
         return
     x = await eor(
         message,

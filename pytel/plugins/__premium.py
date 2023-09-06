@@ -268,21 +268,21 @@ Want to be extended? wait until it expires.
         return
 
     if duration == 1:
-        price = "Rp 25.000"
+        price = "Rp 35.000"
     elif duration == 2:
-        price = "Rp 50.000"
+        price = "Rp 70.000"
     elif duration == 3:
-        price = "Rp 75.000"
+        price = "Rp 105.000"
     elif duration == 4:
-        price = "Rp 100.000"
+        price = "Rp 140.000"
     elif duration == 5:
-        price = "Rp 125.000"
-    elif duration == 6:
-        price = "Rp 150.000"
-    elif duration == 7:
         price = "Rp 175.000"
+    elif duration == 6:
+        price = "Rp 210.000"
+    elif duration == 7:
+        price = "Rp 245.000"
     elif duration == 8:
-        price = "Rp 200.000"
+        price = "Rp 280.000"
     else:
         await xy.edit_text(
             "Purchase a minimum of 1 month and a maximum of 8 months."

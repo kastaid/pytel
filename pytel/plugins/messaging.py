@@ -241,6 +241,10 @@ async def _schedule_msg(
 
 
 @pytel.instruction(
+    ["ddsp"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
     ["dsp"],
     outgoing=True,
 )

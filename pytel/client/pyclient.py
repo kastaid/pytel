@@ -27,6 +27,7 @@ from pyrogram import (
     Client as Raw,
     __version__,
     filters,
+    ContinuePropagation,
     StopPropagation,)
 from pyrogram.enums import (
     ChatMemberStatus,
@@ -100,6 +101,9 @@ class PytelClient(Raw):
         no_updates: Optional[
             bool
         ] = None,
+        sleep_threshold: Optional[
+            int
+        ] = None,
         workers: Any = None,
         system_version: Any = None,
         device_model: Any = None,
@@ -129,6 +133,9 @@ class PytelClient(Raw):
         kwargs[
             "no_updates"
         ] = no_updates
+        kwargs[
+            "sleep_threshold"
+        ] = sleep_threshold
 
         self.client = Raw
         self._client = []
@@ -478,6 +485,10 @@ class PytelClient(Raw):
                 except StopPropagation:
                     raise StopPropagation
                 except (
+                    ContinuePropagation
+                ):
+                    raise ContinuePropagation
+                except (
                     FloodWait
                 ) as excp:
                     await sleep(
@@ -567,6 +578,8 @@ class PytelClient(Raw):
                                     disable_notification=False,
                                 )
 
+                message.continue_propagation()
+
             for _ in self._client:
                 try:
                     if force_edit:
@@ -652,7 +665,7 @@ class PytelClient(Raw):
             f"Installing plugins for {x}"
         )
 
-    def _copyright(
+    async def _copyright(
         self,
         _copyright: Optional[
             str

@@ -985,7 +985,7 @@ async def _unpinned(client, message):
 
 
 @pytel.instruction(
-    ["zombies"],
+    ["zombies", "zombie"],
     outgoing=True,
     admin_only=True,
     supergroups=True,
@@ -999,17 +999,26 @@ async def _zombies(client, message):
     )
     async for member in client.get_chat_members(chat.id):  # type: ignore
         if member.user.is_deleted:
-            zombie = zombie + 1
             try:
+                x = await eor(
+                    x,
+                    text=f"Removing {zombie} zombie...",
+                )
                 await client.ban_chat_member(
                     chat.id,
                     member.user.id,
                 )
-                await sleep(0.7)
+                zombie = zombie + 1
+                await sleep(5)
             except UserAdminInvalid:
                 zombie = zombie - 1
             except FloodWait as flood:
                 await sleep(flood.value)  # type: ignore
+                await client.ban_chat_member(
+                    chat.id,
+                    member.user.id,
+                )
+                zombie = zombie + 1
 
     if zombie == 0:
         return await eor(

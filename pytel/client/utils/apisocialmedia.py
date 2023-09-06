@@ -10,6 +10,8 @@ from mimetypes import guess_type
 from re import findall, search
 from typing import Optional, Any, Dict
 import pyotp
+from douyin_tiktok_scraper.scraper import (
+    Scraper,)
 from instagrapi import (
     Client as InstagramClient,
     exceptions as exp,)
@@ -173,20 +175,26 @@ def Pinterest(
             return "image", _
 
 
-def TikTok(
+async def TikTok(
     tiktok_url: Optional[str],
 ):
     """
     TikTok :: Downloader
     """
-    response = get(
-        f"https://api.douyin.wtf/api?url={tiktok_url}"
-    ).json()
+    video, audio, description = (
+        None,
+        None,
+        None,
+    )
+    api = Scraper()
+    response = await api.hybrid_parsing(
+        tiktok_url
+    )
     if not response:
-        return None, None, None
+        return False, False, False
 
-    if response["status"] == "failed":
-        return None, None, None
+    if response["status"] != "success":
+        return False, False, False
 
     if response["video_data"][
         "nwm_video_url_HQ"
@@ -209,7 +217,7 @@ def TikTok(
             "play_url"
         ]["uri"]
     else:
-        audio = None
+        audio = False
     return video, audio, description
 
 

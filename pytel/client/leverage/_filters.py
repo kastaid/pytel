@@ -5,10 +5,10 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from pyrogram.enums import ChatType
+# from pyrogram.enums import ChatType
 from pyrogram.filters import create
 from pyrogram.types import Message
-from pytelibs import _supersu, _kastaot
+from pytelibs import _supersu
 from ...config import OWNER_ID
 
 
@@ -33,11 +33,11 @@ async def _super(_, __, m: Message):
 
 legally_required = create(_super)
 
-
+"""
 async def _cxgroups(_, __, m: Message):
-    """
+
     SUPPORT :: Channel & Groups
-    """
+
     if not m.chat:
         return False  # Always Update ( False )
     return bool(
@@ -55,6 +55,5 @@ async def _cxgroups(_, __, m: Message):
             and not m.outgoing
         )
     )
-
-
-channel_groups = create(_cxgroups)
+"""
+# channel_groups = create(_cxgroups)

@@ -19,8 +19,8 @@ directory = ["config.env"]
 for b in directory:
     for a in (Checker / b).rglob("*.*"):
         if not a.exists():
-            print(
-                "| [WARNING] | File config.env not found !!"
+            send_log.warning(
+                "File config.env not found !!"
             )
             exit(1)
 
@@ -30,6 +30,15 @@ try:
     if not TGB_TOKEN:
         send_log.warning(
             "Please make a Bot from @BotFather and add it's token in TGB_TOKEN."
+        )
+        exit(1)
+    if (
+        not IG_USN
+        or not IG_PASS
+        or not IG_SECRET
+    ):
+        send_log.warning(
+            "Please fill in the Instagram variables correctly."
         )
         exit(1)
 except ImportError as excp:

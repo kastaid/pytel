@@ -20,9 +20,12 @@ loopers = get_event_loop()
 try:
     from os import cpu_count
     from pathlib import Path
-    from platform import uname
+    from platform import (
+        uname, system, machine,)
     from shutil import rmtree
-    from sys import exit
+    from sys import (
+        platform, maxsize, version_info,
+        exit,)
     from time import time
     import pyroaddon
     from .client import PytelClient
@@ -39,6 +42,56 @@ __license__ = "GNU Affero General Public License v3.0"
 __copyright__ = "PYTEL Copyright (C) 2023-present kastaid"
 
 start_time = time()
+
+
+if (
+    platform.startswith("linux")
+    and maxsize == 2**63 - 1
+):
+    platform = system()
+    machine = machine()
+    send_log.info(
+        "Starting-up on the system {} {}".format(
+            str(platform),
+            str(machine),
+        )
+    )
+else:
+    platform = system()
+    architecture = "64-bit"
+    send_log.warning(
+        "You've to use {} {} system first!".format(
+            str(platform), architecture
+        )
+    )
+    exit(1)
+
+
+if (
+    version_info.major == 3
+    and version_info.minor >= 8
+    and version_info.micro >= 0
+):
+    major = version_info.major
+    minor = version_info.minor
+    micro = version_info.micro
+    send_log.info(
+        "And running PYTEL on the python {}.{}.{}".format(
+            str(round(major)),
+            str(round(minor)),
+            str(round(micro)),
+        )
+    )
+else:
+    major = 3
+    minor = 9
+    send_log.warning(
+        "You've to use python version of at least >= {}.{}.x ! quitting...".format(
+            str(round(major)),
+            str(round(minor)),
+        )
+    )
+    exit(1)
 
 Rooters: Path = Path(
     __file__
@@ -74,7 +127,7 @@ try:
         api_id=API_ID,
         api_hash=API_HASH,
         bot_token=TGB_TOKEN,
-        in_memory=False,
+        in_memory=True,
         no_updates=False,
         ipv6=False,
     )
@@ -84,10 +137,11 @@ try:
             api_id=API_ID,
             api_hash=API_HASH,
             session_string=SESSION1,
-            in_memory=False,
+            in_memory=True,
             lang_code="en",
             ipv6=False,
             no_updates=False,
+            sleep_threshold=60,
             app_version=APP_VERSION,
             system_version=SYSTEM_VERSION,
             device_model=DEVICE_MODEL,
@@ -102,10 +156,11 @@ try:
             api_id=API_ID,
             api_hash=API_HASH,
             session_string=SESSION2,
-            in_memory=False,
+            in_memory=True,
             lang_code="en",
             ipv6=False,
             no_updates=False,
+            sleep_threshold=60,
             app_version=APP_VERSION,
             system_version=SYSTEM_VERSION,
             device_model=DEVICE_MODEL,
@@ -120,10 +175,11 @@ try:
             api_id=API_ID,
             api_hash=API_HASH,
             session_string=SESSION3,
-            in_memory=False,
+            in_memory=True,
             lang_code="en",
             ipv6=False,
             no_updates=False,
+            sleep_threshold=60,
             app_version=APP_VERSION,
             system_version=SYSTEM_VERSION,
             device_model=DEVICE_MODEL,
@@ -138,10 +194,11 @@ try:
             api_id=API_ID,
             api_hash=API_HASH,
             session_string=SESSION4,
-            in_memory=False,
+            in_memory=True,
             lang_code="en",
             ipv6=False,
             no_updates=False,
+            sleep_threshold=60,
             app_version=APP_VERSION,
             system_version=SYSTEM_VERSION,
             device_model=DEVICE_MODEL,
@@ -156,10 +213,11 @@ try:
             api_id=API_ID,
             api_hash=API_HASH,
             session_string=SESSION5,
-            in_memory=False,
+            in_memory=True,
             lang_code="en",
             ipv6=False,
             no_updates=False,
+            sleep_threshold=60,
             app_version=APP_VERSION,
             system_version=SYSTEM_VERSION,
             device_model=DEVICE_MODEL,
@@ -174,10 +232,11 @@ try:
             api_id=API_ID,
             api_hash=API_HASH,
             session_string=SESSION6,
-            in_memory=False,
+            in_memory=True,
             lang_code="en",
             ipv6=False,
             no_updates=False,
+            sleep_threshold=60,
             app_version=APP_VERSION,
             system_version=SYSTEM_VERSION,
             device_model=DEVICE_MODEL,
@@ -192,10 +251,11 @@ try:
             api_id=API_ID,
             api_hash=API_HASH,
             session_string=SESSION7,
-            in_memory=False,
+            in_memory=True,
             lang_code="en",
             ipv6=False,
             no_updates=False,
+            sleep_threshold=60,
             app_version=APP_VERSION,
             system_version=SYSTEM_VERSION,
             device_model=DEVICE_MODEL,
@@ -210,10 +270,11 @@ try:
             api_id=API_ID,
             api_hash=API_HASH,
             session_string=SESSION8,
-            in_memory=False,
+            in_memory=True,
             lang_code="en",
             ipv6=False,
             no_updates=False,
+            sleep_threshold=60,
             app_version=APP_VERSION,
             system_version=SYSTEM_VERSION,
             device_model=DEVICE_MODEL,
@@ -228,10 +289,11 @@ try:
             api_id=API_ID,
             api_hash=API_HASH,
             session_string=SESSION9,
-            in_memory=False,
+            in_memory=True,
             lang_code="en",
             ipv6=False,
             no_updates=False,
+            sleep_threshold=60,
             app_version=APP_VERSION,
             system_version=SYSTEM_VERSION,
             device_model=DEVICE_MODEL,
@@ -246,10 +308,11 @@ try:
             api_id=API_ID,
             api_hash=API_HASH,
             session_string=SESSION10,
-            in_memory=False,
+            in_memory=True,
             lang_code="en",
             ipv6=False,
             no_updates=False,
+            sleep_threshold=60,
             app_version=APP_VERSION,
             system_version=SYSTEM_VERSION,
             device_model=DEVICE_MODEL,

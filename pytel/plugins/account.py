@@ -9,17 +9,19 @@ from asyncio import sleep, gather
 from io import BytesIO
 from PIL import Image
 from pyrogram import enums
-from pyrogram.raw import functions
 from pyrogram.raw.functions.messages import (
     DeleteHistory,
     StartBot,)
 from . import (
     Rooters,
+    functions,
     eor,
+    extract_user,
     plugins_helper,
     px,
     get_text,
     pytel,
+    _supersu,
     suppress,
     random_prefixies,)
 
@@ -249,6 +251,7 @@ async def _limited(client, message):
 )
 async def _set_pfp(client, message):
     rp = message.reply_to_message
+    text = "Successfuly updates ur photo profile."
     if not rp:
         await eor(
             message,
@@ -266,7 +269,6 @@ async def _set_pfp(client, message):
             )
         )
         try:
-            text = "Successfuly updates ur photo profile."
             await gather(
                 client.set_profile_photo(
                     photo=file
@@ -278,6 +280,9 @@ async def _set_pfp(client, message):
             )
             return
         except BaseException as excp:
+            (Rooters / file).unlink(
+                missing_ok=True
+            )
             client.send_log.exception(
                 excp
             )
@@ -294,7 +299,6 @@ async def _set_pfp(client, message):
             )
         )
         try:
-            text = "Successfuly updates ur video profile."
             await gather(
                 client.set_profile_photo(
                     photo=file
@@ -306,6 +310,9 @@ async def _set_pfp(client, message):
             )
             return
         except BaseException as excp:
+            (Rooters / file).unlink(
+                missing_ok=True
+            )
             client.send_log.exception(
                 excp
             )
@@ -361,6 +368,41 @@ async def _set_pfp(client, message):
             )
             return
 
+    elif (
+        rp.document
+        and "image"
+        in rp.document.mime_type
+        or "video"
+        in rp.document.mime_type
+    ):
+        file = (
+            await client.download_media(
+                rp
+            )
+        )
+        try:
+            await gather(
+                client.set_profile_photo(
+                    file
+                ),
+                eor(x, text=text),
+            )
+            (Rooters / file).unlink(
+                missing_ok=True
+            )
+            return
+        except BaseException as excp:
+            (Rooters / file).unlink(
+                missing_ok=True
+            )
+            client.send_log.exception(
+                excp
+            )
+            await eor(
+                x,
+                text=f"Exception: {excp}",
+            )
+            return
     else:
         await eor(
             message,
@@ -369,11 +411,100 @@ async def _set_pfp(client, message):
         return
 
 
+@pytel.instruction(
+    ["dblock"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
+    [
+        "block",
+        "blocked",
+        "unblocked",
+        "unblock",
+    ],
+    outgoing=True,
+)
+async def _blocked(client, message):
+    user_id = await extract_user(
+        client, message
+    )
+    x = await eor(
+        message,
+        text="Checking...",
+    )
+    if not user_id:
+        await eor(
+            x,
+            text="Unable to find user.",
+        )
+        return
+    if user_id == client.me.id:
+        await eor(
+            x,
+            text="It's urself.",
+        )
+        return
+    elif user_id in list(_supersu):
+        await eor(
+            x,
+            text="That's My Developer.",
+        )
+        return
+
+    mention = (
+        await client.get_users(user_id)
+    ).mention
+    user_info = (
+        await client.resolve_peer(
+            user_id
+        )
+    )
+    x = await eor(
+        x,
+        text="Blocking user...",
+    )
+    try:
+        if (
+            message.command[0]
+            == "block"
+            or "blocked"
+            or "dblock"
+        ):
+            await client.invoke(
+                functions.contacts.Block(
+                    id=user_info
+                ),
+            )
+            await eor(
+                x,
+                text=f"{mention} has been blocked.",
+            )
+            return
+        elif (
+            message.command[0][0] == "u"
+        ):
+            await client.unblock_user(
+                user_id
+            )
+            await eor(
+                x,
+                text=f"{mention} has been unblocked.",
+            )
+            return
+    except BaseException as excp:
+        await eor(
+            x, text=f"Exception: {excp}"
+        )
+        return
+
+
 plugins_helper["account"] = {
+    f"{random_prefixies(px)}block / blocked [id/username/reply to user]": "To blocked users.",
+    f"{random_prefixies(px)}unblock / unblocked [id/username/reply to user]": "To unblocked users.",
     f"{random_prefixies(px)}limit / limited": "To check ur account is limited or not.",
     f"{random_prefixies(px)}mydialogs": "To get my dialogue statistics.",
     f"{random_prefixies(px)}setmode [offline/online/off/on]": "To setting ur status to be Online or Offline.",
     f"{random_prefixies(px)}setbio [text/reply]": "To updates ur bio. ( Max 70 characters )",
     f"{random_prefixies(px)}setname [first name] [last name]": "To updates ur name.",
-    f"{random_prefixies(px)}setpfp [reply photo/video/sticker]": "To updates ur profiles.",
+    f"{random_prefixies(px)}setpfp / setpp [reply photo/video/sticker]": "To updates ur profiles.",
 }

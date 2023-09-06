@@ -43,7 +43,9 @@ async def pytasks(
             "Tasks cancellation..."
         )
         for a in client:
-            pylog.info("Exiting...")
+            pylog.success(
+                f"Exiting for User ID ( {a.me.id} )"
+            )
             clear_all_dspam(a.me.id)
             clear_all_schedule(a.me.id)
             for b in asyncio.all_tasks(

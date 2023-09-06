@@ -9,7 +9,7 @@ from asyncio import sleep
 from contextlib import suppress
 from inspect import getfullargspec
 from re import findall, search
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from pyrogram.enums import (
     MessageEntityType,)
 from pyrogram.types import Message
@@ -96,7 +96,7 @@ def replied(
             message.reply_to_message.id
         )
 
-    elif not message.from_user.is_self:
+    elif message.sender_chat:
         reply_id = message.id
 
     return reply_id
@@ -172,7 +172,7 @@ async def extract_userid(
 
 async def user_and_reason(
     client, message, sender_chat=False
-):
+) -> Any:
     args, text = (
         message.text.strip().split(),
         message.text,
@@ -196,7 +196,7 @@ async def user_and_reason(
         else:
             id_ = reply.from_user.id
 
-        if len(args) < 2:
+        if len(args) != 2:
             reason = None
         else:
             reason = text.split(
@@ -229,7 +229,9 @@ async def user_and_reason(
     return user, reason
 
 
-async def extract_user(client, message):
+async def extract_user(
+    client, message
+) -> Any:
     return (
         await user_and_reason(
             client, message

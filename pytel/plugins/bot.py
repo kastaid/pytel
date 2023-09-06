@@ -60,16 +60,16 @@ async def _er_iping(
     client,
 ) -> Optional[str]:
     # pyrogram
-    await lock.acquire()
+    #    await lock.acquire()
     start_pyro = time()
     await client.invoke(
         Ping(ping_id=client.rnd_id())
     )
-    lock.release()
+    #    lock.release()
     p1 = time()
     pings_ = f"{str(round((start_pyro - p1) * -50, 2))}"
     # delay ping
-    await lock.acquire()
+    #    await lock.acquire()
     start_delay = time()
     await client.invoke(
         PingDelayDisconnect(
@@ -77,7 +77,7 @@ async def _er_iping(
             disconnect_delay=15,
         )
     )
-    lock.release()
+    #    lock.release()
     d1 = time()
     delay_ping = f"{str(round((start_delay - d1) * -50, 2))}"
     text = f"""
@@ -308,7 +308,7 @@ async def _iping(client, message):
 
 
 @pytel.instruction(
-    ["alive", "on"],
+    ["dalive", "don"],
     supersu=["PYTEL"],
     force_edit=False,
     supergroups=True,

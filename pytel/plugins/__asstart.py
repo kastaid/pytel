@@ -39,6 +39,7 @@ from . import (
     pytel_tgb,
     suppress,
     filters,
+    mentioned,
     send_log,)
 
 APP_VERSION = f"PYTEL-Premium v.{pyver}"
@@ -95,11 +96,8 @@ async def _asst_home(client, message):
         is_join = False
         send_log.exception(excp)
 
-    fullname = (
-        message.from_user.first_name
-        + message.from_user.last_name
-        if message.from_user.last_name
-        else message.from_user.first_name
+    fullname = await mentioned(
+        client, user_id, use_html=True
     )
     username = (
         f"@{message.from_user.username}"
@@ -109,48 +107,40 @@ async def _asst_home(client, message):
     if is_join:
         await message.reply(
             Assistant.START.format(
-                message.from_user.mention,
+                fullname,
             ),
             quote=False,
             disable_web_page_preview=True,
             reply_markup=Assistant.home_buttons,
         )
-        if checks_users(
-            message.from_user.id
-        ):
+        if checks_users(user_id):
             return
         else:
-            added_users(
-                message.from_user.id
-            )
+            added_users(user_id)
             await client.send_message(
                 int(OWNER_ID),
                 Assistant.start_text_from_user.format(
                     fullname,
-                    message.from_user.id,
+                    user_id,
                     username,
                 ),
             )
     else:
-        if checks_users(
-            message.from_user.id
-        ):
+        if checks_users(user_id):
             return
         else:
-            added_users(
-                message.from_user.id
-            )
+            added_users(user_id)
             await client.send_message(
                 int(OWNER_ID),
                 Assistant.start_text_from_user.format(
                     fullname,
-                    message.from_user.id,
+                    user_id,
                     username,
                 ),
             )
         await message.reply(
             Assistant.FSUBSCRIBE.format(
-                message.from_user.mention,
+                fullname,
             ),
             quote=False,
             disable_web_page_preview=True,
@@ -199,10 +189,11 @@ Harap bergabung terlebih dahulu.
                 return
             else:
                 fullname = (
-                    cq.from_user.first_name
-                    + cq.from_user.last_name
-                    if cq.from_user.last_name
-                    else cq.from_user.first_name
+                    await mentioned(
+                        client,
+                        cq.from_user.id,
+                        use_html=True,
+                    )
                 )
                 username = (
                     f"@{cq.from_user.username}"
@@ -223,7 +214,11 @@ Harap bergabung terlebih dahulu.
 
             await cq.message.reply(
                 Assistant.START.format(
-                    cq.from_user.mention,
+                    await mentioned(
+                        client,
+                        cq.from_user.id,
+                        use_html=True,
+                    ),
                 ),
                 quote=False,
                 disable_web_page_preview=True,
@@ -256,7 +251,11 @@ async def _cb_asst(
         with suppress(BaseException):
             await cq.message.edit(
                 Assistant.START.format(
-                    cq.from_user.mention,
+                    await mentioned(
+                        client,
+                        cq.from_user.id,
+                        use_html=True,
+                    ),
                 ),
                 disable_web_page_preview=True,
                 reply_markup=Assistant.home_buttons,
@@ -305,7 +304,11 @@ async def _cb_asst_payment(
             await cq.message.delete()
             await cq.message.reply(
                 Assistant.START.format(
-                    cq.from_user.mention,
+                    await mentioned(
+                        client,
+                        cq.from_user.id,
+                        use_html=True,
+                    ),
                 ),
                 quote=False,
                 disable_web_page_preview=True,
@@ -319,7 +322,11 @@ async def _cb_asst_payment(
                 int(cq.from_user.id),
                 photo="resources/payments/DANA.jpg",
                 caption=Assistant.PAYMENT_DANA.format(
-                    cq.from_user.mention,
+                    await mentioned(
+                        client,
+                        cq.from_user.id,
+                        use_html=True,
+                    ),
                 ),
                 reply_markup=Assistant.payment_dana_buttons,
                 protect_content=False,
@@ -329,7 +336,11 @@ async def _cb_asst_payment(
             await cq.message.delete()
             await cq.message.reply(
                 Assistant.PAYMENT_OVO.format(
-                    cq.from_user.mention,
+                    await mentioned(
+                        client,
+                        cq.from_user.id,
+                        use_html=True,
+                    ),
                 ),
                 disable_web_page_preview=True,
                 reply_markup=Assistant.payment_ovo_buttons,
@@ -386,7 +397,11 @@ async def payment_listener(
     if via == "DANA":
         r = await cq.message.reply(
             Assistant.TEXT_PAYMENT.format(
-                cq.from_user.mention,
+                await mentioned(
+                    client,
+                    cq.from_user.id,
+                    use_html=True,
+                ),
                 via,
             ),
         )
@@ -402,22 +417,16 @@ async def payment_listener(
         except asyncio.TimeoutError:
             await cq.message.reply(
                 Assistant.TEXT_PAYMENT_NOTIFY.format(
-                    cq.from_user.mention,
+                    await mentioned(
+                        client,
+                        cq.from_user.id,
+                        use_html=True,
+                    ),
                     via,
                 ),
                 reply_markup=Assistant.payment_dana_buttons,
             )
         if msg.photo:
-            f_dana = await client.download_media(
-                msg.photo
-            )
-            bkt_dana = (
-                await client.send_photo(
-                    int(OWNER_ID),
-                    photo=f_dana,
-                )
-            )
-            remove(f_dana)
             text = """
 Mohon Tunggu, Seller akan memeriksa pembayaran Anda.
 Jika Pembayaran Anda Terbukti, Anda akan mendapatkan Notifikasi
@@ -428,6 +437,16 @@ dari sini.
                 show_alert=True,
                 cache_time=300,
             )
+            f_dana = await client.download_media(
+                msg.photo
+            )
+            bkt_dana = (
+                await client.send_photo(
+                    int(OWNER_ID),
+                    photo=f_dana,
+                )
+            )
+            remove(f_dana)
             await client.send_message(
                 int(OWNER_ID),
                 Assistant.NOTIFY_BUYER.format(
@@ -464,7 +483,11 @@ Tekan Confirm, lalu kirim bukti pembayaran Anda.
     elif via == "OVO":
         r = await cq.message.reply(
             Assistant.TEXT_PAYMENT.format(
-                cq.from_user.mention,
+                await mentioned(
+                    client,
+                    cq.from_user.id,
+                    use_html=True,
+                ),
                 via,
             ),
         )
@@ -480,22 +503,16 @@ Tekan Confirm, lalu kirim bukti pembayaran Anda.
         except asyncio.TimeoutError:
             await cq.message.reply(
                 Assistant.TEXT_PAYMENT_NOTIFY.format(
-                    cq.from_user.mention,
+                    await mentioned(
+                        client,
+                        cq.from_user.id,
+                        use_html=True,
+                    ),
                     via,
                 ),
                 reply_markup=Assistant.payment_ovo_buttons,
             )
         if msg.photo:
-            f_ovo = await client.download_media(
-                msg.photo
-            )
-            bkt_ovo = (
-                await client.send_photo(
-                    int(OWNER_ID),
-                    photo=f_ovo,
-                )
-            )
-            remove(f_ovo)
             text = """
 Mohon Tunggu, Seller akan memeriksa pembayaran Anda.
 Jika Pembayaran Anda Terbukti, Anda akan mendapatkan Notifikasi
@@ -506,6 +523,16 @@ dari sini.
                 show_alert=True,
                 cache_time=300,
             )
+            f_ovo = await client.download_media(
+                msg.photo
+            )
+            bkt_ovo = (
+                await client.send_photo(
+                    int(OWNER_ID),
+                    photo=f_ovo,
+                )
+            )
+            remove(f_ovo)
             await client.send_message(
                 int(OWNER_ID),
                 Assistant.NOTIFY_BUYER.format(
@@ -562,7 +589,11 @@ async def _cb_asst_generate(
             await cq.message.delete()
             await cq.message.reply(
                 Assistant.START.format(
-                    cq.from_user.mention,
+                    await mentioned(
+                        client,
+                        cq.from_user.id,
+                        use_html=True,
+                    ),
                 ),
                 quote=False,
                 disable_web_page_preview=True,
@@ -589,7 +620,11 @@ Silahkan lakukan Transaksi jika ingin membuat String Session.
                 await cq.message.delete()
                 await cq.message.reply(
                     AstGenerate.HOME.format(
-                        cq.from_user.mention,
+                        await mentioned(
+                            client,
+                            cq.from_user.id,
+                            use_html=True,
+                        ),
                     ),
                     disable_web_page_preview=True,
                     reply_markup=AstGenerate.gen_buttons,

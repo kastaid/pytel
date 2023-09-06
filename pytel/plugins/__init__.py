@@ -101,7 +101,6 @@ from ..client import (
     humanboolean,
     legally_required,
     subs_like_view_format,
-    channel_groups,
     short_dict,
     size_bytes,
     pydb,)
@@ -109,5 +108,6 @@ from ..config import (
     PREFIX as px,
     TimeZone,
     LOGCHAT_ID,
-    OWNER_ID,)
+    OWNER_ID,
+    RAPID_KEY,)
 from ..logger import pylog as send_log

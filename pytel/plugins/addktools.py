@@ -245,6 +245,9 @@ async def _invited_all(client, message):
                         and (
                             not member.user.is_restricted
                         )
+                        and (
+                            not member.user.is_deleted
+                        )
                     ):
                         try:
                             if (

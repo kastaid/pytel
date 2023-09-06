@@ -36,7 +36,7 @@ _TEXT = """
 """
 
 
-async def running_message(self):
+async def running_message(self) -> None:
     async with _SEND_LOCK:
         try:
             if self:

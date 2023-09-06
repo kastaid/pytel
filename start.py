@@ -30,7 +30,6 @@ isort = (
     "isort --settings-file=setup.cfg ."
 )
 flake8 = "flake8 --config=setup.cfg ."
-mypy = "mypy --config-file=setup.cfg ."
 prettyjson = (
     f"{nocache} -m scripts.prettyjson"
 )
@@ -135,12 +134,6 @@ parser.add_argument(
     action="store_true",
 )
 parser.add_argument(
-    "-t",
-    "--type",
-    help="run type checker only",
-    action="store_true",
-)
-parser.add_argument(
     "-c",
     "--clean",
     help="remove python caches",
@@ -198,14 +191,11 @@ def main():
         )
         clean()
         lint()
-    elif args.type:
-        print(
-            f"{BOLD}{YELLOW}Run type checker...{RST}"
-        )
-        clean()
-        run_cmd(mypy)
     elif args.clean:
         clean()
+        print(
+            f"{BOLD}{BLUE}✓ Cached has been clear.{RST}"
+        )
     else:
         print(
             f"{python} -m start --help"

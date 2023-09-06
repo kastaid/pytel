@@ -85,4 +85,9 @@ IG_SECRET: Optional[str] = gets(
     "IG_SECRET", ""
 )
 
+# RAPID API KEY
+RAPID_KEY: Optional[str] = gets(
+    "RAPID_KEY", ""
+)
+
 del load_dotenv, gets
