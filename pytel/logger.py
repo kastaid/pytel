@@ -5,22 +5,22 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from datetime import date
-from logging import (
-    CRITICAL,
-    DEBUG,
-    ERROR,
-    WARNING,
-    Handler,
-    LogRecord,
-    __file__,
-    basicConfig,
-    currentframe,
-    disable,
-    getLogger,)
-from sys import stderr
-from typing import Union
-from loguru import logger as pylog
+try:
+    from datetime import date
+    from logging import (
+        CRITICAL, DEBUG, ERROR, WARNING,
+        Handler, LogRecord, __file__,
+        basicConfig, currentframe,
+        disable, getLogger,)
+    from sys import stderr
+    from typing import Union
+    from loguru import logger as pylog
+except KeyboardInterrupt:
+    print(
+        "Fie Logger Received interrupt while import"
+    )
+except Exception as excp:
+    print(f"ERROR: {excp}")
 
 pylog.remove(0)
 pylog.add(

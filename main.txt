@@ -25,6 +25,7 @@ lxml==4.9.2
 
 # extended
 psutil
+pybase64
 Pytanggalmerah
 pyroaddon
 pytelibs

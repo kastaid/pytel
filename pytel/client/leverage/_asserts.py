@@ -55,6 +55,7 @@ async def eor(
 def get_text(
     message: Message,
     save_link: Optional[bool] = None,
+    normal: Optional[bool] = None,
 ) -> Optional[str]:
     text_ = (
         message.text.split(None, 1)[1]
@@ -83,6 +84,8 @@ def get_text(
             for x in link:
                 return str(x)
         else:
+            if normal:
+                return text_
             return str(text_.lower())
 
 

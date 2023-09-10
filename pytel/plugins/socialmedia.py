@@ -62,6 +62,7 @@ async def _youtube_video_dl(
     str_link = get_text(
         message,
         save_link=False,
+        normal=True,
     )
     if not str_link:
         await eor(
@@ -264,6 +265,7 @@ async def _youtube_audio_dl(
     str_link = get_text(
         message,
         save_link=False,
+        normal=True,
     )
     if not str_link:
         await eor(
@@ -456,6 +458,7 @@ async def _youtube_searching(
     str_result = get_text(
         message,
         save_link=False,
+        normal=True,
     )
     if not str_result:
         await eor(
@@ -518,6 +521,7 @@ async def _google_searching(
     str_result = get_text(
         message,
         save_link=False,
+        normal=True,
     )
     if not str_result:
         await eor(
@@ -586,7 +590,7 @@ async def _google_searching(
 
 
 @pytel.instruction(
-    ["igs", "igsearch"],
+    ["igsr", "igsearch"],
     outgoing=True,
     supergroups=True,
     privileges=[
@@ -599,6 +603,7 @@ async def _instagram_searching(
     igusername = get_text(
         message,
         save_link=False,
+        normal=True,
     )
     if not igusername or (
         "@" not in igusername
@@ -706,7 +711,7 @@ Copyright (C) 2023-present @kastaid
 
 
 @pytel.instruction(
-    ["igpdl", "igvdl"],
+    ["igpdl", "igvdl", "igsdl"],
     outgoing=True,
     supergroups=True,
     privileges=[
@@ -716,6 +721,11 @@ Copyright (C) 2023-present @kastaid
 async def _instagram_dl(
     client, message
 ):
+    photo, video, story_ = (
+        None,
+        None,
+        None,
+    )
     str_link = get_text(
         message,
         save_link=True,
@@ -741,7 +751,13 @@ async def _instagram_dl(
             type_dl="photo",
         )
         if photo:
-            caption = "<b><u>INSTAGRAM DOWNLOADER</b></u>\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( Facebook )"
+            caption = f"""
+<b><u>INSTAGRAM PHOTO DOWNLOADER</b></u>
+<b>Sources Photo:</b> <a href='{str_link}'>Click Here</a>
+
+Projects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>
+Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( Facebook )
+"""
             await client.send_photo(
                 message.chat.id,
                 photo=photo,
@@ -757,7 +773,7 @@ async def _instagram_dl(
         else:
             await eor(
                 x,
-                text=f"Maybe you mean igvdl ?\n\nTry: <code>.igvdl {str_link}</code>",
+                text="Can't fetching photo Instagram. Try again!",
             )
 
     elif message.command[0] == "igvdl":
@@ -766,7 +782,13 @@ async def _instagram_dl(
             type_dl="video",
         )
         if video:
-            caption = "<b><u>INSTAGRAM DOWNLOADER</b></u>\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( Facebook )"
+            caption = f"""
+<b><u>INSTAGRAM VIDEO DOWNLOADER</b></u>
+<b>Sources Video:</b> <a href='{str_link}'>Click Here</a>
+
+Projects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>
+Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( Facebook )
+"""
             await client.send_video(
                 message.chat.id,
                 video=video,
@@ -782,7 +804,38 @@ async def _instagram_dl(
         else:
             await eor(
                 x,
-                text=f"Maybe you mean igpdl ?\n\nTry: <code>.igpdl {str_link}</code>",
+                text="Can't fetching video Instagram. Try again!",
+            )
+
+    elif message.command[0] == "igsdl":
+        story_ = Instagram.ig_download(
+            ig_url=str_link,
+            type_dl="story",
+        )
+        if story_:
+            caption = f"""
+<b><u>INSTAGRAM STORY DOWNLOADER</b></u>
+<b>Sources Story:</b> <a href='{str_link}'>Click Here</a>
+
+Projects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>
+Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( Facebook )
+"""
+            await client.send_document(
+                message.chat.id,
+                document=story_,
+                caption=caption,
+                reply_to_message_id=replied(
+                    message
+                ),
+            )
+            (Rooters / story_).unlink(
+                missing_ok=True
+            )
+            return await _try_purged(x)
+        else:
+            await eor(
+                x,
+                text="Can't fetching story Instagram. Try again!",
             )
 
 
@@ -934,6 +987,7 @@ async def _social_links(
     real_name = get_text(
         message,
         save_link=False,
+        normal=True,
     )
     if not real_name:
         await eor(
@@ -941,7 +995,6 @@ async def _social_links(
             text="Provide a valid real name!",
         )
         return
-    real_name.capitalize()
     x = await eor(
         message,
         text=f"Searching for <b>{real_name}</b>...",
@@ -1027,8 +1080,9 @@ async def _social_links(
 plugins_helper["socialmedia"] = {
     f"{random_prefixies(px)}social [real name]": "To get the user's social media links, start from Facebook/TikTok/Instagram/Snapchat/Twitter/Youtube/LinkedIn/Pinterest/Github.",
     f"{random_prefixies(px)}igsearch [username ig]": "To get Information User. ( Instagram )",
-    f"{random_prefixies(px)}igpdl [url]/[reply link]": "To get Instagram. ( images )",
+    f"{random_prefixies(px)}igpdl [url]/[reply link]": "To get Instagram. ( image/photo )",
     f"{random_prefixies(px)}igvdl [url]/[reply link]": "To get Instagram. ( video/reels )",
+    f"{random_prefixies(px)}igsdl [url]/[reply link]": "To get Instagram. ( story )",
     f"{random_prefixies(px)}ytsearch [text/reply]": "Search engine for youtube.",
     f"{random_prefixies(px)}ytadl [url]/[reply/text]": "To get Youtube. ( audio/mp3 )",
     f"{random_prefixies(px)}ytvdl [url]/[reply/text]": "To get Youtube. ( video/mp4 )",

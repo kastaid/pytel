@@ -6,15 +6,40 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
-from asyncio import (
-    get_event_loop,
-    set_event_loop_policy,)
-from uvloop import EventLoopPolicy
-from version import __version__ as pyver
 from .logger import pylog as send_log
 
-set_event_loop_policy(EventLoopPolicy())
+try:
+    from asyncio import (
+        get_event_loop,
+        set_event_loop_policy,
+        DefaultEventLoopPolicy,
+        SelectorEventLoop,)
+    from selectors import SelectSelector
+    from requests.exceptions import (
+        ChunkedEncodingError,)
+    from urllib3.exceptions import (
+        IncompleteRead, ProtocolError,)
 
+    #    from uvloop import EventLoopPolicy
+    from version import (
+        __version__ as pyver,)
+except KeyboardInterrupt:
+    send_log.warning(
+        "Received interrupt while import"
+    )
+except Exception as excp:
+    send_log.exception(excp)
+
+
+class MyPolicy(DefaultEventLoopPolicy):
+    def new_event_loop(self):
+        selector = SelectSelector()
+        return SelectorEventLoop(
+            selector
+        )
+
+
+set_event_loop_policy(MyPolicy())
 loopers = get_event_loop()
 
 try:
@@ -28,6 +53,8 @@ try:
         exit,)
     from time import time
     import pyroaddon
+    from pyrogram.errors.exceptions.unauthorized_401 import (
+        Unauthorized,)
     from .client import PytelClient
     from .config import (
         API_HASH, API_ID, SESSION1,
@@ -35,6 +62,22 @@ try:
         SESSION5, SESSION6, SESSION7,
         SESSION8, SESSION9, SESSION10,
         TGB_TOKEN,)
+except KeyboardInterrupt:
+    send_log.warning(
+        "Received interrupt while import"
+    )
+except IncompleteRead as i:
+    send_log.exception(
+        f"HTTP Response, ERROR: {i}"
+    )
+except ProtocolError as p:
+    send_log.exception(
+        f"Connection Broken, ERROR: {p}"
+    )
+except ChunkedEncodingError as c:
+    send_log.exception(
+        f"Connection Error, ERROR: {c}"
+    )
 except Exception as excp:
     send_log.exception(excp)
 
@@ -50,8 +93,13 @@ if (
 ):
     platform = system()
     machine = machine()
+    if machine.startswith("aarch64"):
+        mch = "📱"
+    else:
+        mch = "💻"
     send_log.info(
-        "Starting-up on the system {} {}".format(
+        "{} Starting-up on the system {} {}".format(
+            mch,
             str(platform),
             str(machine),
         )
@@ -76,7 +124,7 @@ if (
     minor = version_info.minor
     micro = version_info.micro
     send_log.info(
-        "And running PYTEL on the python {}.{}.{}".format(
+        "And running PYTEL on the Python {}.{}.{}".format(
             str(round(major)),
             str(round(minor)),
             str(round(micro)),
@@ -324,6 +372,15 @@ try:
     pytel = PytelClient(
         name="pytel", lang_code="en"
     )
+except KeyboardInterrupt:
+    send_log.warning(
+        "Received interrupt while import"
+    )
+except Unauthorized as excp:
+    send_log.warning(
+        f"SESSION Unauthorized coz: {excp}"
+    )
+    exit(1)
 except Exception as excp:
     send_log.exception(excp)
     exit(1)

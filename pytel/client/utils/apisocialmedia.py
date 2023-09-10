@@ -252,27 +252,78 @@ class MetaAPI:
         type_dl: Optional[str] = None,
     ):
         with suppress(Exception):
-            photo, video = None, None
-            get_id = self.client.media_pk_from_url(
-                ig_url
+            (
+                photo,
+                photo_url,
+                video,
+                video_url,
+                story,
+                story_url,
+            ) = (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             )
             if type_dl == "photo":
+                get_id = self.client.media_pk_from_url(
+                    ig_url
+                )
                 photo = self.client.photo_download(
-                    get_id
+                    get_id,
                 )
                 if photo:
                     return photo
                 else:
-                    return False
+                    photo_url = self.client.photo_download_by_url(
+                        ig_url,
+                    )
+                    if photo_url:
+                        return photo_url
+                    else:
+                        return False
 
             elif type_dl == "video":
+                get_id = self.client.media_pk_from_url(
+                    ig_url
+                )
                 video = self.client.video_download(
-                    get_id
+                    get_id,
                 )
                 if video:
                     return video
                 else:
-                    return False
+                    video_url = self.client.video_download_by_url(
+                        ig_url,
+                    )
+                    if video_url:
+                        return video_url
+                    else:
+                        return False
+
+            elif type_dl == "story":
+                st = search(
+                    r"(.*)/stories/(.*)/(\d*)",
+                    ig_url,
+                )
+                _ = st.group(0) + "/"
+                story = self.client.story_download(
+                    self.client.story_pk_from_url(
+                        _,
+                    )
+                )
+                if story:
+                    return story
+                else:
+                    story_url = self.client.story_download_by_url(
+                        ig_url,
+                    )
+                    if story_url:
+                        return story_url
+                    else:
+                        return False
 
     def get_igusers(
         self, username: Optional[str]

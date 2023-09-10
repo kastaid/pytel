@@ -41,6 +41,7 @@ from . import (
     layer,
     plugins_helper,
     px,
+    pydb,
     pytel,
     pytel_tgb,
     random_prefixies,
@@ -174,7 +175,7 @@ def _ialive() -> Optional[str]:
     return str(wrp)
 
 
-def sys_stats():
+def sys_stats() -> str:
     cpu = psutil.cpu_percent()
     mem = (
         psutil.virtual_memory().percent
@@ -184,10 +185,10 @@ def sys_stats():
     ).percent
     process = psutil.Process(getpid())
     stats = f"""
-PYTEL-Premium ( Client )
+PYTEL-Premium ( Statistics )
 -----------------------
 UPTIME: {time_formatter((time() - start_time) * 1000)}
-BOT: {round(process.memory_info()[0] / 1024 ** 2)} MB
+MEMORY: {size_bytes(process.memory_info()[0])}
 CPU: {cpu}%
 RAM: {mem}%
 DISK: {disk}%
@@ -196,6 +197,23 @@ DISK: {disk}%
 Copyright (C) 2023-present kastaid
 """
     return stats
+
+
+def db_usage() -> str:
+    if pydb.name == "Local":
+        used: int = pydb.sizes
+        c_table = len(pydb.keys())
+        sz = f"{size_bytes(used)}"
+        d_b = f"""
+Database ( PYTEL-Premium )
+
+TYPE: {pydb.name}
+SIZE: {sz}
+TABLE: {c_table} contents
+
+Copyright (C) 2023-present kastaid
+"""
+        return d_b
 
 
 @pytel.instruction(
@@ -370,6 +388,21 @@ async def _sys_callback(
     )
 
 
+@pytel_tgb.on_callback_query(
+    filters.regex("db_stats")
+)
+async def _dbb_callback(
+    client,
+    cq: CallbackQuery,
+):
+    text = db_usage()
+    await pytel_tgb.answer_callback_query(
+        cq.id,
+        text,
+        show_alert=True,
+    )
+
+
 @pytel_tgb.on_inline_query(
     filters.regex("^ping")
 )
@@ -383,7 +416,17 @@ async def _ping_inline(
             buttons(
                 "ꜱᴛᴀᴛꜱ",
                 callback_data="sys_stats",
-            )
+            ),
+            buttons(
+                "ᴅᴀᴛᴀʙᴀꜱᴇ",
+                callback_data="db_stats",
+            ),
+        ],
+        [
+            buttons(
+                "ᴄʟᴏꜱᴇ",
+                callback_data="help_close",
+            ),
         ],
     ]
     with suppress(QueryIdInvalid):

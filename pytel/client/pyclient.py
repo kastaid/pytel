@@ -14,7 +14,6 @@ from asyncio import (
 from contextlib import suppress
 from datetime import datetime
 from sys import exc_info, exit
-from time import sleep as asleep
 from traceback import format_exc as fmex
 from typing import (
     Any,
@@ -599,10 +598,10 @@ class PytelClient(Raw):
                         group=group,
                     )
                 except (
-                    FloodWait
-                ) as flood:
-                    asleep(
-                        flood.value + 3
+                    BaseException
+                ) as excp:
+                    pylog.exception(
+                        f"Error: {excp}"
                     )
 
             return wrapper
@@ -661,7 +660,7 @@ class PytelClient(Raw):
         self.send_log.success(
             f"Started on {x}"
         )
-        self.send_log.success(
+        self.send_log.info(
             f"Installing plugins for {x}"
         )
 
@@ -714,7 +713,7 @@ class PytelClient(Raw):
             self._client.append(self)
         try:
             self.send_log.info(
-                "Starting-up Client."
+                "🚀 Starting-up Client."
             )
             await super().start()
             if self.me.id not in list(
@@ -738,7 +737,7 @@ class PytelClient(Raw):
                     await self.stop()
                     exit(1)
             self.send_log.success(
-                f"Successfuly, ur has been login."
+                f"☑️ Successfuly, ur has been login."
             )
         except FloodWait as excp:
             await sleep(excp.value + 5)

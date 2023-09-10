@@ -6,7 +6,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
-from asyncio import sleep, gather
+from asyncio import sleep
 from concurrent.futures import (
     ThreadPoolExecutor,)
 from contextlib import suppress
@@ -54,14 +54,31 @@ ThreadLock = ThreadPoolExecutor(
 )
 
 PYTEL = r"""
-              _       _
-             | |     | |
-  _ __  _   _| |_ ___| |
- | '_ \| | | | __/ _ \ |
- | |_) | |_| | ||  __/ |
- | .__/ \__, |\__\___|_|
- | |     __/ |
- |_|    |___/
+       !
+       ^
+      / \
+     /___\
+    |=   =|                  _       _
+    |     |                 | |     | |
+    |     |      _ __  _   _| |_ ___| |
+    |     |     | '_ \| | | | __/ _ \ |
+    |     |     | |_) | |_| | ||  __/ |
+    |     |     | .__/ \__, |\__\___|_|
+   /|##!##|\    | |     __/ |
+  / |##!##| \   |_|    |___/
+ /  |##!##|  \
+|  / ^ | ^ \  |   [ USERBOT-TELEGRAM ] 🤖
+| /  ( | )  \ |    • Multi Client Session.
+|/   ( | )   \|    • API Development Tools.
+    ((   ))        • Plugins.
+   ((  :  ))
+   ((  :  ))
+    ((   ))
+     (( ))
+      ( )
+       .        © Copyright 2023-present kastaid
+       .               All Rights Reserved.
+       .
 """
 
 
@@ -89,7 +106,9 @@ async def load_plugins() -> None:
     """
     Credits : @illvart
     """
-    send_log.info("Loading plugins...")
+    send_log.info(
+        f"🔄 Loading plugins for {len(pytl)} Client"
+    )
     plugins = sorted_plugins()
     loads = time()
     _ = (
@@ -121,7 +140,7 @@ async def load_plugins() -> None:
     loaded_time = time_formatter(
         (time() - loads) * 1000
     )
-    loaded_msg = ">> Loaded success!!\nPlugins: {}, Commands: {}\n\n{}\n\n>> Time taken {}".format(
+    loaded_msg = ">> Loaded success!!\nPlugins: {}, Commands: {}\n\n{}\n\n>> ⏳ Time taken {}".format(
         plugins_helper.count,
         plugins_helper.total,
         "|".join(plugins)
@@ -134,7 +153,7 @@ async def load_plugins() -> None:
 
 async def start_asst() -> None:
     send_log.info(
-        "Starting-up Assistant."
+        "🛸 Starting-up Assistant."
     )
     try:
         await pytel_tgb.start()
@@ -148,7 +167,7 @@ async def start_asst() -> None:
     except Exception as excp:
         send_log.exception(excp)
     send_log.success(
-        "Successful, Started-On Asisstant."
+        "☑️ Successful, Started-On Asisstant."
     )
 
 
@@ -159,7 +178,7 @@ async def runner() -> None:
             if _.loop.is_closed():
                 _.loop.new_event_loop()
             else:
-                pass
+                _.loop.create_future()
             await _.client_started()
             await _.notify_login()
             await auto_pilots(
@@ -181,15 +200,13 @@ async def runner() -> None:
             send_log.exception(excp)
 
     await load_plugins()
-    await gather(
-        _._copyright(
-            _copyright=f"{__copyright__}",
-            _license=f"{__license__}",
-        ),
-        pytasks(
-            confirm=True,
-            client=pytl,
-        ),
+    await _._copyright(
+        _copyright=f"{__copyright__}",
+        _license=f"{__license__}",
+    )
+    await pytasks(
+        confirm=True,
+        client=pytl,
     )
     ThreadLock.shutdown(wait=False)
     for c in pytl:
@@ -215,13 +232,14 @@ if __name__ == "__main__":
             else:
                 pass
             try:
+                loopers.create_future()
                 loopers.run_until_complete(
                     runner()
                 )
             #                loopers.run_forever()
             finally:
                 x.send_log.info(
-                    "See you next time !",
+                    "👋 See you next time !",
                 )
                 Instagram.loged_out(
                     crash=True

@@ -36,13 +36,6 @@ class BaseDB:
                 {key: self.get_key(key)}
             )
 
-    def ping(self):
-        return 1
-
-    @property
-    def usage(self):
-        return 0
-
     def keys(self):
         return []
 
@@ -121,6 +114,10 @@ class Local(BaseDB):
     @property
     def name(self):
         return "Local"
+
+    @property
+    def sizes(self):
+        return self.db.size
 
     def keys(self):
         return self._cache.keys()

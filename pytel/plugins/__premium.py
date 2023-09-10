@@ -158,6 +158,10 @@ async def _premstat_inline(
                         "ꜱᴛᴀᴛꜱ",
                         callback_data="sys_stats",
                     ),
+                    buttons(
+                        "ᴅᴀᴛᴀʙᴀꜱᴇ",
+                        callback_data="db_stats",
+                    ),
                 ],
                 [
                     buttons(

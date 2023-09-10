@@ -2,7 +2,7 @@
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
-# PLease read the GNU Affero General Public License in
+# Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from calendar import month
@@ -114,9 +114,9 @@ async def _calendar(client, message):
     point = message.text.split(None, 2)
     ye = datetime.now(tz).year
     da = datetime.now(tz).strftime(
-        "<b>{}:</b> <u>%d/%m/%Y</u>\n<b>{}:</b> <u>%H:%M:%S</u>".format(
-            "Date",
-            "Time",
+        "<b>{}:</b> <u>%d %B, %Y</u>\n<b>{}:</b> <u>%H:%M:%S</u>".format(
+            "├ Date",
+            "├ Time",
         ),
     )
     _ = TanggalMerah(
@@ -308,7 +308,7 @@ async def _calendar(client, message):
         ca,
         "Now",
         da,
-        "Day off",
+        "└ Day off",
         dayoff,
     )
     await message.reply(

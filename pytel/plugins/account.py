@@ -19,6 +19,7 @@ from . import (
     extract_user,
     plugins_helper,
     px,
+    get_args,
     get_text,
     pytel,
     _supersu,
@@ -75,7 +76,9 @@ async def _online_offfline(
 async def _set_name_bio(
     client, message
 ):
-    args = get_text(message)
+    args = get_text(
+        message, normal=True
+    )
     if message.command[0] == "setbio":
         if len(args) >= 70:
             await eor(
@@ -251,7 +254,7 @@ async def _limited(client, message):
 )
 async def _set_pfp(client, message):
     rp = message.reply_to_message
-    text = "Successfuly updates ur photo profile."
+    text = "Successfuly updates ur profile photo."
     if not rp:
         await eor(
             message,
@@ -265,7 +268,8 @@ async def _set_pfp(client, message):
     if rp.photo:
         file = (
             await client.download_media(
-                rp.photo
+                rp.photo,
+                file_name="cache/",
             )
         )
         try:
@@ -295,7 +299,8 @@ async def _set_pfp(client, message):
     elif rp.video:
         file = (
             await client.download_media(
-                rp.video
+                rp.video,
+                file_name="cache/",
             )
         )
         try:
@@ -328,7 +333,8 @@ async def _set_pfp(client, message):
     ):
         file = (
             await client.download_media(
-                rp.sticker.file_id
+                rp.sticker.file_id,
+                file_name="cache/",
             )
         )
         if file.endswith(
@@ -346,7 +352,6 @@ async def _set_pfp(client, message):
             with open(conv, "rb") as f:
                 pp = f.read()
             file_io = BytesIO(pp)
-            text = "Successfuly updates ur photo profile."
             await gather(
                 client.set_profile_photo(
                     photo=file_io
@@ -377,13 +382,17 @@ async def _set_pfp(client, message):
     ):
         file = (
             await client.download_media(
-                rp
+                rp.document.file_id,
+                file_name="cache/",
             )
         )
+        with open(file, "rb") as f:
+            pp = f.read()
+        file_io = BytesIO(pp)
         try:
             await gather(
                 client.set_profile_photo(
-                    file
+                    photo=file_io
                 ),
                 eor(x, text=text),
             )
@@ -403,12 +412,62 @@ async def _set_pfp(client, message):
                 text=f"Exception: {excp}",
             )
             return
+
     else:
         await eor(
             message,
             text="Please reply to photos/video/sticker.",
         )
         return
+
+
+@pytel.instruction(
+    [
+        "rempfp",
+        "rempp",
+    ],
+    outgoing=True,
+)
+async def _rempfp(client, message):
+    msg = get_args(message, normal=True)
+    if msg == "all":
+        limit = 0
+    elif msg.isdigit():
+        limit = int(msg)
+    else:
+        limit = 1
+
+    count = 0
+    x = await eor(
+        message,
+        text=f"Removing {msg} profile photo...",
+    )
+    async for photos in client.get_chat_photos(
+        "me", limit=limit
+    ):
+        try:
+            await client.delete_profile_photos(
+                photos.file_id
+            )
+            count = count + 1
+        except Exception as excp:
+            client.send_log.exception(
+                excp
+            )
+            await eor(
+                x,
+                text=f"Error: ```{excp}```",
+            )
+            return
+
+    text = "Successfuly removing {} profile photo."
+    await eor(
+        x,
+        text=text.format(
+            count,
+        ),
+    )
+    return
 
 
 @pytel.instruction(
@@ -506,5 +565,6 @@ plugins_helper["account"] = {
     f"{random_prefixies(px)}setmode [offline/online/off/on]": "To setting ur status to be Online or Offline.",
     f"{random_prefixies(px)}setbio [text/reply]": "To updates ur bio. ( Max 70 characters )",
     f"{random_prefixies(px)}setname [first name] [last name]": "To updates ur name.",
-    f"{random_prefixies(px)}setpfp / setpp [reply photo/video/sticker]": "To updates ur profiles.",
+    f"{random_prefixies(px)}setpfp / setpp [reply photo/video/sticker]": "To updates ur profile photo.",
+    f"{random_prefixies(px)}rempfp [count: integer/all]": "To removing profile photo.",
 }

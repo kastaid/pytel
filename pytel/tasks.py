@@ -37,14 +37,14 @@ async def pytasks(
 
     def signal_handler(signum, __):
         pylog.info(
-            f"Stop signal received ({signals[signum]})."
+            f"🛑 Stop signal received ({signals[signum]})."
         )
         pylog.info(
-            "Tasks cancellation..."
+            "🚫 Tasks cancellation..."
         )
         for a in client:
             pylog.success(
-                f"Exiting for User ID ( {a.me.id} )"
+                f"🏃 Exiting for User ID ( {a.me.id} )"
             )
             clear_all_dspam(a.me.id)
             clear_all_schedule(a.me.id)
@@ -58,7 +58,7 @@ async def pytasks(
         signal_name(s, signal_handler)
     while confirm:
         tasks = asyncio.create_task(
-            asyncio.sleep(600)
+            asyncio.sleep(10)
         )
         try:
             await tasks
