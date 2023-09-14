@@ -19,6 +19,9 @@ from . import (
     suppress,
     fetch_ipinfo,
     fetch_dns,
+    time,
+    progress,
+    replied,
     random_prefixies,
     screenshots,)
 
@@ -61,13 +64,14 @@ async def _screenshots(client, message):
 
     if file:
         with suppress(Exception):
+            u_time = time()
             z = await eor(
                 x,
                 text="Uploading...",
             )
-            await client.send_document(
+            await client.send_photo(
                 z.chat.id,
-                document=file,
+                photo=file,
                 caption=(
                     "{} [PYTEL](https://github.com/kastaid/pytel)".format(
                         "Made using",
@@ -77,7 +81,16 @@ async def _screenshots(client, message):
                     )
                 ),
                 parse_mode=ParseMode.MARKDOWN,
-                force_document=True,
+                reply_to_message_id=replied(
+                    message
+                ),
+                progress=progress,
+                progress_args=(
+                    z,
+                    u_time,
+                    "`Uploading File!`",
+                    "Screenshot Website",
+                ),
                 disable_notification=True,
             )
             await _try_purged(z, 2.5)

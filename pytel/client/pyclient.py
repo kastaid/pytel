@@ -706,7 +706,7 @@ class PytelClient(Raw):
             f"Started on {x}"
         )
         self.send_log.info(
-            f"Installing plugins for {x}"
+            f"Preparing plugins for {x}"
         )
 
     async def _copyright(

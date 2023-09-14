@@ -181,9 +181,9 @@ async def screenshots(
 ) -> Any:
     payload = {
         "url": url,
-        "width": 1920,
+        "width": 1280,
         "height": 1080,
-        "scale": 15,
+        "scale": 1,
         "format": "jpeg",
     }
     response = await fetching(
