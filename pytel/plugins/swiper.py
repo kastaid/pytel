@@ -16,6 +16,8 @@ from . import (
     plugins_helper,
     px,
     pytel,
+    progress,
+    time,
     suppress,
     random_prefixies,)
 
@@ -85,7 +87,10 @@ async def _swipper(client, message):
                 )
             except Exception:
                 await downloads_media(
-                    client, message, m
+                    client,
+                    message,
+                    m,
+                    x,
                 )
             await _try_purged(x, 1.5)
             return
@@ -110,7 +115,10 @@ async def _swipper(client, message):
                     chat, msg_id
                 )
                 await downloads_media(
-                    client, message, m
+                    client,
+                    message,
+                    m,
+                    x,
                 )
                 await _try_purged(
                     x, 1.5
@@ -135,6 +143,7 @@ async def _swipper(client, message):
                         client,
                         message,
                         m,
+                        x,
                     )
                     await _try_purged(
                         x, 1.5
@@ -143,7 +152,10 @@ async def _swipper(client, message):
 
 
 async def downloads_media(
-    client, message, m
+    client,
+    message,
+    m,
+    x,
 ):
     caption = (
         m.caption
@@ -156,83 +168,172 @@ async def downloads_media(
                 message.chat.id,
                 reply_to_message_id=message.id,
             )
+        s_time = time()
         if m.photo:
             photo = await client.download_media(
-                m.photo
+                m.photo,
+                progress=progress,
+                progress_args=(
+                    x,
+                    s_time,
+                    "`Downloading File!`",
+                    "Telegram Photo",
+                ),
             )
-            await client.send_document(
+            u_time = time()
+            await client.send_photo(
                 message.chat.id,
-                document=photo,
+                photo=photo,
                 caption=caption,
-                force_document=True,
                 reply_to_message_id=message.id,
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Telegram Photo",
+                ),
             )
             (Rooters / photo).unlink(
                 missing_ok=True
             )
         if m.video:
             video = await client.download_media(
-                m.video
+                m.video,
+                progress=progress,
+                progress_args=(
+                    x,
+                    s_time,
+                    "`Downloading File!`",
+                    "Telegram Video",
+                ),
             )
-            await client.send_document(
+            u_time = time()
+            await client.send_video(
                 message.chat.id,
-                document=video,
+                video=video,
                 caption=caption,
-                force_document=True,
+                supports_streaming=True,
                 reply_to_message_id=message.id,
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Telegram Video",
+                ),
             )
             (Rooters / video).unlink(
                 missing_ok=True
             )
         if m.document:
             file = await client.download_media(
-                m.document
+                m.document,
+                progress=progress,
+                progress_args=(
+                    x,
+                    s_time,
+                    "`Downloading File!`",
+                    "Telegram Document",
+                ),
             )
+            u_time = time()
             await client.send_document(
                 message.chat.id,
                 document=file,
                 caption=caption,
                 force_document=True,
                 reply_to_message_id=message.id,
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Telegram Document",
+                ),
             )
             (Rooters / file).unlink(
                 missing_ok=True
             )
         if m.audio:
             audio = await client.download_media(
-                m.audio
+                m.audio,
+                progress=progress,
+                progress_args=(
+                    x,
+                    s_time,
+                    "`Downloading File!`",
+                    "Telegram Audio",
+                ),
             )
+            u_time = time()
             await client.send_audio(
                 message.chat.id,
                 audio,
                 caption,
                 reply_to_message_id=message.id,
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Telegram Audio",
+                ),
             )
             (Rooters / audio).unlink(
                 missing_ok=True
             )
         if m.voice:
             voice = await client.download_media(
-                m.voice
+                m.voice,
+                progress=progress,
+                progress_args=(
+                    x,
+                    s_time,
+                    "`Downloading File!`",
+                    "Telegram Voice",
+                ),
             )
+            u_time = time()
             await client.send_voice(
                 message.chat.id,
                 voice,
                 caption,
                 reply_to_message_id=message.id,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Telegram Voice",
+                ),
             )
             (Rooters / voice).unlink(
                 missing_ok=True
             )
         if m.animation:
             animation = await client.download_media(
-                m.animation
+                m.animation,
+                progress=progress,
+                progress_args=(
+                    x,
+                    s_time,
+                    "`Downloading File!`",
+                    "Telegram Animation",
+                ),
             )
+            u_time = time()
             await client.send_animation(
                 message.chat.id,
                 animation,
                 caption,
                 reply_to_message_id=message.id,
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Telegram Animation",
+                ),
             )
             (
                 Rooters / animation

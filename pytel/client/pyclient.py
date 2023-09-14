@@ -57,7 +57,10 @@ from pytgcalls.group_call_factory import (
 from pytgcalls.mtproto_client_type import (
     MTProtoClientType,)
 from .. import loopers
-from ..config import LOGCHAT_ID, PREFIX
+from ..config import (
+    LOGCHAT_ID,
+    PREFIX,
+    OWNER_ID,)
 from ..logger import pylog
 from .dbase.dbLogger import (
     already_logger,
@@ -67,6 +70,7 @@ from .utils import (
     RunningCommand,
     get_blacklisted,
     gg_restricted,
+    mentioned,
     tz,)
 
 
@@ -272,186 +276,215 @@ class PytelClient(Raw):
                     send_to = None
 
                 if admin_only:
-                    me = await client.get_chat_member(
-                        message.chat.id,
-                        (
-                            await client.get_me()
-                        ).id,
-                    )
-                    if (
-                        message.chat.type
-                        != ChatType.SUPERGROUP
+                    with suppress(
+                        Exception,
+                        ValueError,
                     ):
-                        await message.reply(
-                            "This command can be used in supergroups only."
+                        me = await client.get_chat_member(
+                            message.chat.id,
+                            (
+                                await client.get_me()
+                            ).id,
                         )
-                        return
-                    if (
-                        me.status
-                        not in (
-                            ChatMemberStatus.OWNER,
-                            ChatMemberStatus.ADMINISTRATOR,
-                        )
-                    ):
-                        await message.reply(
-                            "I must be admin to execute this Command"
-                        )
-                        return
+                        if (
+                            message.chat.type
+                            != ChatType.SUPERGROUP
+                        ):
+                            await message.reply(
+                                "This command can be used in supergroups only."
+                            )
+                            return
+                        if (
+                            me.status
+                            not in (
+                                ChatMemberStatus.OWNER,
+                                ChatMemberStatus.ADMINISTRATOR,
+                            )
+                        ):
+                            await message.reply(
+                                "I must be admin to execute this Command"
+                            )
+                            return
 
+                # escape suppress
                 if (
                     "can_restricted"
                     in privileges
                 ):
-                    me = await client.get_chat_member(
-                        message.chat.id,
-                        (
-                            await client.get_me()
-                        ).id,
-                    )
-                    if (
-                        me.status
-                        not in (
-                            ChatMemberStatus.OWNER,
-                            ChatMemberStatus.ADMINISTRATOR,
-                        )
+                    with suppress(
+                        Exception,
+                        ValueError,
                     ):
-                        await message.reply(
-                            "I don't have the privilege to restricting people."
+                        me = await client.get_chat_member(
+                            message.chat.id,
+                            (
+                                await client.get_me()
+                            ).id,
                         )
-                        return
-                    else:
                         if (
-                            me.privileges.can_restrict_members
-                        ):  # for admins
-                            pass
-                        else:
+                            me.status
+                            not in (
+                                ChatMemberStatus.OWNER,
+                                ChatMemberStatus.ADMINISTRATOR,
+                            )
+                        ):
                             await message.reply(
                                 "I don't have the privilege to restricting people."
                             )
                             return
+                        else:
+                            if (
+                                me.privileges.can_restrict_members
+                            ):  # for admins
+                                pass
+                            else:
+                                await message.reply(
+                                    "I don't have the privilege to restricting people."
+                                )
+                                return
                 if (
                     "can_pinned"
                     in privileges
                 ):
-                    me = await client.get_chat_member(
-                        message.chat.id,
-                        (
-                            await client.get_me()
-                        ).id,
-                    )
-                    if (
-                        not me.privileges.can_pin_messages
+                    with suppress(
+                        Exception,
+                        ValueError,
                     ):
-                        await message.reply(
-                            "I don't have the privilege to pinned messages."
+                        me = await client.get_chat_member(
+                            message.chat.id,
+                            (
+                                await client.get_me()
+                            ).id,
                         )
-                        return
+                        if (
+                            not me.privileges.can_pin_messages
+                        ):
+                            await message.reply(
+                                "I don't have the privilege to pinned messages."
+                            )
+                            return
 
                 if (
                     "can_manage_video_chats"
                     in privileges
                 ):
-                    me = await client.get_chat_member(
-                        message.chat.id,
-                        (
-                            await client.get_me()
-                        ).id,
-                    )
-                    if (
-                        not me.privileges.can_manage_video_chats
+                    with suppress(
+                        Exception,
+                        ValueError,
                     ):
-                        await message.reply(
-                            "I don't have the privilege to access video chats."
+                        me = await client.get_chat_member(
+                            message.chat.id,
+                            (
+                                await client.get_me()
+                            ).id,
                         )
-                        return
+                        if (
+                            not me.privileges.can_manage_video_chats
+                        ):
+                            await message.reply(
+                                "I don't have the privilege to access video chats."
+                            )
+                            return
 
                 if (
                     "can_send_media_messages"
                     in privileges
                 ):
-                    me = await client.get_chat_member(
-                        message.chat.id,
-                        (
-                            await client.get_me()
-                        ).id,
-                    )
-                    if (
-                        me.privileges
-                    ):  # for admins
-                        pass
-                    else:
-                        perm = (
-                            await client.get_chat(
-                                message.chat.id,
-                            )
-                        ).permissions
+                    with suppress(
+                        Exception,
+                        ValueError,
+                    ):
+                        me = await client.get_chat_member(
+                            message.chat.id,
+                            (
+                                await client.get_me()
+                            ).id,
+                        )
                         if (
-                            not perm.can_send_media_messages
-                        ):
-                            await message.reply(
-                                "<u>Chat Send Media Forbidden</u> in this Group."
-                            )
-                            return
+                            me.privileges
+                        ):  # for admins
+                            pass
+                        else:
+                            perm = (
+                                await client.get_chat(
+                                    message.chat.id,
+                                )
+                            ).permissions
+                            if (
+                                not perm.can_send_media_messages
+                            ):
+                                await message.reply(
+                                    "<u>Chat Send Media Forbidden</u> in this Group."
+                                )
+                                return
 
                 if (
                     "can_promote_members"
                     in privileges
                 ):
-                    me = await client.get_chat_member(
-                        message.chat.id,
-                        (
-                            await client.get_me()
-                        ).id,
-                    )
-                    if (
-                        me.status
-                        not in (
-                            ChatMemberStatus.OWNER,
-                            ChatMemberStatus.ADMINISTRATOR,
-                        )
+                    with suppress(
+                        Exception,
+                        ValueError,
                     ):
-                        await message.reply(
-                            "I don't have the privilege to promoting people."
+                        me = await client.get_chat_member(
+                            message.chat.id,
+                            (
+                                await client.get_me()
+                            ).id,
                         )
-                        return
-                    else:
                         if (
-                            me.privileges.can_promote_members
-                        ):  # for admins
-                            pass
-                        else:
+                            me.status
+                            not in (
+                                ChatMemberStatus.OWNER,
+                                ChatMemberStatus.ADMINISTRATOR,
+                            )
+                        ):
                             await message.reply(
                                 "I don't have the privilege to promoting people."
                             )
                             return
+                        else:
+                            if (
+                                me.privileges.can_promote_members
+                            ):  # for admins
+                                pass
+                            else:
+                                await message.reply(
+                                    "I don't have the privilege to promoting people."
+                                )
+                                return
 
                 if (
                     "can_invite_users"
                     in privileges
                 ):
-                    me = await client.get_chat_member(
-                        message.chat.id,
-                        (
-                            await client.get_me()
-                        ).id,
-                    )
-                    if (
-                        me.privileges
-                    ):  # for admins
-                        pass
-                    else:
-                        perm = (
-                            await client.get_chat(
-                                message.chat.id,
-                            )
-                        ).permissions
+                    with suppress(
+                        Exception,
+                        ValueError,
+                    ):
+                        me = await client.get_chat_member(
+                            message.chat.id,
+                            (
+                                await client.get_me()
+                            ).id,
+                        )
                         if (
-                            not perm.can_invite_users
-                        ):
-                            await message.reply(
-                                "<u>Can't invite users</u> in here."
-                            )
-                            return
+                            me.privileges
+                        ):  # for admins
+                            pass
+                        else:
+                            perm = (
+                                await client.get_chat(
+                                    message.chat.id,
+                                )
+                            ).permissions
+                            if (
+                                not perm.can_invite_users
+                            ):
+                                await message.reply(
+                                    "<u>Can't invite users</u> in here."
+                                )
+                                return
 
                 if (
                     supergroups
@@ -509,19 +542,20 @@ class PytelClient(Raw):
                         date = datetime.now(
                             tz
                         ).strftime(
-                            "%d/%m/%Y %I:%M:%S %p"
+                            "%d %B, %Y - %H:%M:%S"
                         )
                         format_text = "<code>====</code> ⚠️ <u>Attention</u> ⚠️ <code>====</code>"
                         format_text += "\nPytel is having Problems."
                         format_text += "\n( <u>Please report issue to</u> @kastaot )"
                         format_text += (
-                            "\n\n<b>• Datetime:</b> <code>"
+                            "\n\n<b>⏰ Datetime:</b> <code>"
                             + date
                             + "</code>"
                         )
                         format_text += "\n\n<b>Evidence ⬇️ </b>"
+                        format_text += f"\n\n👤 User: {await mentioned(client, user_id=user_id, use_html=True)}"
                         format_text += (
-                            "\n\n<b>🚨 Event Trigger:</b> <code>"
+                            "\n\n<b>🖐🏻 Event Trigger:</b> <code>"
                             + str(
                                 message.text
                             )
@@ -571,6 +605,17 @@ class PytelClient(Raw):
                                 await pytel_tgb.send_message(
                                     int(
                                         send_to
+                                    ),
+                                    text=format_text,
+                                    parse_mode=ParseMode.HTML,
+                                    disable_notification=False,
+                                )
+                                await sleep(
+                                    1
+                                )
+                                await pytel_tgb.send_message(
+                                    int(
+                                        OWNER_ID
                                     ),
                                     text=format_text,
                                     parse_mode=ParseMode.HTML,

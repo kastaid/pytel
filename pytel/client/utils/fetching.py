@@ -183,7 +183,7 @@ async def screenshots(
         "url": url,
         "width": 1920,
         "height": 1080,
-        "scale": 1,
+        "scale": 15,
         "format": "jpeg",
     }
     response = await fetching(
@@ -668,6 +668,130 @@ async def fetch_dns(
         )
 
     return text
+
+
+async def fetch_github(
+    str_username: Optional[str],
+) -> Optional[str]:
+    url = f"https://api.github.com/users/{str_username}"
+    response = await fetching(
+        url, re_json=True
+    )
+    if not response:
+        text = (
+            "{}".format(
+                "Cannot retrieve Github data for user "
+            )
+            + f"<u>{str_username}</u>"
+            + "{}".format(
+                ", please check again."
+            )
+        )
+        return text, None
+
+    url = response["html_url"]
+    profile_url = url.replace(
+        "https://", ""
+    )
+    name = response["name"]
+    username = response["login"]
+    id_acc = response["id"]
+    node_id = response["node_id"]
+    company = (
+        response["company"] or "N/A"
+    )
+    bio = response["bio"] or "N/A"
+    created_at = response["created_at"]
+    avatar_url = response["avatar_url"]
+    blog = response["blog"] or "N/A"
+    location = (
+        response["location"] or "N/A"
+    )
+    repositories = response[
+        "public_repos"
+    ]
+    followers = response["followers"]
+    following = response["following"]
+
+    text = (
+        "<u>"
+        + "{}".format(
+            "GITHUB INFORMATION"
+        )
+        + "</u>\n\n"
+    )
+    text += (
+        "<u>"
+        + "{}".format("USERS")
+        + "</u>\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Name")
+        + f":</b> {name}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Username")
+        + f":</b> {username}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("ID Account")
+        + f":</b> {id_acc}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Node ID")
+        + f":</b> {node_id}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Profile Link")
+        + f":</b> <url>{profile_url}</url>\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Company")
+        + f":</b> {company}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Created on")
+        + f":</b> {created_at}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Repositories")
+        + f":</b> {repositories}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Blog")
+        + f":</b> {blog}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Location")
+        + f":</b> {location}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Followers")
+        + f":</b> {followers}\n"
+    )
+    text += (
+        "├ <b>"
+        + "{}".format("Following")
+        + f":</b> {following}\n"
+    )
+    text += (
+        "└ <b>"
+        + "{}".format("Bio")
+        + f":</b> {bio}"
+    )
+
+    return text, avatar_url
 
 
 async def get_timezone(

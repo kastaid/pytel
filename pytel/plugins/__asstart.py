@@ -104,6 +104,17 @@ async def _asst_home(client, message):
         if message.from_user.username
         else "None"
     )
+    if not checks_users(user_id):
+        added_users(user_id)
+        await client.send_message(
+            int(OWNER_ID),
+            Assistant.start_text_from_user.format(
+                fullname,
+                user_id,
+                username,
+            ),
+        )
+
     if is_join:
         await message.reply(
             Assistant.START.format(
@@ -113,31 +124,7 @@ async def _asst_home(client, message):
             disable_web_page_preview=True,
             reply_markup=Assistant.home_buttons,
         )
-        if checks_users(user_id):
-            return
-        else:
-            added_users(user_id)
-            await client.send_message(
-                int(OWNER_ID),
-                Assistant.start_text_from_user.format(
-                    fullname,
-                    user_id,
-                    username,
-                ),
-            )
     else:
-        if checks_users(user_id):
-            return
-        else:
-            added_users(user_id)
-            await client.send_message(
-                int(OWNER_ID),
-                Assistant.start_text_from_user.format(
-                    fullname,
-                    user_id,
-                    username,
-                ),
-            )
         await message.reply(
             Assistant.FSUBSCRIBE.format(
                 fullname,

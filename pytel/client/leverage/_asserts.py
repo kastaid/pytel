@@ -82,7 +82,10 @@ def get_text(
                 text_,
             )
             for x in link:
-                return str(x)
+                if x:
+                    return str(x)
+                else:
+                    return False
         else:
             if normal:
                 return text_

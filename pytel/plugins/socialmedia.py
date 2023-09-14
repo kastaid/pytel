@@ -5,7 +5,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from json import loads
-from re import search, findall
+from re import search, findall, sub
 from requests import get as getreq
 from search_engine_parser import (
     GoogleSearch,)
@@ -20,11 +20,14 @@ from . import (
     TikTok,
     Pinterest,
     ParseMode,
+    fetch_github,
     _try_purged,
     eor,
     get_text,
     is_url,
     int2date,
+    time,
+    progress,
     plugins_helper,
     px,
     pytel,
@@ -204,6 +207,7 @@ async def _youtube_video_dl(
             text="Uploading video...",
         )
         try:
+            u_time = time()
             await client.send_video(
                 message.chat.id,
                 video=video,
@@ -227,6 +231,13 @@ async def _youtube_video_dl(
                 ),
                 reply_to_message_id=replied(
                     message
+                ),
+                progress=progress,
+                progress_args=(
+                    fx,
+                    u_time,
+                    "`Uploading File!`",
+                    "Youtube Video",
                 ),
             )
             await _try_purged(fx)
@@ -399,6 +410,7 @@ async def _youtube_audio_dl(
             text="Uploading audio...",
         )
         try:
+            u_time = time()
             await client.send_audio(
                 message.chat.id,
                 audio=audio,
@@ -424,6 +436,13 @@ async def _youtube_audio_dl(
                 ),
                 reply_to_message_id=replied(
                     message
+                ),
+                progress=progress,
+                progress_args=(
+                    fx,
+                    u_time,
+                    "`Uploading File!`",
+                    "Youtube Audio",
                 ),
             )
             await _try_purged(fx)
@@ -509,6 +528,76 @@ async def _youtube_searching(
         ),
     )
     await _try_purged(x)
+
+
+@pytel.instruction(
+    ["ghs", "ghsearch", "github"],
+    outgoing=True,
+)
+async def _github_searching(
+    client, message
+):
+    str_username = get_text(
+        message,
+        save_link=False,
+        normal=True,
+    )
+    if not str_username:
+        await eor(
+            message,
+            text="Provide a valid username / link github!",
+        )
+        return
+
+    x = await eor(
+        message,
+        text="Checking...",
+    )
+    if "github.com/" in str_username:
+        src = search(
+            r"github.(.*)", str_username
+        )
+        mkz = src.group()
+        xyz = mkz.replace(
+            "github.com/", ""
+        )
+        str_username = sub(
+            r"\/([\s\S]*)$", "", xyz
+        )
+
+    elif str_username.startswith("@"):
+        str_username = (
+            str_username.replace(
+                "@", ""
+            )
+        )
+
+    x = await eor(
+        message,
+        text=f"Searching for @{str_username} ...",
+    )
+
+    (
+        text,
+        avatar_url,
+    ) = await fetch_github(str_username)
+    if avatar_url:
+        try:
+            await client.send_document(
+                message.chat.id,
+                document=avatar_url,
+                caption=text,
+                parse_mode=ParseMode.HTML,
+                reply_to_message_id=replied(
+                    message
+                ),
+                protect_content=True,
+            )
+            await _try_purged(x)
+            return
+        except Exception:
+            await eor(x, text=text)
+            return
 
 
 @pytel.instruction(
@@ -684,6 +773,9 @@ Copyright (C) 2023-present @kastaid
                 document=filn,
                 caption=text,
                 parse_mode=ParseMode.HTML,
+                reply_to_message_id=replied(
+                    message
+                ),
                 protect_content=True,
             )
             await _try_purged(x)
@@ -751,6 +843,7 @@ async def _instagram_dl(
             type_dl="photo",
         )
         if photo:
+            u_time = time()
             caption = f"""
 <b><u>INSTAGRAM PHOTO DOWNLOADER</b></u>
 <b>Sources Photo:</b> <a href='{str_link}'>Click Here</a>
@@ -764,6 +857,13 @@ Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( F
                 caption=caption,
                 reply_to_message_id=replied(
                     message
+                ),
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Instagram Photo",
                 ),
             )
             (Rooters / photo).unlink(
@@ -782,6 +882,7 @@ Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( F
             type_dl="video",
         )
         if video:
+            u_time = time()
             caption = f"""
 <b><u>INSTAGRAM VIDEO DOWNLOADER</b></u>
 <b>Sources Video:</b> <a href='{str_link}'>Click Here</a>
@@ -795,6 +896,13 @@ Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( F
                 caption=caption,
                 reply_to_message_id=replied(
                     message
+                ),
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Instagram Video",
                 ),
             )
             (Rooters / video).unlink(
@@ -813,6 +921,7 @@ Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( F
             type_dl="story",
         )
         if story_:
+            u_time = time()
             caption = f"""
 <b><u>INSTAGRAM STORY DOWNLOADER</b></u>
 <b>Sources Story:</b> <a href='{str_link}'>Click Here</a>
@@ -826,6 +935,13 @@ Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( F
                 caption=caption,
                 reply_to_message_id=replied(
                     message
+                ),
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Instagram Story",
                 ),
             )
             (Rooters / story_).unlink(
@@ -875,8 +991,15 @@ async def _pinterest_dl(
             text="Can't find any files, Please try again later!",
         )
         return
+    u_time = time()
     with suppress(Exception):
-        caption = "Projects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://developers.pinterest.com/'>Pinterest</a> ( Developers )"
+        caption = f"""
+<b><u>PINTEREST DOWNLOADER</b></u>
+<b>Sources:</b> <a href='{str_link}'>Click Here</a>
+
+Projects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>
+Made with <a href='https://developers.pinterest.com/'>Pinterest</a> ( Developers )
+"""
         if type_file == "video":
             await client.send_video(
                 message.chat.id,
@@ -884,6 +1007,13 @@ async def _pinterest_dl(
                 caption=caption,
                 reply_to_message_id=replied(
                     message
+                ),
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Pinterest Video",
                 ),
             )
             await _try_purged(x, 1)
@@ -898,6 +1028,13 @@ async def _pinterest_dl(
                 caption=caption,
                 reply_to_message_id=replied(
                     message
+                ),
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Pinterest Photo",
                 ),
             )
             await _try_purged(x, 1)
@@ -940,6 +1077,7 @@ async def _tiktok_dl(client, message):
         tiktok_url=str_link
     )
     if video:
+        u_time = time()
         try:
             caption = f"{description}\n\nProjects by <a href='https://t.me/PYTELPremium/47'>PYTEL-Premium 🇮🇩</a>\nMade with <a href='https://tiktok.com'>Tiktok</a>"
             await client.send_video(
@@ -948,6 +1086,13 @@ async def _tiktok_dl(client, message):
                 caption=caption,
                 reply_to_message_id=replied(
                     message
+                ),
+                progress=progress,
+                progress_args=(
+                    x,
+                    u_time,
+                    "`Uploading File!`",
+                    "Tiktok Video",
                 ),
             )
             if audio:
@@ -958,6 +1103,13 @@ async def _tiktok_dl(client, message):
                     caption=caption,
                     reply_to_message_id=replied(
                         message
+                    ),
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        u_time,
+                        "`Uploading File!`",
+                        "Tiktok Audio",
                     ),
                 )
         except Exception as excp:
@@ -1061,6 +1213,9 @@ async def _social_links(
                 message.chat.id,
                 document=files,
                 caption=caption,
+                reply_to_message_id=replied(
+                    message
+                ),
             )
             await _try_purged(x)
             (Rooters / files).unlink(
@@ -1070,6 +1225,8 @@ async def _social_links(
     await client.send_message(
         message.chat.id,
         text=text,
+        protect_content=True,
+        disable_web_page_preview=True,
         reply_to_message_id=replied(
             message
         ),
@@ -1089,4 +1246,5 @@ plugins_helper["socialmedia"] = {
     f"{random_prefixies(px)}ggsearch [text/reply]": "Search engine for google.",
     f"{random_prefixies(px)}ttdl [url]/[reply link]": "To get Tiktok. ( video & original audio ) ( Without Watermark )",
     f"{random_prefixies(px)}pintdl [url]/[reply link]": "To get Pinterest. ( images/video )",
+    f"{random_prefixies(px)}github [username/link github]": "To get the User/Organization Github Profile.",
 }

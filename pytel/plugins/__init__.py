@@ -7,6 +7,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
 from contextlib import suppress
+from time import time
 from pyrogram import filters
 from pyrogram.enums import (
     ParseMode,
@@ -69,6 +70,7 @@ from ..client import (
     time_formatter,
     user_and_reason,
     extract_user,
+    progress,
     plugins_button,
     unpack_inline,
     _try_purged,
@@ -82,6 +84,7 @@ from ..client import (
     fetch_adzan,
     fetch_weather,
     fetch_dns,
+    fetch_github,
     fetch_ipinfo,
     mentioned,
     get_chat_ids,

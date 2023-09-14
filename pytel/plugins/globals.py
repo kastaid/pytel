@@ -244,7 +244,7 @@ async def _lists_blacklisted(
 
 
 @pytel.instruction(
-    ["devgcast"],
+    ["devgcast", "dgcast", "cgcast"],
     supersu=["PYTEL"],
 )
 @pytel.instruction(

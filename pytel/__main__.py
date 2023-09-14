@@ -69,9 +69,9 @@ PYTEL = r"""
  /  |##!##|  \
 |  / ^ | ^ \  |   [ USERBOT-TELEGRAM ] 🤖
 | /  ( | )  \ |    • Multi Client Session.
-|/   ( | )   \|    • API Development Tools.
-    ((   ))        • Plugins.
-   ((  :  ))
+|/   ( | )   \|    • Multi Featured.
+    ((   ))        • API Development Tools.
+   ((  :  ))       • Plugins.
    ((  :  ))
     ((   ))
      (( ))
@@ -140,7 +140,7 @@ async def load_plugins() -> None:
     loaded_time = time_formatter(
         (time() - loads) * 1000
     )
-    loaded_msg = ">> Loaded success!!\nPlugins: {}, Commands: {}\n\n{}\n\n>> ⏳ Time taken {}".format(
+    loaded_msg = ">> Loaded success!! 🔥🔥🔥\n💿 Plugins: {}\n🛠 Commands: {}\n\n{}\n\n>> ⏳ Time taken {}".format(
         plugins_helper.count,
         plugins_helper.total,
         "|".join(plugins)
@@ -157,6 +157,8 @@ async def start_asst() -> None:
     )
     try:
         await pytel_tgb.start()
+    except KeyError:
+        pass
     except FloodWait as flood:
         await sleep(flood.value + 5)
         await pytel_tgb.start()
@@ -230,13 +232,17 @@ if __name__ == "__main__":
             if x.loop.is_closed():
                 x.loop.new_event_loop()
             else:
-                pass
+                x.loop.create_future()
             try:
                 loopers.create_future()
                 loopers.run_until_complete(
                     runner()
                 )
             #                loopers.run_forever()
+            except Exception as excp:
+                x.send_log.exception(
+                    excp
+                )
             finally:
                 x.send_log.info(
                     "👋 See you next time !",

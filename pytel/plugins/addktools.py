@@ -171,6 +171,12 @@ async def _invited_all(client, message):
                     grp
                 )
             )
+        except KeyError as excp:
+            await eor(
+                msg,
+                text=f"Exception: {excp}",
+            )
+            return
         except Exception as excp:
             client.send_log.exception(
                 excp

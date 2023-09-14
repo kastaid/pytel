@@ -185,16 +185,16 @@ def sys_stats() -> str:
     ).percent
     process = psutil.Process(getpid())
     stats = f"""
-PYTEL-Premium ( Statistics )
+STATISTICS ( PYTEL-Premium )
 -----------------------
-UPTIME: {time_formatter((time() - start_time) * 1000)}
-MEMORY: {size_bytes(process.memory_info()[0])}
+Uptime: {time_formatter((time() - start_time) * 1000)}
 CPU: {cpu}%
 RAM: {mem}%
 DISK: {disk}%
+Memory Usage: {size_bytes(process.memory_info()[0])}
 -----------------------
 
-Copyright (C) 2023-present kastaid
+Copyright (C) 2023-present @kastaid
 """
     return stats
 
@@ -205,13 +205,13 @@ def db_usage() -> str:
         c_table = len(pydb.keys())
         sz = f"{size_bytes(used)}"
         d_b = f"""
-Database ( PYTEL-Premium )
+DATABASE ( PYTEL-Premium )
 
-TYPE: {pydb.name}
-SIZE: {sz}
-TABLE: {c_table} contents
+Database Type: {pydb.name}
+Database Size: {sz}
+Database Table: {c_table} contents
 
-Copyright (C) 2023-present kastaid
+Copyright (C) 2023-present @kastaid
 """
         return d_b
 

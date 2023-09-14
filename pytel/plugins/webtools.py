@@ -5,7 +5,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from requests import get
+from requests import get, Session
 from . import (
     ParseMode,
     _try_purged,
@@ -92,9 +92,9 @@ async def _screenshots(client, message):
 
 @pytel.instruction(
     [
-        "shorten_isgd",
-        "shorten_tiny",
-        "shorten_clck",
+        "short_isgd",
+        "short_tiny",
+        "short_clck",
     ],
     outgoing=True,
 )
@@ -117,7 +117,7 @@ async def _shorten_url(client, message):
     )
     if (
         message.command[0]
-        == "shorten_isgd"
+        == "short_isgd"
     ):
         rsp = get(
             "https://is.gd/create.php",
@@ -128,7 +128,7 @@ async def _shorten_url(client, message):
         )
     elif (
         message.command[0]
-        == "shorten_tiny"
+        == "short_tiny"
     ):
         rsp = get(
             "http://tinyurl.com/api-create.php",
@@ -136,7 +136,7 @@ async def _shorten_url(client, message):
         )
     elif (
         message.command[0]
-        == "shorten_clck"
+        == "short_clck"
     ):
         rsp = get(
             "https://clck.ru/--",
@@ -150,11 +150,57 @@ async def _shorten_url(client, message):
             return
         else:
             response = rsp.text.strip()
-            text = "<b><u>SHORT URL</b></u>\n"
-            text += f" ├ <b>Input:</b> <code>{url}</code>\n"
-            text += f" └ <b>Output:</b> <code>{response}</code>"
+            text = "<b><u>SHORTEN URL</b></u>\n"
+            text += f" ├ <b>Before:</b> <code>{url}</code>\n"
+            text += f" └ <b>After:</b> <code>{response}</code>"
             await eor(x, text=text)
             return
+
+
+@pytel.instruction(
+    ["unshort"],
+    outgoing=True,
+)
+async def _unshortens(client, message):
+    url = get_text(
+        message, save_link=True
+    )
+    if not url or not (
+        is_url(url) is True
+    ):
+        await eor(
+            message,
+            text="Provide a valid link/url!",
+        )
+        return
+    x = await eor(
+        message,
+        text="Unshorten...",
+    )
+    sessi = Session()
+    resp = sessi.head(
+        url,
+        allow_redirects=True,
+        timeout=3,
+        stream=True,
+    )
+    if (
+        resp.status_code == 200
+        and resp.url
+    ):
+        text = "<b><u>UNSHORTEN URL</b></u>\n"
+        text += f" ├ <b>Before:</b> <code>{url}</code>\n"
+        text += f" └ <b>After:</b> <code>{resp.url}</code>"
+        await eor(
+            x,
+            text=text,
+        )
+        return
+    else:
+        await eor(
+            x,
+            text="Please try again later!",
+        )
 
 
 @pytel.instruction(
@@ -163,7 +209,7 @@ async def _shorten_url(client, message):
 )
 async def _ip_info(client, message):
     ipv = get_text(
-        message, save_link=True
+        message, save_link=False
     )
     if not ipv or not (
         is_ipv4(ipv) is True
@@ -209,7 +255,8 @@ async def _domain_ns(client, message):
 
 plugins_helper["webtools"] = {
     f"{random_prefixies(px)}webss [url]/[reply link]": "To capture the screen on the link.",
-    f"{random_prefixies(px)}shorten_[isgd/tiny/clck] [url]/[reply link]": "To shorten your link/url.",
+    f"{random_prefixies(px)}short_[isgd/tiny/clck] [url]/[reply link]": "To shorten your link/url.",
+    f"{random_prefixies(px)}unshort [url]/[reply link]": "To un-shorten your link/url.",
     f"{random_prefixies(px)}dns / {random_prefixies(px)}domain [url]/[reply link]": "To get DNS ( Domain Name Server )",
     f"{random_prefixies(px)}ipinfo [ip address]": "To get information IP Address.",
 }

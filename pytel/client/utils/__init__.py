@@ -22,6 +22,7 @@ from .fetching import (
     screenshots,
     fetch_ipinfo,
     fetch_dns,
+    fetch_github,
     fetch_weather,)
 from .helper import (
     plugins_helper,
@@ -40,5 +41,6 @@ from .misc import (
     int2date,
     short_dict,
     size_bytes,
+    progress,
     subs_like_view_format,
     tz,)
