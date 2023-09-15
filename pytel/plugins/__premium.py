@@ -64,9 +64,9 @@ async def _get_status_user(
             int(from_user)
         )
         pyprem = (
-            "active-"
+            "🟢 active-"
             if expired and time_left
-            else "inactive-"
+            else "🔴 inactive-"
         )
 
         uptime = time_formatter(
@@ -74,7 +74,7 @@ async def _get_status_user(
         )
         text = f"""
 <u><b>PYTEL-Premium</b></u> 🇮🇩
-<u> └</u> <b>Status</b>: {pyprem}[ <u><b>{status}</u></b> ]
+<u> └ <b>Status</b></u>: {pyprem}[ <b><i>{status}</i></b> ]
  ├ <b>Uptime</b>: <code>{uptime}</code>
  ├ <b>Expired</b>: {expired}
  └ <b>Time Left</b>: {time_left}

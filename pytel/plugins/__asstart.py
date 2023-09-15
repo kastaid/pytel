@@ -170,35 +170,13 @@ Harap bergabung terlebih dahulu.
             )
         else:
             await cq.message.delete()
-            if checks_users(
-                cq.from_user.id
-            ):
-                return
-            else:
-                fullname = (
-                    await mentioned(
-                        client,
-                        cq.from_user.id,
-                        use_html=True,
-                    )
+            fullname = (
+                await mentioned(
+                    client,
+                    cq.from_user.id,
+                    use_html=True,
                 )
-                username = (
-                    f"@{cq.from_user.username}"
-                    if cq.from_user.username
-                    else "None"
-                )
-                added_users(
-                    cq.from_user.id
-                )
-                await client.send_message(
-                    int(OWNER_ID),
-                    Assistant.start_text_from_user.format(
-                        fullname,
-                        cq.from_user.id,
-                        username,
-                    ),
-                )
-
+            )
             await cq.message.reply(
                 Assistant.START.format(
                     await mentioned(
