@@ -44,6 +44,18 @@ from pyrogram.handlers import (
     MessageHandler,
     EditedMessageHandler,)
 from pyrogram.raw.all import layer
+from pyrogram.raw.functions.channels import (
+    GetFullChannel,)
+from pyrogram.raw.functions.messages import (
+    GetFullChat,)
+from pyrogram.raw.functions.phone import (
+    GetGroupCall,
+    GetGroupParticipants,
+    EditGroupCallParticipant,)
+from pyrogram.raw.types import (
+    InputGroupCall,
+    InputPeerChannel,
+    InputPeerChat,)
 from pyrogram.types import Message
 from pytelibs import (
     _c,
@@ -791,6 +803,92 @@ class PytelClient(Raw):
             self.send_log.exception(
                 excp
             )
+
+    async def get_group_call(
+        self,
+        message,
+        chat_ids: Any = None,
+    ) -> Optional[InputGroupCall]:
+        if chat_ids:
+            chat_id = chat_ids
+        else:
+            chat_id = message.chat.id
+        chat_peer = (
+            await self.resolve_peer(
+                chat_id
+            )
+        )
+        if isinstance(
+            chat_peer,
+            (
+                InputPeerChannel,
+                InputPeerChat,
+            ),
+        ):
+            if isinstance(
+                chat_peer,
+                InputPeerChannel,
+            ):
+                full_chat = (
+                    await self.invoke(
+                        GetFullChannel(
+                            channel=chat_peer
+                        )
+                    )
+                ).full_chat
+            elif isinstance(
+                chat_peer, InputPeerChat
+            ):
+                full_chat = (
+                    await self.invoke(
+                        GetFullChat(
+                            chat_id=chat_peer.chat_id
+                        )
+                    )
+                ).full_chat
+            if full_chat is not None:
+                return full_chat.call
+        return False
+
+    async def muting_user_vc(
+        self,
+        group_call: Any,
+        participant: Any,
+        muted: bool,
+    ) -> EditGroupCallParticipant:
+        mtd = await self.invoke(
+            EditGroupCallParticipant(
+                call=group_call,
+                participant=participant,
+                muted=muted,
+            ),
+        )
+        return mtd
+
+    async def get_partici(
+        self, group_call: Any
+    ) -> GetGroupParticipants:
+        par = await self.invoke(
+            GetGroupParticipants(
+                call=group_call,
+                ids=[],
+                sources=[],
+                offset="",
+                limit=500,
+            ),
+        )
+        return par
+
+    async def get_resvc(
+        self, group_call: Any
+    ) -> GetGroupCall:
+        res = await self.invoke(
+            GetGroupCall(
+                call=group_call,
+                limit=500,
+            ),
+        )
+        return res
 
     async def stop(self, *args):
         if self not in self._client:

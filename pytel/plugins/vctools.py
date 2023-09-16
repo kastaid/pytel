@@ -8,22 +8,9 @@
 from asyncio import gather
 from random import randint
 from threading import RLock
-from typing import Optional, Any
-from pyrogram import Client
-from pyrogram.raw.functions.channels import (
-    GetFullChannel,)
-from pyrogram.raw.functions.messages import (
-    GetFullChat,)
 from pyrogram.raw.functions.phone import (
-    GetGroupCall,
     CreateGroupCall,
-    DiscardGroupCall,
-    GetGroupParticipants,
-    EditGroupCallParticipant,)
-from pyrogram.raw.types import (
-    InputGroupCall,
-    InputPeerChannel,
-    InputPeerChat,)
+    DiscardGroupCall,)
 from . import (
     Rooters,
     eor,
@@ -44,95 +31,6 @@ _MTVC_TEXT = """
 ├ <b>Can Talk:</b> <code>{}</code>
 └ <b>Users:</b> {}
 """
-
-
-async def get_group_call(
-    client: Client,
-    message,
-    chat_ids: Any = None,
-) -> Optional[InputGroupCall]:
-    if chat_ids:
-        chat_id = chat_ids
-    else:
-        chat_id = message.chat.id
-    chat_peer = (
-        await client.resolve_peer(
-            chat_id
-        )
-    )
-    if isinstance(
-        chat_peer,
-        (
-            InputPeerChannel,
-            InputPeerChat,
-        ),
-    ):
-        if isinstance(
-            chat_peer, InputPeerChannel
-        ):
-            full_chat = (
-                await client.send(
-                    GetFullChannel(
-                        channel=chat_peer
-                    )
-                )
-            ).full_chat
-        elif isinstance(
-            chat_peer, InputPeerChat
-        ):
-            full_chat = (
-                await client.send(
-                    GetFullChat(
-                        chat_id=chat_peer.chat_id
-                    )
-                )
-            ).full_chat
-        if full_chat is not None:
-            return full_chat.call
-    return False
-
-
-async def get_resvc(
-    client: Client, group_call: Any
-) -> GetGroupCall:
-    res = await client.invoke(
-        GetGroupCall(
-            call=group_call,
-            limit=500,
-        ),
-    )
-    return res
-
-
-async def muting_user_vc(
-    client: Client,
-    group_call: Any,
-    participant: Any,
-    muted: bool,
-) -> EditGroupCallParticipant:
-    mtd = await client.invoke(
-        EditGroupCallParticipant(
-            call=group_call,
-            participant=participant,
-            muted=muted,
-        ),
-    )
-    return mtd
-
-
-async def get_partici(
-    client: Client, group_call: Any
-) -> GetGroupParticipants:
-    par = await client.invoke(
-        GetGroupParticipants(
-            call=group_call,
-            ids=[],
-            sources=[],
-            offset="",
-            limit=500,
-        ),
-    )
-    return par
 
 
 @pytel.instruction(
@@ -162,8 +60,7 @@ async def _video_chats_start(
 
     try:
         group_call = (
-            await get_group_call(
-                client,
+            await client.get_group_call(
                 message,
                 chat_ids=chat_id,
             )
@@ -240,8 +137,8 @@ async def _video_chats_stop(
     )
     if not (
         group_call := (
-            await get_group_call(
-                client, message
+            await client.get_group_call(
+                message
             )
         )
     ):
@@ -278,14 +175,14 @@ async def _video_chats_joined(
         if not gets:
             gets = message.chat.id
 
-        with suppress(BaseException):
+        if gets:
             gc = get_chat_ids(str(gets))
-            if not gc:
-                await eor(
-                    message,
-                    text="Please provide id/username/link messages of group or channel.",
-                )
-                return
+        if not gc:
+            await eor(
+                message,
+                text="Please provide id/username/link messages of group or channel.",
+            )
+            return
 
         x = await eor(
             message,
@@ -309,8 +206,7 @@ async def _video_chats_joined(
 
         chat_id = int(chat.id)
         group_call = (
-            await get_group_call(
-                client,
+            await client.get_group_call(
                 message,
                 chat_ids=chat_id,
             )
@@ -322,8 +218,8 @@ async def _video_chats_joined(
             )
             return
 
-        par = await get_partici(
-            client, group_call
+        par = await client.get_partici(
+            group_call
         )
         check = []
         for i in par.users:
@@ -398,8 +294,7 @@ async def _video_chats_leaving(
 
         chat_id = int(chat.id)
         group_call = (
-            await get_group_call(
-                client,
+            await client.get_group_call(
                 message,
                 chat_ids=chat_id,
             )
@@ -410,8 +305,8 @@ async def _video_chats_leaving(
                 text="Video chats not available.",
             )
             return
-        par = await get_partici(
-            client, group_call
+        par = await client.get_partici(
+            group_call
         )
         if int(par.count) > 0:
             check: list = []
@@ -501,8 +396,7 @@ async def _video_chats_information(
 
         chat_id = int(chat.id)
         group_call = (
-            await get_group_call(
-                client,
+            await client.get_group_call(
                 message,
                 chat_ids=chat_id,
             )
@@ -514,11 +408,13 @@ async def _video_chats_information(
             )
             return
         try:
-            res = await get_resvc(
-                client, group_call
+            res = (
+                await client.get_resvc(
+                    group_call
+                )
             )
-            par = await get_partici(
-                client, group_call
+            par = await client.get_partici(
+                group_call
             )
         except Exception as excp:
             client.send_log.exception(
@@ -668,10 +564,11 @@ async def _muting_user_video_chats_(
         )
         return
     chat_id = message.chat.id
-    group_call = await get_group_call(
-        client,
-        message,
-        chat_ids=chat_id,
+    group_call = (
+        await client.get_group_call(
+            message,
+            chat_ids=chat_id,
+        )
     )
     if not group_call:
         await eor(
@@ -680,8 +577,8 @@ async def _muting_user_video_chats_(
         )
         return
 
-    par = await get_partici(
-        client, group_call
+    par = await client.get_partici(
+        group_call
     )
     text = ""
     if int(par.count) > 0:
@@ -709,8 +606,7 @@ async def _muting_user_video_chats_(
                     else:
                         muted = True
                         text = "<b><u>Muting</u> IN VIDEO CHATS</b>"
-                    await muting_user_vc(
-                        client,
+                    await client.muting_user_vc(
                         group_call=group_call,
                         participant=participant,
                         muted=muted,

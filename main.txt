@@ -32,9 +32,11 @@ pytelibs
 pyotp
 python-dotenv
 pymediainfo
+pyzbar
+opencv-python
 requests
 speedtest-cli
-
+qrcode
 uvloop
 validators
 

@@ -170,13 +170,6 @@ Harap bergabung terlebih dahulu.
             )
         else:
             await cq.message.delete()
-            fullname = (
-                await mentioned(
-                    client,
-                    cq.from_user.id,
-                    use_html=True,
-                )
-            )
             await cq.message.reply(
                 Assistant.START.format(
                     await mentioned(

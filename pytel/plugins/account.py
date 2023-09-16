@@ -13,6 +13,8 @@ from pyrogram.raw.functions.messages import (
     DeleteHistory,
     StartBot,)
 from . import (
+    SETMODE_ONLINE,
+    SETMODE_OFFLINE,
     Rooters,
     functions,
     eor,
@@ -31,42 +33,83 @@ from . import (
     ["setmode"],
     outgoing=True,
 )
-async def _online_offfline(
+async def _online_offline(
     client, message
 ):
-    if client.me.id:
-        mode = message.text.split(
-            None, 1
+    mode = message.text.split(None, 1)
+    if not mode:
+        return
+
+    if mode[1] in ["online", "on"]:
+        user_lock = client.me.id
+        if user_lock in SETMODE_OFFLINE:
+            SETMODE_OFFLINE.discard(
+                user_lock
+            )
+        else:
+            SETMODE_ONLINE.add(
+                user_lock
+            )
+        status = "Online"
+        await eor(
+            message,
+            text=f"✅ Success, ur status is <u>{status}</u>",
         )
-        if mode[1] in ["online", "on"]:
-            status = "Online"
-            await eor(
-                message,
-                text=f"✅ Success, ur status is <u>{status}</u>",
+        # Status Online
+        while True:
+            try:
+                if (
+                    user_lock
+                    not in SETMODE_ONLINE
+                ):
+                    break
+                await client.invoke(
+                    query=functions.account.UpdateStatus(
+                        offline=False
+                    ),
+                )
+            except Exception:
+                SETMODE_ONLINE.discard(
+                    user_lock
+                )
+                break
+
+    elif mode[1] in [
+        "offline",
+        "off",
+    ]:
+        user_lock = client.me.id
+        if user_lock in SETMODE_ONLINE:
+            SETMODE_ONLINE.discard(
+                user_lock
             )
-            # Status Online
-            await client.invoke(
-                query=functions.account.UpdateStatus(
-                    offline=False
-                ),
+        else:
+            SETMODE_OFFLINE.add(
+                user_lock
             )
-            return
-        if mode[1] in [
-            "offline",
-            "off",
-        ]:
-            status = "Offline"
-            await eor(
-                message,
-                text=f"✅ Success, ur status is <u>{status}</u>",
-            )
-            # Status Offline
-            await client.invoke(
-                query=functions.account.UpdateStatus(
-                    offline=True
-                ),
-            )
-            return
+        status = "Offline"
+        await eor(
+            message,
+            text=f"✅ Success, ur status is <u>{status}</u>",
+        )
+        # Status Offline
+        while True:
+            try:
+                if (
+                    user_lock
+                    not in SETMODE_OFFLINE
+                ):
+                    break
+                await client.invoke(
+                    query=functions.account.UpdateStatus(
+                        offline=True
+                    ),
+                )
+            except Exception:
+                SETMODE_OFFLINE.discard(
+                    user_lock
+                )
+                break
 
 
 @pytel.instruction(

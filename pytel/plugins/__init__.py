@@ -46,7 +46,10 @@ from pytelibs import (
     _UNGBAN_LOCKED,
     _INVITED_LOCKED,
     _KICKED_LOCKED,
+    SETMODE_ONLINE,
+    SETMODE_OFFLINE,
     LOCK_TYPES,
+    converting_binnary,
     normalize_youtube_url,
     is_youtube_url,
     replace_all,)
@@ -106,7 +109,9 @@ from ..client import (
     subs_like_view_format,
     short_dict,
     size_bytes,
-    pydb,)
+    pydb,
+    making_code,
+    scanner_code,)
 from ..config import (
     PREFIX as px,
     TimeZone,

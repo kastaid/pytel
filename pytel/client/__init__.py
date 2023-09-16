@@ -59,4 +59,6 @@ from .utils import (
     get_spamwatch_banned,
     get_cas_banned,
     subs_like_view_format,
+    making_code,
+    scanner_code,
     tz,)

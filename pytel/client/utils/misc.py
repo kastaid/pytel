@@ -22,6 +22,9 @@ from typing import (
     Union,
     Any,)
 from uuid import uuid4
+import cv2
+import numpy as np
+import qrcode
 from PIL import (
     Image,
     ImageDraw,
@@ -36,6 +39,11 @@ from pytelibs import (
     _CHARACTER_NAMES,
     SIZE_UNITS,)
 from pytz import timezone
+from pyzbar import pyzbar
+from qrcode.image.styledpil import (
+    StyledPilImage,)
+from qrcode.image.styles.colormasks import (
+    RadialGradiantColorMask,)
 from pytel.config import TimeZone
 from pytel.logger import (
     pylog as send_log,)
@@ -436,6 +444,101 @@ def Memify(image_path, text):
     )
     img.save(final_image, **img_info)
     return final_image
+
+
+def making_code(
+    client, data, type_file: str
+):
+    Logo = "resources/kastaid/PYTEL_CODE.jpg"
+    logo = Image.open(Logo)
+    # taking base width
+    basewidth = 100
+
+    # adjust image size
+    wpercent = basewidth / float(
+        logo.size[0]
+    )
+    hsize = int(
+        (
+            float(logo.size[1])
+            * float(wpercent)
+        )
+    )
+    logo = logo.resize(
+        (basewidth, hsize),
+        Image.ANTIALIAS,
+    )
+    QRcode = qrcode.QRCode(
+        error_correction=qrcode.constants.ERROR_CORRECT_H
+    )
+    # adding URL or text to QRcode
+    QRcode.add_data(data)
+    # generating QR code
+    QRcode.make(fit=True)
+    QRimg = QRcode.make_image(
+        image_factory=StyledPilImage,
+        color_mask=RadialGradiantColorMask(),
+    )
+
+    # set size of QR code
+    pos = (
+        (QRimg.size[0] - logo.size[0])
+        // 2,
+        (QRimg.size[1] - logo.size[1])
+        // 2,
+    )
+    QRimg.paste(logo, pos)
+
+    # save the QR code generated
+    output = f"{client.me.id}_code.{type_file}"
+    QRimg.save(output)
+    return output
+
+
+def scanner_code(files, type_file: str):
+    image = cv2.imread(files)
+    image = cv2.resize(
+        image, (640, 850)
+    )
+
+    # decode and detect the QR codes and barcodes
+    barcodes = pyzbar.decode(image)
+    qr_code, code = 0, 0
+
+    if len(barcodes) == 0:
+        text = "No barcode found on this image"
+        return text
+
+    text = "<b><u>Scanner Code</b></u> ( Barcode / QR Code )\n\n"
+    for barcode in barcodes:
+        # extract the points of th polygon of the barcode and create a Numpy array
+        pts = np.array(
+            [barcode.polygon], np.int32
+        )
+        pts = pts.reshape((-1, 1, 2))
+
+        # check to see if this is a QR code or a barcode
+        if barcode.type == "QRCODE":
+            qr_code += 1
+        elif barcode.type == "CODE128":
+            code += 1
+
+        text += "<b>Code:</b> <code>{}</code>\n\n".format(
+            barcode.data.decode("utf-8")
+        )
+
+    if int(qr_code) != 0:
+        text += "{} QR code(s) found on this {}\n".format(
+            qr_code,
+            type_file,
+        )
+    if int(code) != 0:
+        text += "{} barcode(s) found on this {}\n".format(
+            code,
+            type_file,
+        )
+
+    return text
 
 
 async def progress(
