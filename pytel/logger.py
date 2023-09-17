@@ -108,6 +108,9 @@ getLogger(
 getLogger("io").disabled = True
 pylog.disable("instagrapi")
 pylog.disable("pytgcalls")
+pylog.disable("pyrogram.dispatcher")
+pylog.disable("pyrogram.connection")
+pylog.disable("asyncio.base_events")
 
 basicConfig(
     handlers=[InterceptHandler()],

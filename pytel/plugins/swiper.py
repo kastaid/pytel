@@ -7,8 +7,11 @@
 
 from pyrogram.enums import ChatType
 from pyrogram.errors import RPCError
+from ..client.dbase.dbLogger import (
+    check_logger,)
 from . import (
     Rooters,
+    LOGCHAT_ID,
     _try_purged,
     eor,
     get_text,
@@ -30,9 +33,52 @@ from . import (
     ],
 )
 async def _swipper(client, message):
-    url = get_text(
-        message, save_link=True
-    )
+    _ = client.me.id
+    if message.reply_to_message:
+        rep = message.reply_to_message
+        caption = (
+            rep.caption
+            or rep.caption_entities
+            if rep.caption
+            or rep.caption_entities
+            else None
+        )
+        await _try_purged(message)
+        if LOGCHAT_ID:
+            chat_id = int(LOGCHAT_ID)
+        else:
+            log_data = (
+                check_logger().get(_)
+            )
+            chat_id = int(log_data[0])
+        if (
+            rep.document
+            or rep.video
+            or rep.photo
+        ):
+            file = await client.download_media(
+                rep, "cache/"
+            )
+            await _try_purged(message)
+            await client.send_document(
+                chat_id=chat_id,
+                document=file,
+                caption=caption,
+                force_document=True,
+            )
+            (Rooters / file).unlink(
+                missing_ok=True
+            )
+            return
+
+        else:
+            await _try_purged(message)
+            return
+
+    else:
+        url = get_text(
+            message, save_link=True
+        )
     if not url or not (
         is_url(url) is True
     ):

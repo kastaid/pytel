@@ -7,12 +7,16 @@
 
 import asyncio
 import signal
+from contextlib import suppress
+from os import getpid, close
 from signal import (
     signal as signal_name,
     SIGINT,
     SIGTERM,
     SIGABRT,)
 from typing import Any, Optional
+import psutil
+from .client import Instagram
 from .client.dbase.dbMessaging import (
     clear_all_schedule,
     clear_all_dspam,)
@@ -52,13 +56,27 @@ async def pytasks(
                 a.loop
             ):
                 b.cancel()
+            with suppress(Exception):
+                proc = psutil.Process(
+                    getpid()
+                )
+                for _ in (
+                    proc.open_files()
+                    + proc.connections()
+                ):
+                    close(_.fd)
+
+        pylog.info(
+            "👋 See you next time !",
+        )
+        Instagram.loged_out(crash=True)
         tasks.cancel()
 
     for s in (SIGINT, SIGTERM, SIGABRT):
         signal_name(s, signal_handler)
     while confirm:
         tasks = asyncio.create_task(
-            asyncio.sleep(10)
+            asyncio.sleep(4000)
         )
         try:
             await tasks

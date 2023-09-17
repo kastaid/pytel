@@ -13,6 +13,7 @@ from asyncio import (
     AbstractEventLoop,)
 from contextlib import suppress
 from datetime import datetime
+from multiprocessing import Process
 from sys import exc_info, exit
 from traceback import format_exc as fmex
 from typing import (
@@ -33,6 +34,7 @@ from pyrogram.enums import (
     ChatType,
     ParseMode,)
 from pyrogram.errors.exceptions.bad_request_400 import (
+    ChannelInvalid,
     MessageIdInvalid,
     PersistentTimestampInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
@@ -522,6 +524,8 @@ class PytelClient(Raw):
                     )
                     return
                 except (
+                    ChannelInvalid,
+                    TimeoutError,
                     PersistentTimestampInvalid,
                     PersistentTimestampOutdated,
                 ):
@@ -661,8 +665,10 @@ class PytelClient(Raw):
                         f"Error: {excp}"
                     )
 
+            Process(target=wrapper)
             return wrapper
 
+        Process(target=decorator)
         return decorator
 
     async def user_fullname(

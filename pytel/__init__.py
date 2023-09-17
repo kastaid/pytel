@@ -52,7 +52,6 @@ try:
         platform, maxsize, version_info,
         exit,)
     from time import time
-    import pyroaddon
     from pyrogram.errors.exceptions.unauthorized_401 import (
         Unauthorized,)
     from .client import PytelClient
@@ -162,16 +161,17 @@ else:
 
 APP_VERSION = f"PYTEL-Premium v.{pyver}"
 WORKERS = min(
-    64, (cpu_count() or 0) + 8
+    64, (cpu_count() or 1) + 16
 )
 SYSTEM_VERSION = f"{uname().system}"
 DEVICE_MODEL = f"{uname().machine}"
 
 try:
+    import pyroaddon
     from pyrogram import Client
 
     pytel_tgb = Client(
-        name="pytel",
+        name="pytel_bot",
         api_id=API_ID,
         api_hash=API_HASH,
         bot_token=TGB_TOKEN,
@@ -179,6 +179,20 @@ try:
         no_updates=False,
         ipv6=False,
     )
+except KeyboardInterrupt:
+    send_log.warning(
+        "Received interrupt while import"
+    )
+except Unauthorized as excp:
+    send_log.warning(
+        f"SESSION Unauthorized coz: {excp}"
+    )
+    exit(1)
+except Exception as excp:
+    send_log.exception(excp)
+    exit(1)
+
+try:
     pytel_1 = (
         PytelClient(
             name="pytel1",
@@ -404,6 +418,17 @@ pytl = [
 
 if pytel:
     for pytel_ in pytl:
-        pytel._client.append(pytel_)
+        try:  # noqa
+            if (
+                pytel_
+                not in pytel._client
+            ):
+                pytel._client.append(
+                    pytel_
+                )
+            else:
+                pass
+        except Exception:
+            pass
 else:
-    pytel = None
+    pytl = None

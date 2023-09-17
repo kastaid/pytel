@@ -14,7 +14,6 @@ from importlib import (
     import_module as import_plugins,)
 from multiprocessing import cpu_count
 from pathlib import Path
-from sys import exit
 from time import time
 from tracemalloc import start
 from typing import List, Tuple
@@ -30,11 +29,11 @@ from . import (
     __copyright__,
     __license__,
     pytel_tgb,
+    pytel,
     pytl,)
 from .client import (
     plugins_helper,
-    time_formatter,
-    Instagram,)
+    time_formatter,)
 from .client.autopilots import (
     auto_pilots,)
 from .client.dbase.dbMessaging import (
@@ -49,7 +48,7 @@ start()
 
 Plugins: Path = Path(__file__).parent
 ThreadLock = ThreadPoolExecutor(
-    max_workers=cpu_count() * 1,
+    max_workers=cpu_count() * 16,
     thread_name_prefix="PYTEL",
 )
 
@@ -177,6 +176,8 @@ async def runner() -> None:
     await start_asst()
     for _ in pytl:
         try:
+            if _ not in pytel._client:
+                pytel._client.append(_)
             if _.loop.is_closed():
                 _.loop.new_event_loop()
             else:
@@ -214,7 +215,7 @@ async def runner() -> None:
     for c in pytl:
         await c.loop.shutdown_asyncgens()
         c.loop.stop()
-        await _.stop()
+        await c.stop()
         await pytel_tgb.stop()
 
 
@@ -234,21 +235,10 @@ if __name__ == "__main__":
             else:
                 x.loop.create_future()
             try:
-                loopers.create_future()
-                loopers.run_until_complete(
-                    runner()
-                )
-            #                loopers.run_forever()
-            except Exception as excp:
-                x.send_log.exception(
-                    excp
-                )
-            finally:
-                x.send_log.info(
-                    "👋 See you next time !",
-                )
-                Instagram.loged_out(
-                    crash=True
-                )
-                loopers.stop()
-                exit(0)
+                if x in pytel._client:
+                    loopers.create_future()
+                    loopers.run_until_complete(
+                        starlink()
+                    )
+            except Exception:
+                pass
