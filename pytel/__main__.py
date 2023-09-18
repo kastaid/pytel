@@ -172,7 +172,7 @@ async def start_asst() -> None:
     )
 
 
-async def runner() -> None:
+async def execution() -> None:
     await start_asst()
     for _ in pytl:
         try:
@@ -238,7 +238,7 @@ if __name__ == "__main__":
                 if x in pytel._client:
                     loopers.create_future()
                     loopers.run_until_complete(
-                        starlink()
+                        execution()
                     )
             except Exception:
                 pass

@@ -59,7 +59,6 @@ async def _swipper(client, message):
             file = await client.download_media(
                 rep, "cache/"
             )
-            await _try_purged(message)
             await client.send_document(
                 chat_id=chat_id,
                 document=file,
@@ -72,7 +71,6 @@ async def _swipper(client, message):
             return
 
         else:
-            await _try_purged(message)
             return
 
     else:
@@ -84,8 +82,9 @@ async def _swipper(client, message):
     ):
         await eor(
             message,
-            text="Provide a valid link telegram!",
+            text="Provide a valid link telegram or reply to media!",
         )
+
     x = await eor(
         message,
         text="Swiper no swiping...",
@@ -387,5 +386,5 @@ async def downloads_media(
 
 
 plugins_helper["swiper"] = {
-    f"{random_prefixies(px)}swiper [link messages media/sticker/text (channel/groups)]": "To get files/text/stickers on a channel/groups. ( You must first join the target channel if channel's private )",
+    f"{random_prefixies(px)}swiper [link messages media/sticker/text (channel/groups)] / [reply to media/document]": "To get files/text/stickers on a channel/groups. ( <i>You must first join the target channel if channel's private</i> )\n\n<b>Note:</b> <i>If you reply to media/document, the file will be sent to the channel logger</i>.",
 }

@@ -296,6 +296,7 @@ async def _anti_pm_status(
             )
             is_purged = True
 
+        links_msg = f"tg://openmessage?user_id={user_info.user_id}&message_id={message.id}"
         usrnm = await client.username(
             user_id=user_info.user_id
         )
@@ -309,16 +310,21 @@ async def _anti_pm_status(
                             url=fmt,
                         ),
                     ],
+                    [
+                        buttons(
+                            "Check Message",
+                            url=links_msg,
+                        ),
+                    ],
                 ]
             )
         else:
-            fmt = f"t.me/c/{user_info.user_id}/{message.id}"
             rpm = ikmarkup(
                 [
                     [
                         buttons(
-                            "Link Message",
-                            url=fmt,
+                            "Check Message",
+                            url=links_msg,
                         ),
                     ],
                 ]
