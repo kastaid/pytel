@@ -27,6 +27,7 @@ lxml==4.9.2
 fonttools
 emoji
 httpx
+phonenumbers
 psutil
 pybase64
 Pytanggalmerah
