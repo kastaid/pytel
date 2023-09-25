@@ -30,7 +30,9 @@ from . import (
     pytel,
     replied,
     resize_media,
-    random_prefixies,)
+    random_prefixies,
+    _try_purged,
+    quotlymaker,)
 
 
 async def get_response(message, client):
@@ -751,10 +753,85 @@ async def _memify(client, message):
         return
 
 
+@pytel.instruction(
+    ["q", "quotly"],
+    outgoing=True,
+    supergroups=True,
+)
+async def _quotly_stickers(
+    client, message
+):
+    text = None
+    y = await eor(
+        message,
+        text="Checking...",
+    )
+    reply = message.reply_to_message
+    text = (
+        reply.text
+        or reply.caption
+        or reply.caption_entities
+    )
+    if not text:
+        await eor(
+            y,
+            text="Please reply to message!",
+        )
+        return
+
+    x = await eor(
+        y,
+        text="Creating...",
+    )
+
+    user = await client.get_messages(
+        message.chat.id,
+        message_ids=message.id,
+        reply_to_message_ids=reply.id,
+    )
+    res, canvas = await quotlymaker(
+        message.chat.id,
+        text,
+        reply,
+        client,
+        user,
+    )
+    if not res:
+        await eor(
+            x,
+            text="Try again later!",
+        )
+        return
+    files = (
+        f"{client.me.id}_quotly.webp"
+    )
+    canvas.save(files)
+    try:
+        await client.send_sticker(
+            message.chat.id,
+            sticker=files,
+            reply_to_message_id=replied(
+                message
+            ),
+        )
+        await _try_purged(x)
+        (Rooters / files).unlink(
+            missing_ok=True
+        )
+    except ChatSendStickersForbidden:
+        await x.edit(
+            "You can’t send stickers in this chat."
+        )
+        (Rooters / files).unlink(
+            missing_ok=True
+        )
+
+
 plugins_helper["stickers"] = {
     f"{random_prefixies(px)}sti / stickerinfo [reply to sticker]": "To get stickers information.",
     f"{random_prefixies(px)}ts / takesticker [reply to sticker/gif/photo + (emoji/not))]": "To take sticker.",
     f"{random_prefixies(px)}gst / getsticker [reply to sticker]": "Convert sticker to be Image/Photo.",
     f"{random_prefixies(px)}mmf / memify [text] & [reply to photo/sticker]": "To add text to the image/sticker.",
     f"{random_prefixies(px)}tiny [reply to sticker]": "To reduce the sticker size.",
+    f"{random_prefixies(px)}quotly / q [reply to image / reply to message]": "To create quotly.",
 }

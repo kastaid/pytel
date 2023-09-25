@@ -39,6 +39,7 @@ from .utils import (
     fetch_github,
     fetch_weather,
     fetch_ipinfo,
+    fetch_phonenumbers,
     humanboolean,
     get_blacklisted,
     get_youtube_info,
@@ -61,4 +62,5 @@ from .utils import (
     subs_like_view_format,
     making_code,
     scanner_code,
+    quotlymaker,
     tz,)

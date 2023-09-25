@@ -20,12 +20,19 @@ from typing import (
     Union,)
 from urllib.parse import (
     urlparse as urllibparse,)
+import phonenumbers
 from aiofiles import open
 from aiohttp import (
     ClientSession,
     __version__,)
 from asyncache import cached
 from cachetools import TTLCache
+from phonenumbers import (
+    geocoder,
+    carrier,
+    timezone as phtimezone,)
+from phonenumbers.carrier import (
+    _is_mobile,)
 from pytz import (
     country_timezones,
     timezone,
@@ -170,6 +177,51 @@ async def get_blacklisted(
             ids = list(res)
         break
     return set(ids)
+
+
+def fetch_phonenumbers(
+    number: Optional[str] = None,
+) -> Optional[str]:
+    text = "<b><u>PHONE NUMBER INFORMATION</b></u>\n"
+    phoneNumber = phonenumbers.parse(
+        number
+    )
+    # Using the geocoder module of phonenumbers to print the Location in console
+    yourLocation = (
+        geocoder.description_for_number(
+            phoneNumber, "id"
+        )
+    )
+    if not yourLocation:
+        return "Phone numbers invalid!"
+
+    text += f"├ <b>Numbers:</b> <code>{number}</code>\n"
+    text += f"├ <b>Country:</b> {yourLocation}\n"
+    # Using the carrier module of phonenumbers to print the service provider name in console
+    yourServiceProvider = (
+        carrier.name_for_number(
+            phoneNumber, "id"
+        )
+    )
+    text += f"├ <b>Provider:</b> {yourServiceProvider}\n"
+
+    # timezone
+    zone = phtimezone.time_zones_for_geographical_number(
+        phoneNumber
+    )
+    text += f"├ <b>Timezone:</b> {zone[0]}\n"
+
+    # is Mobile
+    mbl = _is_mobile(number)
+    if mbl:
+        text += (
+            f"└ <b>Mobile:</b> {mbl}"
+        )
+    else:
+        text += "└ <b>Mobile:</b> <code>Yes</code>\n\n"
+
+    text += "<b>Tracker by</b> ( <b><a href='https://github.com/google'>Google-libphonenumber</a></b> )"
+    return str(text)
 
 
 async def screenshots(

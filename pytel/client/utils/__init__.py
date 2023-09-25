@@ -20,6 +20,7 @@ from .fetching import (
     get_spamwatch_banned,
     get_cas_banned,
     screenshots,
+    fetch_phonenumbers,
     fetch_ipinfo,
     fetch_dns,
     fetch_github,
@@ -46,3 +47,4 @@ from .misc import (
     making_code,
     scanner_code,
     tz,)
+from .quotlymaker import quotlymaker

@@ -74,7 +74,7 @@ async def _youtube_video_dl(
         )
         return
 
-    xx = await eor(
+    xy = await eor(
         message,
         text="Processing...",
     )
@@ -89,7 +89,10 @@ async def _youtube_video_dl(
             info = get_youtube_info(
                 url=_links
             )
-            str_link = info.get("title")
+            str_link = (
+                f"{info.get('channel')} - "
+                + f"{info.get('title')}"
+            )
 
         with suppress(ValueError):
             searching = SearchVideos(
@@ -148,12 +151,12 @@ async def _youtube_video_dl(
         if video_duration > 120:
             magazine = "120"
             await eor(
-                xx,
+                xy,
                 text=f"Video longer than {video_duration} min aren't allowed.\nMust be <= {magazine} min.",
             )
             return
         xx = await eor(
-            xx,
+            xy,
             text=f"Downloading <b>{thumbn}</b>",
         )
         videof = yt_download.prepare_filename(
@@ -164,7 +167,7 @@ async def _youtube_video_dl(
         )
     except BaseException as excp:
         await eor(
-            xx,
+            xy or xx,
             text=f"YTDL Error: <pre>{excp}</pre>",
         )
         return
@@ -202,10 +205,10 @@ async def _youtube_video_dl(
             thumbnail = f"cache/{download_data['id']}.webp"
 
         video = f"cache/{download_data['id']}.mp4"
-        fx = await eor(
-            xx,
+        fx = await xx.reply(
             text="Uploading video...",
         )
+        await _try_purged(xx)
         try:
             u_time = time()
             await client.send_video(
@@ -240,13 +243,13 @@ async def _youtube_video_dl(
                     "Youtube Video",
                 ),
             )
-            await _try_purged(fx)
             (Rooters / video).unlink(
                 missing_ok=True
             )
             (
                 Rooters / thumbnail
             ).unlink(missing_ok=True)
+            await _try_purged(fx)
             return
         except BaseException as excp:
             await eor(
@@ -284,7 +287,8 @@ async def _youtube_audio_dl(
             text="Provide a valid link youtube or text result!",
         )
         return
-    xx = await eor(
+
+    xy = await eor(
         message,
         text="Processing...",
     )
@@ -298,7 +302,10 @@ async def _youtube_audio_dl(
             info = get_youtube_info(
                 url=_links
             )
-            str_link = info.get("title")
+            str_link = (
+                f"{info.get('channel')} - "
+                + f"{info.get('title')}"
+            )
 
         with suppress(BaseException):
             searching = SearchVideos(
@@ -352,12 +359,12 @@ async def _youtube_audio_dl(
         if audio_duration > 120:
             magazine = "120"
             await eor(
-                xx,
+                xy,
                 text=f"Audio longer than {audio_duration} min aren't allowed.\nMust be <= {magazine} min.",
             )
             return
         xx = await eor(
-            xx,
+            xy,
             text=f"Downloading <b>{thumbn}</b>",
         )
         audiof = yt_download.prepare_filename(
@@ -368,7 +375,7 @@ async def _youtube_audio_dl(
         )
     except BaseException as excp:
         await eor(
-            xx,
+            xy or xx,
             text=f"YTDL Error: <pre>{excp}</pre>",
         )
         return
@@ -405,10 +412,10 @@ async def _youtube_audio_dl(
             thumbnail = f"cache/{download_data['id']}.mp3.webp"
 
         audio = f"cache/{download_data['id']}.mp3.mp3"
-        fx = await eor(
-            xx,
+        fx = await xx.reply(
             text="Uploading audio...",
         )
+        await _try_purged(xx)
         try:
             u_time = time()
             await client.send_audio(
@@ -445,13 +452,13 @@ async def _youtube_audio_dl(
                     "Youtube Audio",
                 ),
             )
-            await _try_purged(fx)
             (Rooters / audio).unlink(
                 missing_ok=True
             )
             (
                 Rooters / thumbnail
             ).unlink(missing_ok=True)
+            await _try_purged(fx)
             return
         except BaseException as excp:
             await eor(

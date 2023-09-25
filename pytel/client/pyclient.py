@@ -36,6 +36,7 @@ from pyrogram.enums import (
 from pyrogram.errors.exceptions.bad_request_400 import (
     ChannelInvalid,
     MessageIdInvalid,
+    MessageNotModified,
     PersistentTimestampInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
@@ -525,9 +526,10 @@ class PytelClient(Raw):
                     return
                 except (
                     ChannelInvalid,
-                    TimeoutError,
+                    MessageNotModified,
                     PersistentTimestampInvalid,
                     PersistentTimestampOutdated,
+                    TimeoutError,
                 ):
                     pass
                 except StopPropagation:

@@ -55,27 +55,47 @@ async def eor(
 def get_text(
     message: Message,
     save_link: Optional[bool] = None,
+    get_phone: Optional[bool] = None,
     normal: Optional[bool] = None,
 ) -> Optional[str]:
-    text_ = (
-        message.text.split(None, 1)[1]
-        if len(
-            message.command,
-        )
-        != 1
-        else None
-    )
     if message.reply_to_message:
         text_ = (
             message.reply_to_message.text
             or message.reply_to_message.caption
             or message.reply_to_message.caption_entities
         )
+    else:
+        text_ = (
+            message.text.split(None, 1)[
+                1
+            ]
+            if len(
+                message.command,
+            )
+            != 1
+            else None
+        )
 
     if text_ is None:
         return False
     else:
-        if save_link:
+        if get_phone:
+            # find phone number
+            numb = findall(
+                "\\+?[1-9][0-9]{7,14}",
+                str(text_),
+            )
+            for n in numb:
+                if not n:
+                    return False
+                if not n.startswith(
+                    "+"
+                ):
+                    return f"+{int(n)}"
+                else:
+                    return str(n)
+
+        elif save_link:
             # find link
             link = findall(
                 "http[s]?://(?:[ a-zA-Z]|[0-9]|[$-_@.&+]|(?: %[0-9a-fA-F][0-9a-fA-F]))+",

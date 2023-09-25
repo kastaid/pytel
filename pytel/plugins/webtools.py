@@ -19,6 +19,7 @@ from . import (
     suppress,
     fetch_ipinfo,
     fetch_dns,
+    fetch_phonenumbers,
     time,
     progress,
     replied,
@@ -266,10 +267,51 @@ async def _domain_ns(client, message):
         await eor(x, text=dn_server)
 
 
+@pytel.instruction(
+    ["inb", "infonumber"],
+    outgoing=True,
+)
+async def _numbers_info(
+    client, message
+):
+    numb = get_text(
+        message,
+        get_phone=True,
+        save_link=False,
+        normal=False,
+    )
+    if not numb:
+        await eor(
+            message,
+            text="Provide a valid phone number!",
+        )
+        return
+    x = await eor(
+        message,
+        text="Processing...",
+    )
+    rsp = fetch_phonenumbers(numb)
+    if rsp:
+        await client.send_message(
+            message.chat.id,
+            text=rsp,
+            reply_to_message_id=replied(
+                message,
+            ),
+            disable_web_page_preview=True,
+        )
+        await _try_purged(x)
+    else:
+        await eor(
+            x, text="Try again later!"
+        )
+
+
 plugins_helper["webtools"] = {
     f"{random_prefixies(px)}webss [url]/[reply link]": "To capture the screen on the link.",
     f"{random_prefixies(px)}short_[isgd/tiny/clck] [url]/[reply link]": "To shorten your link/url.",
     f"{random_prefixies(px)}unshort [url]/[reply link]": "To un-shorten your link/url.",
     f"{random_prefixies(px)}dns / {random_prefixies(px)}domain [url]/[reply link]": "To get DNS ( Domain Name Server )",
-    f"{random_prefixies(px)}ipinfo [ip address]": "To get information IP Address.",
+    f"{random_prefixies(px)}ipinfo [ip address]": "To get Information IP Address.",
+    f"{random_prefixies(px)}inb / infonumber [numbers/reply to numbers]": "To get Information Phone Numbers. ( Tracker by Google-libphonenumber )",
 }

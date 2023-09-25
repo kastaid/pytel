@@ -56,15 +56,15 @@ async def pytasks(
                 a.loop
             ):
                 b.cancel()
-            with suppress(Exception):
-                proc = psutil.Process(
-                    getpid()
-                )
-                for _ in (
-                    proc.open_files()
-                    + proc.connections()
-                ):
-                    close(_.fd)
+        with suppress(Exception):
+            proc = psutil.Process(
+                getpid()
+            )
+            for _ in (
+                proc.open_files()
+                + proc.connections()
+            ):
+                close(_.fd)
 
         pylog.info(
             "👋 See you next time !",

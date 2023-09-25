@@ -24,6 +24,9 @@ localdb.json==1.0
 lxml==4.9.2
 
 # extended
+fonttools
+emoji
+httpx
 psutil
 pybase64
 Pytanggalmerah
@@ -50,5 +53,6 @@ youtube-search
 
 # api
 douyin-tiktok-scraper
+g4f
 openai
 instagrapi

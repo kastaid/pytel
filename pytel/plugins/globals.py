@@ -231,10 +231,22 @@ async def _lists_blacklisted(
         "<u><b>BLACKLISTED CHAT</u></b>"
     )
     for c in groups:
-        chat = await client.get_chat(
-            int(c)
-        )
-        text += f"\n├ <code>{chat.id}</code> - {chat.title}"
+        try:
+            chat = (
+                await client.get_chat(
+                    int(c)
+                )
+            )
+            text += f"\n├ <code>{chat.id}</code> - {chat.title}"
+            await sleep(1.3)
+        except FloodWait as flood:
+            await sleep(flood.value + 3)
+        except KeyError:  # removing
+            rem_blacklisted(
+                user, chat.id
+            )
+        except BaseException:
+            pass
 
     if text:
         await eor(

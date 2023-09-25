@@ -89,6 +89,7 @@ from ..client import (
     fetch_dns,
     fetch_github,
     fetch_ipinfo,
+    fetch_phonenumbers,
     mentioned,
     get_chat_ids,
     get_spamwatch_banned,
@@ -111,7 +112,8 @@ from ..client import (
     size_bytes,
     pydb,
     making_code,
-    scanner_code,)
+    scanner_code,
+    quotlymaker,)
 from ..config import (
     PREFIX as px,
     TimeZone,

@@ -6,9 +6,10 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from typing import Optional, Any
+import g4f
 import openai
 from requests import post
-from ...config import AI_KEY, AI_BASE
+from ...config import AI_KEY
 
 
 class PytelAI:
@@ -19,55 +20,56 @@ class PytelAI:
     def __init__(
         self,
         api_key: Optional[str],
-        api_base: Optional[str],
     ):
         self.api_key = api_key
-        self.api_base = api_base
 
     def text(
         self,
         query: Optional[str],
     ) -> Optional[str]:
-        openai.api_key = self.api_key
-        openai.api_base = self.api_base
         try:
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+            response = g4f.ChatCompletion.create(
+                model="gpt-4",
                 messages=[
                     {
                         "role": "user",
                         "content": f"{query}",
                     },
                 ],
+                stream=False,
             )
-            if response["choices"][0][
-                "message"
-            ]["content"]:
-                return response[
-                    "choices"
-                ][0]["message"][
-                    "content"
-                ]
+            if response:
+                return response
+        except BaseException as excp:
+            return str(excp)
 
-        except (
-            openai.error.APIError
-        ) as e:
-            if (
-                hasattr(e, "response")
-                and "detail"
-                in e.response
-            ):
-                return e.response[
-                    "detail"
-                ]
-            else:
-                return str(e)
+    #            if response["choices"][0][
+    #                "message"
+    #            ]["content"]:
+    #                return response[
+    #                    "choices"
+    #                ][0]["message"][
+    #                    "content"
+    #                ]
+
+    #        except (
+    #            openai.error.APIError
+    #        ) as e:
+    #            if (
+    #                hasattr(e, "response")
+    #                and "detail"
+    #                in e.response
+    #            ):
+    #                return e.response[
+    #                    "detail"
+    #                ]
+    #            else:
+    #                return str(e)
 
     def images(
         self, query: Optional[str]
     ):
         openai.api_key = self.api_key
-        openai.api_base = self.api_base
         try:
             response = (
                 openai.Image.create(
@@ -121,7 +123,6 @@ class PytelAI:
         type_transmitting: str = None,
     ):
         openai.api_key = self.api_key
-        openai.api_base = self.api_base
         if (
             type_transmitting
             == "transcribe"
@@ -130,7 +131,7 @@ class PytelAI:
                 audiofile, "rb"
             ) as au_f:
                 try:
-                    trans = openai.Audio.transcribe(
+                    trans = g4f.Audio.transcribe(
                         file=au_f,
                         model="whisper-1",
                         response_format="text",
@@ -167,7 +168,7 @@ class PytelAI:
                 audiofile, "rb"
             ) as au_f:
                 try:
-                    trans = openai.Audio.translate(
+                    trans = g4f.Audio.translate(
                         file=au_f,
                         model="whisper-1",
                         response_format="text",
@@ -199,5 +200,4 @@ class PytelAI:
 
 ChatGPT = PytelAI(
     api_key=AI_KEY,
-    api_base=AI_BASE,
 )

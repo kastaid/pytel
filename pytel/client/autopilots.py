@@ -6,6 +6,8 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
+from pyrogram.errors.exceptions.flood_420 import (
+    FloodWait,)
 from pyrogram.types import (
     ChatPrivileges,)
 from ..config import LOGCHAT_ID
@@ -51,7 +53,7 @@ async def auto_pilots(_, tgb) -> None:
             )
         )
         logger_id: int = channel.id
-        await sleep(1)
+        await sleep(2)
         await _.promote_chat_member(
             int(logger_id),
             b_username,
@@ -72,11 +74,13 @@ async def auto_pilots(_, tgb) -> None:
             user_id,
             int(logger_id),
         )
+        await sleep(1)
         await _.set_chat_description(
             int(logger_id),
             description=description,
         )
         pics = "resources/kastaid/pytel_logger.jpg"
+        await sleep(1)
         await _.set_chat_photo(
             int(logger_id),
             photo=pics,
@@ -86,6 +90,8 @@ async def auto_pilots(_, tgb) -> None:
             user_id=user_id,
             logger_id=logger_id,
         )
+    except FloodWait as flood:
+        await sleep(flood.value + 5)
     except BaseException as excp:
         send_log.error(excp)
 

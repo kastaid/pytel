@@ -70,9 +70,6 @@ SESSION10: Optional[str] = gets(
 AI_KEY: Optional[str] = gets(
     "AI_KEY", ""
 )
-AI_BASE: Optional[str] = gets(
-    "AI_BASE", ""
-)
 
 # Instagram Account
 IG_USN: Optional[str] = gets(
