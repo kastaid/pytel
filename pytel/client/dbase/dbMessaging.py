@@ -2,28 +2,27 @@
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
-# PLease read the GNU Affero General Public License in
+# Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from cachetools import func
+from functools import lru_cache
 from ._BaseClient import pydb
 
 
-@func.lru_cache
+@lru_cache
 def get_schedule():
     return (
         pydb.get_key("SCHEDULE") or {}
     )
 
 
-@func.lru_cache
+@lru_cache
 def get_dspam():
     return (
         pydb.get_key("DELAYSPAM") or {}
     )
 
 
-@func.lru_cache
 def check_schedule(user, chat):
     c = get_schedule()
     if c.get(int(user)):
@@ -34,7 +33,6 @@ def check_schedule(user, chat):
     return False
 
 
-@func.lru_cache
 def check_dspam(user, chat):
     c = get_dspam()
     if c.get(int(user)):
@@ -45,7 +43,6 @@ def check_dspam(user, chat):
     return False
 
 
-@func.lru_cache
 def add_schedule(user, chat):
     sch = get_schedule()
     if sch.get(int(user)):
@@ -63,7 +60,6 @@ def add_schedule(user, chat):
     pydb.set_key("SCHEDULE", sch)
 
 
-@func.lru_cache
 def cancel_schedule(user, chat):
     sch = get_schedule()
     if (
@@ -78,7 +74,6 @@ def cancel_schedule(user, chat):
         )
 
 
-@func.lru_cache
 def clear_all_schedule(user):
     sch = get_schedule()
     if sch.get(int(user)):
@@ -88,7 +83,6 @@ def clear_all_schedule(user):
         )
 
 
-@func.lru_cache
 def add_dspam(user, chat):
     sch = get_dspam()
     if sch.get(int(user)):
@@ -106,7 +100,6 @@ def add_dspam(user, chat):
     pydb.set_key("DELAYSPAM", sch)
 
 
-@func.lru_cache
 def cancel_dspam(user, chat):
     sch = get_dspam()
     if (
@@ -121,7 +114,6 @@ def cancel_dspam(user, chat):
         )
 
 
-@func.lru_cache
 def clear_all_dspam(user):
     sch = get_dspam()
     if sch.get(int(user)):
