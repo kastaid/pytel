@@ -65,6 +65,10 @@ def clean() -> None:
             "__pycache__"
         ):
             _.rmdir()
+        for _ in Path(".").rglob(
+            "cache/pip"
+        ):
+            _.rmdir()
 
 
 def lint() -> None:

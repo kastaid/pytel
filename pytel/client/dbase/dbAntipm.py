@@ -6,35 +6,42 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from typing import Optional
+from cachetools import func
 from ._BaseClient import pydb
 
 
+@func.lru_cache
 def get_antipm():
     return pydb.get_key("ANTIPM") or {}
 
 
+@func.lru_cache
 def get_pmreport():
     return (
         pydb.get_key("PMREPORT") or {}
     )
 
 
+@func.lru_cache
 def get_pmblock():
     return pydb.get_key("PMBLOCK") or {}
 
 
+@func.lru_cache
 def get_pmpurged():
     return (
         pydb.get_key("PMPURGED") or {}
     )
 
 
+@func.lru_cache
 def get_pm_media():
     return (
         pydb.get_key("PMLOGMEDIA") or {}
     )
 
 
+@func.lru_cache
 def set_antipm(
     user_id: Optional[int],
     status: Optional[str],
@@ -47,6 +54,7 @@ def set_antipm(
     )
 
 
+@func.lru_cache
 def get_antipm_status(
     user_id: Optional[int],
 ):
@@ -55,6 +63,7 @@ def get_antipm_status(
         return apm[user_id]
 
 
+@func.lru_cache
 def set_pmreport(
     user_id: Optional[int],
     status: Optional[str],
@@ -67,6 +76,7 @@ def set_pmreport(
     )
 
 
+@func.lru_cache
 def get_pmreport_status(
     user_id: Optional[int],
 ):
@@ -75,6 +85,7 @@ def get_pmreport_status(
         return apm[user_id]
 
 
+@func.lru_cache
 def set_pmblock(
     user_id: Optional[int],
     status: Optional[str],
@@ -87,6 +98,7 @@ def set_pmblock(
     )
 
 
+@func.lru_cache
 def get_pmblock_status(
     user_id: Optional[int],
 ):
@@ -95,6 +107,7 @@ def get_pmblock_status(
         return apm[user_id]
 
 
+@func.lru_cache
 def set_pmpurged(
     user_id: Optional[int],
     status: Optional[str],
@@ -107,6 +120,7 @@ def set_pmpurged(
     )
 
 
+@func.lru_cache
 def get_antipm_purged(
     user_id: Optional[int],
 ):
@@ -115,6 +129,7 @@ def get_antipm_purged(
         return apm[user_id]
 
 
+@func.lru_cache
 def set_pmlogmedia(
     user_id: Optional[int],
     status: Optional[str],
@@ -127,6 +142,7 @@ def set_pmlogmedia(
     )
 
 
+@func.lru_cache
 def get_pmlog_media(
     user_id: Optional[int],
 ):

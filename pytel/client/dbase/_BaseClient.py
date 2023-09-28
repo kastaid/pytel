@@ -8,17 +8,20 @@
 import ast
 from contextlib import suppress
 from sys import exit
+from typing import Optional
+import attrs
 from localdb import Database
 from ...logger import pylog
 
 
+@attrs.define
 class BaseDB:
     def __init__(
         self,
         *args,
         **kwargs,
     ):
-        self._cache = {}
+        self._cache: Optional[dict] = {}
 
     def get_key(self, key):
         if key in self._cache:
@@ -113,7 +116,8 @@ class Local(BaseDB):
 
     @property
     def name(self):
-        return "Local"
+        nm: str = "Local"
+        return nm
 
     @property
     def sizes(self):

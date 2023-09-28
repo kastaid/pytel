@@ -393,6 +393,7 @@ async def _anti_pm_status(
 @pytel.instruction(
     ["antipm"],
     outgoing=True,
+    supergroups=True,
 )
 async def _anti_pm(client, message):
     _ = client.me.id
@@ -472,6 +473,7 @@ Enable with: </b><code>{}antipm enable</code>
 @pytel.instruction(
     ["pmreport"],
     outgoing=True,
+    supergroups=True,
 )
 async def _antipm_report(
     client, message
@@ -550,6 +552,7 @@ Enable with: </b><code>{}pmreport enable</code>
 @pytel.instruction(
     ["pmblock"],
     outgoing=True,
+    supergroups=True,
 )
 async def _antipm_block(
     client, message
@@ -628,6 +631,7 @@ Enable with: </b><code>{}pmblock enable</code>
 @pytel.instruction(
     ["pmpurged"],
     outgoing=True,
+    supergroups=True,
 )
 async def _antipm_purged(
     client, message
@@ -704,6 +708,7 @@ Enable with: </b><code>{}pmpurged enable</code>
 @pytel.instruction(
     ["pmlogmedia"],
     outgoing=True,
+    supergroups=True,
 )
 async def _pmlog_media(client, message):
     _ = client.me.id

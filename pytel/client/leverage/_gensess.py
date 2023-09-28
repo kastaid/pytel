@@ -5,9 +5,11 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
+import attrs
 from ._inline import buttons, ikmarkup
 
 
+@attrs.define
 class AstGenerate:
     """
     GENERATE :: Session Button

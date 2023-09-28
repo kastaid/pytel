@@ -23,6 +23,7 @@ from typing import (
     List,
     Optional,
     Union,)
+from cachetools import cached
 from pyrogram import (
     Client as Raw,
     __version__,
@@ -262,6 +263,7 @@ class PytelClient(Raw):
                 & ~filters.bot
             )
 
+        @cached(cache={})
         def decorator(
             func: Callable,
         ) -> Callable:

@@ -7,7 +7,6 @@
 
 from asyncio import sleep
 from pyrogram.enums import (
-    ChatMembersFilter,
     ChatMemberStatus,)
 from pyrogram.errors import (
     UserAdminInvalid,
@@ -1001,47 +1000,54 @@ async def _zombies(client, message):
         message,
         text="finding zombie...",
     )
-    async for member in client.get_chat_members(chat.id, filter=ChatMembersFilter.SEARCH):  # type: ignore
-        if member.user.is_deleted:
+    ghost = client.get_chat_members(
+        chat_id=chat.id,
+    )
+    async for member in ghost:
+        try:
+            if (
+                member.user.first_name
+                is None
+            ):
+                x = await eor(
+                    x,
+                    text=f"Removing {len(zombie)} zombie accounts...",
+                )
+                await client.ban_chat_member(
+                    chat.id,
+                    member.user.id,
+                )
+                zombie = zombie + [
+                    member.user.id
+                ]
+                await sleep(1)
+
+        except UserAdminInvalid:
+            zombie = zombie - [
+                member.user.id
+            ]
+        except FloodWait as flood:
+            await sleep(flood.value)  # type: ignore
+            await client.ban_chat_member(
+                chat.id,
+                member.user.id,
+            )
             zombie = zombie + [
                 member.user.id
             ]
-            x = await eor(
-                x,
-                text=f"Removing {len(zombie)} zombie accounts...",
-            )
-        else:
-            pass
-        for user_id in zombie:
-            try:
-                await client.ban_chat_member(
-                    chat.id,
-                    user_id,
-                )
-                await sleep(1)
-            except UserAdminInvalid:
-                zombie = zombie - [
-                    member.user.id
-                ]
-            except FloodWait as flood:
-                await sleep(flood.value)  # type: ignore
-                await client.ban_chat_member(
-                    chat.id,
-                    user_id,
-                )
 
     if len(zombie) == 0:
         await eor(
-            x, text="zombie-clean"
+            x,
+            text="no zombies, your group is clean.",
         )
         return
 
     await eor(
         x,
-        text=f"cleaning-zombie {len(zombie)} account.",
+        text=f"has cleaned {len(zombie)} deleted (zombie) accounts.",
     )
     zombie.clear()
-    return
 
 
 plugins_helper["admins"] = {

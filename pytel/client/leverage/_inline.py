@@ -8,7 +8,7 @@
 from io import BytesIO
 from math import ceil
 from struct import unpack
-from typing import Callable
+from typing import Callable, Optional
 from asyncache import cached
 from cachetools import MRUCache
 from pyrogram.file_id import b64_decode
@@ -22,7 +22,9 @@ from ..utils import SaveDict
 class EqInlineKeyboardButton(
     InlineKeyboardButton
 ):
-    def __eq__(self, other):
+    def __eq__(
+        self, other: Optional[str]
+    ):
         return self.text == other.text
 
     def __lt__(self, other):

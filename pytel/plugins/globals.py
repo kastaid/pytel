@@ -220,16 +220,16 @@ async def _lists_blacklisted(
         text="Checking...",
     )
     user = client.me.id
-    groups = list_blacklisted(user)
+    groups = await list_blacklisted(
+        user
+    )
     if not groups:
         await eor(
             x,
             text="You don't have a blacklisted.",
         )
         return
-    text = (
-        "<u><b>BLACKLISTED CHAT</u></b>"
-    )
+    text = f"<u><b>BLACKLISTED CHAT</u></b> ( {len(groups)} )"
     for c in groups:
         try:
             chat = (
@@ -289,7 +289,7 @@ async def _global_broadcast(
             attempts=6,
             fallbacks=GCAST_BLACKLIST,
         )
-        dbl = list_blacklisted(
+        dbl = await list_blacklisted(
             user_lock
         )
         lsted = []
@@ -314,12 +314,13 @@ async def _global_broadcast(
             return
         else:
             send = get_text(message)
+        _GCAST_LOCKED.add(user_lock)
+        gpc = client.get_dialogs()
         aa = await eor(
             message,
             text="💬 Start a live broadcast message to groups..",
         )
-        _GCAST_LOCKED.add(user_lock)
-        async for gg in client.get_dialogs():
+        async for gg in gpc:
             if gg.chat.type in [
                 ChatType.GROUP,
                 ChatType.SUPERGROUP,
@@ -398,7 +399,7 @@ async def _global_broadcast(
             + "</code> groups.\n"
             + " └ <b>Failed:</b> <code>"
             + s2
-            + "</code> groups.\n\n(c) @kastaid #pytel"
+            + "</code> groups.\n\n(c) kastaid #pytel"
         )
         await client.send_message(
             int(message.chat.id),
@@ -463,12 +464,13 @@ async def _global_user_broadcast(
             return
         else:
             send = get_text(message)
+        _GUCAST_LOCKED.add(user_lock)
+        gpc = client.get_dialogs()
         aa = await eor(
             message,
             text="💬 Start a live broadcast message to users..",
         )
-        _GUCAST_LOCKED.add(user_lock)
-        async for gg in client.get_dialogs():
+        async for gg in gpc:
             if gg.chat.type in [
                 ChatType.PRIVATE,
             ]:
@@ -537,7 +539,7 @@ async def _global_user_broadcast(
             + "</code> users.\n"
             + " └ <b>Failed:</b> <code>"
             + s2
-            + "</code> users.\n\n(c) @kastaid #pytel"
+            + "</code> users.\n\n(c) kastaid #pytel"
         )
         await client.send_message(
             int(message.chat.id),

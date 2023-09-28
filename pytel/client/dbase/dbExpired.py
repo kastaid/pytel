@@ -2,16 +2,26 @@
 # Copyright (C) 2023-present kastaid
 #
 # This file is a part of < https://github.com/kastaid/pytel/ >
-# PLease read the GNU Affero General Public License in
+# Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from datetime import datetime, timedelta
+from time import perf_counter
 from typing import Optional, Any
+from asyncache import cached
+from cachetools import TTLCache, func
 from ..utils import tz
 from ._BaseClient import pydb
 
 
-def countdown_to_datetime(
+@cached(
+    TTLCache(
+        maxsize=1024,
+        ttl=60,
+        timer=perf_counter,
+    )
+)  # 60 seconds
+async def countdown_to_datetime(
     expired: Any,
 ) -> Optional[str]:
     days = expired.days
@@ -50,10 +60,12 @@ def countdown_to_datetime(
     return str(result)
 
 
+@func.lru_cache
 def user_expired():
     return pydb.get_key("EXP_DT") or {}
 
 
+@func.lru_cache
 def set_expired_days(
     user_id: Optional[int],
     duration,
@@ -61,6 +73,7 @@ def set_expired_days(
     days_in_month = 1
     if duration <= 12:
         days_in_month = 30 * duration
+
     expire_date = datetime.now(
         tz
     ).replace(microsecond=0).replace(
@@ -78,6 +91,13 @@ def set_expired_days(
     )
 
 
+@cached(
+    TTLCache(
+        maxsize=1024,
+        ttl=60,
+        timer=perf_counter,
+    )
+)  # 60 seconds
 async def get_expired_date(
     user_id,
 ) -> str:
@@ -91,6 +111,7 @@ async def get_expired_date(
                 None,
                 None,
             )
+
         yy = datetime.strptime(
             str(xx),
             "%Y-%m-%d %H:%M:%S",
@@ -98,16 +119,16 @@ async def get_expired_date(
         expired = yy - datetime.now(
             tz
         ).replace(tzinfo=None)
-        #        formatext = f"{expired.days}d {expired.seconds//3600}h {(expired.seconds//60)%60}m"
         return (
             yy,
-            countdown_to_datetime(
+            await countdown_to_datetime(
                 expired
             ),
         )
     return None, None
 
 
+@func.lru_cache
 def rem_expired(
     user_id,
 ):
