@@ -7,6 +7,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
 from .apichatgpt import ChatGPT
+from .apicrypto import fetch_crypto
 from .apilyrics import (
     LyricsEngine as LE,)
 from .apisocialmedia import (

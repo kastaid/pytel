@@ -173,6 +173,7 @@ logs/*.log
 pytel.json
 
 # pytel media
+*.webp
 *.m4a
 *.mp4
 *.mp3

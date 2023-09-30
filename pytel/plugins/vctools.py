@@ -6,11 +6,13 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import gather
-from random import randint
 from threading import RLock
 from pyrogram.raw.functions.phone import (
     CreateGroupCall,
-    DiscardGroupCall,)
+    DiscardGroupCall,
+    EditGroupCallTitle,)
+from pyrogram.raw.types import (
+    InputPeerChannel,)
 from . import (
     Rooters,
     eor,
@@ -57,7 +59,9 @@ async def _video_chats_start(
     )
     title = get_text(message)
     chat_id = message.chat.id
-
+    peer = await client.resolve_peer(
+        chat_id
+    )
     try:
         group_call = (
             await client.get_group_call(
@@ -76,14 +80,12 @@ async def _video_chats_start(
             text = f"<b><u>{message.chat.title}</u></b>\n└ <b>Video chats started</b>"
             await client.invoke(
                 CreateGroupCall(
-                    peer=(
-                        await client.resolve_peer(
-                            chat_id
-                        )
+                    peer=InputPeerChannel(
+                        channel_id=peer.channel_id,
+                        access_hash=peer.access_hash,
                     ),
-                    random_id=randint(
-                        10000, 999999999
-                    ),
+                    random_id=client.rnd_id()
+                    // 9000000000,
                 )
             )
             await eor(x, text=text)
@@ -92,14 +94,12 @@ async def _video_chats_start(
             text = f"<b><u>{message.chat.title}</u></b>\n├ <b>Video chats started</b>\n└ <b>Title:</b> {title}"
             await client.invoke(
                 CreateGroupCall(
-                    peer=(
-                        await client.resolve_peer(
-                            chat_id
-                        )
+                    peer=InputPeerChannel(
+                        channel_id=peer.channel_id,
+                        access_hash=peer.access_hash,
                     ),
-                    random_id=randint(
-                        10000, 999999999
-                    ),
+                    random_id=client.rnd_id()
+                    // 9000000000,
                     title=title,
                 )
             )
@@ -153,6 +153,65 @@ async def _video_chats_stop(
         )
     )
     text = f"<u><b>{message.chat.title}</b></u>\n└ <b>Video chats has been stopped.</b>"
+    await eor(x, text=text)
+
+
+@pytel.instruction(
+    ["titlevc", "tvc"],
+    outgoing=True,
+    supergroups=True,
+    privileges=[
+        "can_manage_video_chats"
+    ],
+)
+async def _video_chats_settitle(
+    client, message
+):
+    title = get_text(
+        message, normal=True
+    )
+    if not title:
+        await eor(
+            message,
+            text="Gimme a text to setup video chats title.",
+        )
+        return
+
+    if len(title) > 40:
+        await eor(
+            message,
+            text="The title is too long, it cannot be more than 40 characters.",
+        )
+        return
+
+    x = await eor(
+        message,
+        text="Setup title video chats...",
+    )
+    if not (
+        group_call := (
+            await client.get_group_call(
+                message
+            )
+        )
+    ):
+        await eor(
+            x,
+            text="Video chats not available.",
+        )
+        return
+
+    await client.invoke(
+        EditGroupCallTitle(
+            call=group_call,
+            title=title,
+        )
+    )
+    text = f"""
+<u><b>{message.chat.title}</b></u>
+├ <b><u>Video Chat Title</b></u>
+└ <b>Title:</b> {title}
+"""
     await eor(x, text=text)
 
 
@@ -655,4 +714,5 @@ plugins_helper["vctools"] = {
     f"{random_prefixies(px)}infovc / ivc [url/link message/username/id or not]": "To get information video chats/channel.",
     f"{random_prefixies(px)}mutevc / mvc [id/username/reply to user]": "To Muting user in video chats.",
     f"{random_prefixies(px)}unmutevc / umvc [id/username/reply to user]": "To Unmuting user in video chats.",
+    f"{random_prefixies(px)}titlevc / tvc [text/reply to message]": "To setup video chats title.",
 }

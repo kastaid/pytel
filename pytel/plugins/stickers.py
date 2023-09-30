@@ -818,6 +818,7 @@ async def _quotly_stickers(
         (Rooters / files).unlink(
             missing_ok=True
         )
+        return
     except ChatSendStickersForbidden:
         await x.edit(
             "You can’t send stickers in this chat."

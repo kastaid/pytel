@@ -2,7 +2,18 @@
 > with asynchronous I/O - Python 3 MTProto library to interact with Telegram's API.
 
 ### Fitures
-  * Multi client `SESSION`
+  * Multi Client `SESSION`
+  * ChatGPT `Open AI`
+  * Managing Group. `( Telegram )`
+  * Social Media. `( Searching & Downloader )`
+      <kbd>
+          Downloader:
+          Instagram/Tiktok/Youtube/Pinterest
+      </kbd>
+      <kbd>
+          Searching:
+          Google/Instagram/Tiktok/Youtube/Github etc.
+      </kbd>
 
 ### Get Session `Pyrogram`
     python3 -m pygen
@@ -12,8 +23,23 @@
   <kbd>
 Copy file sample.env or rename to config.env
   </kbd>
-  
+
     cp sample.env config.env
+
+### Build ( Advanced Package Tool )
+  <kbd>
+Perform this command to install the package.
+  </kbd>
+
+    apt-get install -y --no-install-recommends \
+        wget curl git python3-dev \
+        python3-pip python3-venv \
+        python3-testresources python2-dev \
+        python3-libxml2 gcc g++ \
+        pkg-config build-essential \
+        ffmpeg libavformat-dev libavcodec-dev \
+        libavdevice-dev libavutil-dev libswscale-dev \
+        libswresample-dev libavfilter-dev libzbar0 linux-libc-dev
 
 ### Guide Command ›_
   * <strong>Install requirements:</strong>

@@ -35,6 +35,7 @@ from .utils import (
     LE,
     Memify,
     fetch_adzan,
+    fetch_crypto,
     fetch_dns,
     fetch_github,
     fetch_weather,

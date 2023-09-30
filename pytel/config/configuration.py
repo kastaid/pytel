@@ -34,36 +34,36 @@ TimeZone: Optional[str] = gets(
     "TimeZone", ""
 )
 SESSION1: Optional[str] = gets(
-    "SESSION1", ""
+    "SESSION1", None
 )
 
 # Multi Client
 SESSION2: Optional[str] = gets(
-    "SESSION2", ""
+    "SESSION2", None
 )
 SESSION3: Optional[str] = gets(
-    "SESSION3", ""
+    "SESSION3", None
 )
 SESSION4: Optional[str] = gets(
-    "SESSION4", ""
+    "SESSION4", None
 )
 SESSION5: Optional[str] = gets(
-    "SESSION5", ""
+    "SESSION5", None
 )
 SESSION6: Optional[str] = gets(
-    "SESSION6", ""
+    "SESSION6", None
 )
 SESSION7: Optional[str] = gets(
-    "SESSION7", ""
+    "SESSION7", None
 )
 SESSION8: Optional[str] = gets(
-    "SESSION8", ""
+    "SESSION8", None
 )
 SESSION9: Optional[str] = gets(
-    "SESSION9", ""
+    "SESSION9", None
 )
 SESSION10: Optional[str] = gets(
-    "SESSION10", ""
+    "SESSION10", None
 )
 
 # ChatGPT API_KEY

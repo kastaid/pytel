@@ -45,7 +45,7 @@ async def _mention_all(client, message):
         return
 
     chat_id = message.chat.id
-    tx = get_text(message)
+    tx = get_text(message, normal=True)
     if not tx:
         await eor(
             message,
