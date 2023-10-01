@@ -38,6 +38,7 @@ from pyrogram.raw.functions import (
 from pytelibs import (
     _chpytel,
     _supersu,
+    DEFAULT_SHELL_BLACKLISTED,
     GCAST_BLACKLIST,
     GUCAST_BLACKLIST,
     _GCAST_LOCKED,

@@ -41,6 +41,8 @@ from pyrogram.errors.exceptions.bad_request_400 import (
     PersistentTimestampInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
+from pyrogram.errors.exceptions.forbidden_403 import (
+    ChatWriteForbidden,)
 from pyrogram.errors.exceptions.internal_server_error_500 import (
     PersistentTimestampOutdated,)
 from pyrogram.filters import Filter
@@ -521,6 +523,16 @@ class PytelClient(Raw):
                         client,
                         message,
                     )
+                except (
+                    FloodWait
+                ) as excp:
+                    await sleep(
+                        excp.value + 10
+                    )
+                    await func(
+                        client,
+                        message,
+                    )
                 except MessageIdInvalid:
                     await message.reply(
                         "Message command not found. Please don't delete the command message."
@@ -532,6 +544,7 @@ class PytelClient(Raw):
                     PersistentTimestampInvalid,
                     PersistentTimestampOutdated,
                     TimeoutError,
+                    ChatWriteForbidden,
                 ):
                     pass
                 except StopPropagation:
@@ -540,16 +553,6 @@ class PytelClient(Raw):
                     ContinuePropagation
                 ):
                     raise ContinuePropagation
-                except (
-                    FloodWait
-                ) as excp:
-                    await sleep(
-                        excp.value + 5
-                    )
-                    await func(
-                        client,
-                        message,
-                    )
                 except (
                     Exception
                 ) as excp:
@@ -574,6 +577,8 @@ class PytelClient(Raw):
                         )
                         format_text += "\n\n<b>Evidence ⬇️ </b>"
                         format_text += f"\n\n👤 User: {await mentioned(client, user_id=user_id, use_html=True)}"
+                        format_text += f"\nGroup Name: {message.chat.title}"
+                        format_text += f"\nGroup ID: <code>{message.chat.id}</code>"
                         format_text += (
                             "\n\n<b>🖐🏻 Event Trigger:</b> <code>"
                             + str(
@@ -589,7 +594,7 @@ class PytelClient(Raw):
                             + "</code>"
                         )
                         format_text += (
-                            "\n\n<b>🚨 Error text:</b> <code>"
+                            "\n\n<b>🚨 Crux of the matter ( Issue ) :</b> <code>"
                             + str(
                                 exc_info()[
                                     1
@@ -598,12 +603,12 @@ class PytelClient(Raw):
                             + "</code>"
                         )
                         format_text += "\n\n<code>======</code> <u>History Commit</u> <code>======</code>"
-                        format_text += "\n\n<b>Last 4 Commit:</b> \n"
+                        format_text += "\n\n<b>Last 3 Commit:</b> \n"
                         (
                             stdout,
                             stderr,
                         ) = RunningCommand(
-                            'git log --pretty=format:"%an: %s" -4'
+                            'git log --pretty=format:"%an: %s" -3'
                         )
                         result = str(
                             stdout

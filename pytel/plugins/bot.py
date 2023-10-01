@@ -212,8 +212,8 @@ DATABASE ( PYTEL-Premium )
 • Database Type: {pydb.name}
 • Database Size: {sz}
 • Database Table Contents:
-  - Table: {c_keys}
-  - Contents: {contents}
+  › Table: {c_keys}
+  › Contents: {contents}
 
 Copyright (C) 2023-present @kastaid
 """

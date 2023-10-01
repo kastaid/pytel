@@ -35,7 +35,7 @@ Perform this command to install the package.
         wget curl git python3-dev \
         python3-pip python3-venv \
         python3-testresources python2-dev \
-        python3-libxml2 gcc g++ \
+        python3-libxml2 gcc g++ neofetch \
         pkg-config build-essential \
         ffmpeg libavformat-dev libavcodec-dev \
         libavdevice-dev libavutil-dev libswscale-dev \
