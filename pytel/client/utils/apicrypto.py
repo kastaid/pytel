@@ -40,20 +40,40 @@ def fetch_crypto(
     if not resp["data"]["coins"]:
         return f"Can't Fetching data for {coin.upper()}"
 
-    text = f"#{coin.upper()} ( Market Cap )\n"
+    high, low = None, None
+    percent = resp["data"]["coins"][0][
+        "change"
+    ]
+    if not percent.startswith("-"):
+        percent = "+" + percent
+    else:
+        pass
+    text = f"<b>#{coin.upper()} ( <a href='{resp['data']['coins'][0]['coinrankingUrl']}'>Market Cap</a> )</b> | <code>{percent}%</code>\n<pre>"
     text += f"Rank: {int(resp['data']['coins'][0]['rank'])}\n"
-    price: Union[int, float] = resp[
+    price_now: Union[int, float] = resp[
         "data"
     ]["coins"][0]["price"]
-    price = crypto_format(price)
-    text += f"USD Price: ${price}\n"
+    price = crypto_format(price_now)
+    text += f"Price to USD: ${price}\n"
     if resp["data"]["coins"][0][
         "btcPrice"
     ]:
         btcprice = resp["data"][
             "coins"
         ][0]["btcPrice"]
-        text += f"BTC Price: {crypto_format(btcprice)} ₿\n"
+        text += f"Price to BTC: {crypto_format(btcprice)} ₿\n"
     text += f"Market Cap: ${crypto_format(int(resp['data']['coins'][0]['marketCap']))}\n"
-    text += f"Volume 24 Hours: ${crypto_format(int(resp['data']['coins'][0]['24hVolume']))} | {resp['data']['coins'][0]['change']}%"
+    text += f"Volume 24 Hours: ${crypto_format(int(resp['data']['coins'][0]['24hVolume']))}\n"
+    high = max(
+        resp["data"]["coins"][0][
+            "sparkline"
+        ]
+    )
+    low = min(
+        resp["data"]["coins"][0][
+            "sparkline"
+        ]
+    )
+    text += f"Price High: ${crypto_format(high)}\n"
+    text += f"Price Low: ${crypto_format(low)}</pre>"
     return text

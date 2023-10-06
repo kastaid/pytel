@@ -94,7 +94,9 @@ async def _bash_script(client, message):
         return
     stdout, stderr = RunningCommand(cmd)
     err, out = "", ""
-    result = " <b>⟩ <u>Unix Shell</u></b>\n"
+    result = (
+        " <b>⟩ <u>Unix Shell</u></b>\n"
+    )
     result += (
         f"Command: <pre>{cmd}</pre>\n\n"
     )

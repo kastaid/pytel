@@ -23,13 +23,13 @@ class PytelAI:
     ):
         self.api_key = api_key
 
-    def text(
+    async def text(
         self,
         query: Optional[str],
     ) -> Optional[str]:
         try:
-            response = g4f.ChatCompletion.create(
-                model="gpt-4",
+            response = await g4f.ChatCompletion.create_async(
+                model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "user",

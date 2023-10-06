@@ -51,6 +51,7 @@ async def _crypto_charts(
             reply_to_message_id=replied(
                 message
             ),
+            disable_web_page_preview=True,
         )
         return await _try_purged(x, 1.5)
 

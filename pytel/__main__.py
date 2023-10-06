@@ -48,7 +48,7 @@ start()
 
 Plugins: Path = Path(__file__).parent
 ThreadLock = ThreadPoolExecutor(
-    max_workers=cpu_count() * 16,
+    max_workers=cpu_count() * 64,
     thread_name_prefix="PYTEL",
 )
 
@@ -240,5 +240,7 @@ if __name__ == "__main__":
                     loopers.run_until_complete(
                         execution()
                     )
-            except Exception:
-                pass
+            except Exception as excp:
+                send_log.exception(excp)
+#            finally:
+#                loopers.close()

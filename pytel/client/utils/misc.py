@@ -75,6 +75,7 @@ async def mentioned(
     user_id,
     use_html: bool = None,
 ) -> str:
+    is_user = False
     sep: str = ""
     try:
         user = await client.get_users(
@@ -86,8 +87,18 @@ async def mentioned(
             and f"{sep}{user.first_name} {user.last_name}"
             or f"{sep}{user.first_name}"
         )
+        is_user = True
     except BaseException:
-        fname = "Anonymous"
+        try:
+            chats = (
+                await client.get_chat(
+                    user_id
+                )
+            )
+            fname = chats.title
+        except BaseException:
+            fname = "Anonymous"
+            is_user = True
 
     fullname = " ".join(
         replace_all(
@@ -97,17 +108,30 @@ async def mentioned(
             _CHARACTER_NAMES,
         ).split()
     )
-    if use_html:
-        return "<a href=tg://user?id={}>➦{}</a>".format(
-            user_id,
+    if is_user:
+        if use_html:
+            return "<a href=tg://user?id={}>➦{}</a>".format(
+                user_id,
+                fullname,
+            )
+        return "[➦{}](tg://user?id={})".format(
             fullname,
-        )
-    return (
-        "[➦{}](tg://user?id={})".format(
-            fullname,
             user_id,
         )
-    )
+    else:
+        if str(user_id).startswith("-"):
+            user_id = str(
+                user_id
+            ).replace("-100", "")
+        if use_html:
+            return "<a href=t.me/c/{}/1?single&thread=>➦{}</a>".format(
+                int(user_id),
+                fullname,
+            )
+        return "[➦{}](t.me/c/{}/1?single&thread=)".format(
+            fullname,
+            int(user_id),
+        )
 
 
 def short_dict(
@@ -495,7 +519,9 @@ def making_code(
     return output
 
 
-def scanner_code(files, type_file: str):
+async def scanner_code(
+    files, type_file: str
+):
     image = cv2.imread(files)
     image = cv2.resize(
         image, (640, 850)

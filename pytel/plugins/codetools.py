@@ -61,22 +61,40 @@ async def _base64_en_de(
     criteria, lething = None, None
     if message.command[0] == "encode":
         criteria = "Base64 Encode"
-        lething = str(
-            b64encode(
-                bytes(str_data, "utf-8")
+        try:
+            lething = str(
+                b64encode(
+                    bytes(
+                        str_data,
+                        "utf-8",
+                    )
+                )
+            )[2:]
+        except BaseException as excp:
+            await eor(
+                x,
+                text=f"{excp}",
             )
-        )[2:]
+            return
 
     elif message.command[0] == "decode":
         criteria = "Base64 Decode"
-        lething = str(
-            b64decode(
-                bytes(
-                    str_data, "utf-8"
+        try:
+            lething = str(
+                b64decode(
+                    bytes(
+                        str_data,
+                        "utf-8",
+                    ),
+                    validate=True,
                 ),
-                validate=True,
-            ),
-        )[2:]
+            )[2:]
+        except BaseException as excp:
+            await eor(
+                x,
+                text=f"{excp}",
+            )
+            return
 
     if lething and criteria:
         await eor(
@@ -266,6 +284,7 @@ async def _scanning_code(
         )
         return
 
+    type_file = ""
     y = await eor(
         message,
         text="Checking...",
@@ -274,7 +293,7 @@ async def _scanning_code(
         type_file = "images"
         file = (
             await client.download_media(
-                rep.photo
+                rep.photo, "cache/"
             )
         )
     elif (
@@ -284,7 +303,8 @@ async def _scanning_code(
         type_file = "sticker"
         file = (
             await client.download_media(
-                rep.sticker.file_id
+                rep.sticker.file_id,
+                "cache/",
             )
         )
     else:
@@ -298,7 +318,10 @@ async def _scanning_code(
         y,
         text="Scanning...",
     )
-    data = scanner_code(file, type_file)
+    data = await scanner_code(
+        files=file,
+        type_file=type_file,
+    )
     if data:
         await client.send_message(
             message.chat.id,

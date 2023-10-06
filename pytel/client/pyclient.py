@@ -19,7 +19,6 @@ from traceback import format_exc as fmex
 from typing import (
     Any,
     Callable,
-    Coroutine,
     List,
     Optional,
     Union,)
@@ -710,31 +709,19 @@ class PytelClient(Raw):
         if user.username:
             return str(user.username)
 
-    def run_in_loop(
-        self,
-        catch: Coroutine[
-            Any,
-            Any,
-            None,
-        ],
-    ) -> Any:
-        with suppress(TimeoutError):
-            return self.loop.run_until_complete(
-                catch
-            )
-
     async def notify_login(
         self,
     ):
-        x = await self.user_fullname(
-            user_id=self.me.id
-        )
-        self.send_log.success(
-            f"Started on {x}"
-        )
-        self.send_log.info(
-            f"Preparing plugins for {x}"
-        )
+        with suppress(Exception):
+            x = await self.user_fullname(
+                user_id=self.me.id
+            )
+            self.send_log.success(
+                f"Started on {x}"
+            )
+            self.send_log.info(
+                f"Preparing plugins for {x}"
+            )
 
     async def _copyright(
         self,

@@ -12,6 +12,9 @@ from re import findall, search
 from typing import Optional, Union, Any
 from pyrogram.enums import (
     MessageEntityType,)
+from pyrogram.raw.types import (
+    InputPeerChat,
+    InputPeerChannel,)
 from pyrogram.types import Message
 
 
@@ -177,9 +180,35 @@ async def extract_userid(
 
     entities = message.entities
     if len(entities) < 2:
-        return (
-            await client.get_users(text)
-        ).id
+        try:
+            users = (
+                await client.get_users(
+                    text
+                )
+            ).id
+            return users
+        except BaseException:
+            text = "-100" + text
+            try:
+                peer = await client.resolve_peer(
+                    int(text)
+                )
+            except BaseException:
+                return False
+
+            if isinstance(
+                peer,
+                (InputPeerChat,),
+            ):
+                users = peer.chat_id
+                return users
+            if isinstance(
+                peer,
+                (InputPeerChannel,),
+            ):
+                users = peer.channel_id
+                return users
+
     entity = entities[1]
     if (
         entity.type
@@ -193,7 +222,7 @@ async def extract_userid(
         == MessageEntityType.TEXT_MENTION
     ):
         return entity.user.id
-    return None
+    return False
 
 
 async def user_and_reason(
@@ -218,7 +247,7 @@ async def user_and_reason(
                     reply.sender_chat.id
                 )
             else:
-                return None, None
+                return False, False
         else:
             id_ = reply.from_user.id
 

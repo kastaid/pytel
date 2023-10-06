@@ -6,7 +6,10 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
+from .checker import check_pypi_version
 from .logger import pylog as send_log
+
+check_pypi_version()
 
 try:
     from asyncio import (

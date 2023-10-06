@@ -93,7 +93,7 @@ async def _reported(client, message):
     if not user:
         await eor(
             message,
-            text="I can't find that user.",
+            text="I can't find that user/channel.",
         )
         return
     if (user in list(_supersu)) or (
@@ -104,14 +104,31 @@ async def _reported(client, message):
             text="That's My Developer.",
         )
         return
+    else:
+        pass
 
     x = await eor(
         message,
         text="</b>Reporting . . .</b>",
     )
-    user_info = (
-        await client.resolve_peer(user)
-    )
+    try:
+        user_info = (
+            await client.resolve_peer(
+                int(user)
+            )
+        )
+    except BaseException:
+        try:
+            user_info = await client.resolve_peer(
+                int(user)
+            )
+        except BaseException:
+            await eor(
+                message,
+                text="I can't find that user/channel.",
+            )
+            return
+
     rsn = (
         reason.lower()
         if reason
@@ -178,5 +195,5 @@ async def _reported(client, message):
 
 
 plugins_helper["reports"] = {
-    f"{random_prefixies(px)}report [id/username/reply to user] [reason: abuse/copyright/fake/spam/porn/geogroup/violence/other]": "To reports user/group/channel & give the reason.",
+    f"{random_prefixies(px)}report [id/username/reply to user/channel] [reason: abuse/copyright/fake/spam/porn/geogroup/violence/other]": "To reports user/channel & give the reason.",
 }

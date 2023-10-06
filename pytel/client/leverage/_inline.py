@@ -9,8 +9,7 @@ from io import BytesIO
 from math import ceil
 from struct import unpack
 from typing import Callable, Optional
-from asyncache import cached
-from cachetools import MRUCache
+from cachetools import cached
 from pyrogram.file_id import b64_decode
 from pyrogram.types import (
     InlineKeyboardButton,
@@ -129,6 +128,10 @@ def plugins_button(
                         plugins_page,
                     ),
                 ),
+                buttons(
+                    "ᴄʟᴏꜱᴇ",
+                    callback_data="menu_close",
+                ),
                 EqInlineKeyboardButton(
                     " ►",
                     callback_data="{}_next({})".format(
@@ -142,11 +145,7 @@ def plugins_button(
     return get_plugins
 
 
-@cached(
-    MRUCache(
-        maxsize=1024,
-    ),
-)
+@cached(cache={})
 def unpack_inline(
     inline_message_id: str,
 ) -> Callable:
@@ -165,12 +164,15 @@ def unpack_inline(
             "=iiiq",
             b.read(),
         )
-        peer = int(
-            str(pid).replace(
-                "-",
-                "-100",
+        if str(pid).startswith("-"):
+            peer = int(
+                str(pid).replace(
+                    "-", "-100"
+                )
             )
-        )
+        else:
+            peer = int(str(pid))
+
         _ = {
             "dc_id": dc_id,
             "message_id": message_id,

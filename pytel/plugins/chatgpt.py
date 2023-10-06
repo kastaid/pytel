@@ -43,7 +43,7 @@ async def _openai(client, message):
             message,
             text="currently submitting a request...",
         )
-        resp = ChatGPT.text(args)
+        resp = await ChatGPT.text(args)
         if resp:
             answer = f"<b>Question:</b> {args}\n\n<b>Answers:</b>\n{resp}"
             if len(answer) >= 4096:

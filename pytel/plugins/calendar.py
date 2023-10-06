@@ -283,6 +283,17 @@ async def _calendar(client, message):
                 2,
                 1,
             )
+        else:
+            exam = calendar_command()
+            await message.reply(
+                "{}".format(str(exam)),
+                parse_mode=ParseMode.HTML,
+                disable_notification=True,
+            )
+            return await _try_purged(
+                message,
+                3.5,
+            )
 
     except BaseException:
         exam = calendar_command()

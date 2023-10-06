@@ -17,6 +17,7 @@ from . import (
     random_prefixies,
     eor,
     attr_file,
+    mentioned,
     get_spamwatch_banned,
     get_cas_banned,
     extract_user,)
@@ -31,19 +32,29 @@ async def _ids(client, message):
 
     if chat_type == ChatType.PRIVATE:
         user_id = message.chat.id
-        get_u = await client.get_users(
-            user_id
+        get_u = await mentioned(
+            client,
+            user_id,
+            use_html=True,
         )
-        dc_id = (
-            get_u.dc_id
-            if get_u.dc_id
-            else "N/A"
-        )
-        check_u = (
-            "BOT"
-            if get_u.is_bot
-            else "USER"
-        )
+        try:
+            dc_id = (
+                "N/A"
+                if not get_u.dc_id
+                else get_u.dc_id
+            )
+        except BaseException:
+            dc_id = "N/A"
+
+        try:
+            check_u = (
+                "BOT"
+                if get_u.is_bot
+                else "USER"
+            )
+        except BaseException:
+            check_u = "PRIVATE"
+
         text = """
 <b><u>{}</b></u>
  ├ <b>Profile</b>: {}
@@ -51,7 +62,7 @@ async def _ids(client, message):
  └ <b>DC ID</b>: <code>{}</code>
 """.format(
             check_u,
-            get_u.mention,
+            get_u,
             user_id,
             dc_id,
         )
@@ -62,21 +73,29 @@ async def _ids(client, message):
         return
 
     elif chat_type == ChatType.CHANNEL:
-        dc_id = (
-            message.sender_chat.dc_id
-            if message.sender_chat.dc_id
-            else "N/A"
-        )
+        try:
+            dc_id = (
+                message.sender_chat.dc_id
+                if message.sender_chat.dc_id
+                else "N/A"
+            )
+        except BaseException:
+            dc_id = "N/A"
+
         channel_id = (
             message.sender_chat.id
         )
         text = """
 <b><u>CHANNEL</b></u>
- ├ <b>Name</b>: {}
+ ├ <b>Profile</b>: {}
  ├ <b>ID</b>: <code>{}</code>
  └ <b>DC ID</b>: <code>{}</code>
 """.format(
-            message.sender_chat.title,
+            await mentioned(
+                client,
+                message.sender_chat.id,
+                use_html=True,
+            ),
             channel_id,
             dc_id,
         )
@@ -90,28 +109,40 @@ async def _ids(client, message):
         ChatType.GROUP,
         ChatType.SUPERGROUP,
     ]:
-        dc_id = (
-            message.chat.dc_id
-            if message.chat.dc_id
-            else "N/A"
-        )
+        try:
+            dc_id = (
+                message.chat.dc_id
+                if message.chat.dc_id
+                else "N/A"
+            )
+        except BaseException:
+            dc_id = "N/A"
+
         text = ""
         text += """
 <b><u>GROUP</u></b>
- ├ <b>Name</b>: {}
+ ├ <b>Profile</b>: {}
  ├ <b>ID</b>: <code>{}</code>
  └ <b>DC ID</b>: <code>{}</code>
 """.format(
-            message.chat.title,
+            await mentioned(
+                client,
+                message.chat.id,
+                use_html=True,
+            ),
             message.chat.id,
             dc_id,
         )
         if message.reply_to_message:
-            dc_id = (
-                message.reply_to_message.from_user.dc_id
-                if message.reply_to_message.from_user.dc_id
-                else "N/A"
-            )
+            try:
+                dc_id = (
+                    message.reply_to_message.from_user.dc_id
+                    if message.reply_to_message.from_user.dc_id
+                    else "N/A"
+                )
+            except BaseException:
+                dc_id = "N/A"
+
             check_u = (
                 "BOT"
                 if message.reply_to_message.from_user.is_bot
@@ -124,7 +155,11 @@ async def _ids(client, message):
  └ <b>DC ID</b>: <code>{}</code>
 """.format(
                 check_u,
-                message.reply_to_message.from_user.mention,
+                await mentioned(
+                    client,
+                    message.reply_to_message.from_user.id,
+                    use_html=True,
+                ),
                 message.reply_to_message.from_user.id,
                 dc_id,
             )
@@ -140,11 +175,15 @@ async def _ids(client, message):
                     get_file.file_id,
                 )
         else:
-            dc_id = (
-                message.from_user.dc_id
-                if message.from_user.id
-                else "N/A"
-            )
+            try:
+                dc_id = (
+                    message.from_user.dc_id
+                    if message.from_user.id
+                    else "N/A"
+                )
+            except BaseException:
+                dc_id = "N/A"
+
             check_u = (
                 "BOT"
                 if message.from_user.is_bot
@@ -157,7 +196,11 @@ async def _ids(client, message):
  └ <b>DC ID</b>: <code>{}</code>
 """.format(
                 check_u,
-                message.from_user.mention,
+                await mentioned(
+                    client,
+                    message.from_user.id,
+                    use_html=True,
+                ),
                 message.from_user.id,
                 dc_id,
             )
