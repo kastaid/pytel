@@ -74,12 +74,13 @@ async def _help(client, message):
                         "You cannot use inline bots to send messages in this chat."
                     )
         except BotResponseTimeout:
-            await eor(
-                xy or message,
+            return await eor(
+                xy,
                 text="Did not answer the request, please try again.",
             )
-            return
-        return await _try_purged(xy)
+        return await _try_purged(
+            xy, 1.5
+        )
 
     if message.command[0] == "help":
         plugins_name = get_text(message)

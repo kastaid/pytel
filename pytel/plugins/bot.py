@@ -42,6 +42,7 @@ from . import (
     plugins_helper,
     px,
     pydb,
+    pytl,
     pytel,
     pytel_tgb,
     random_prefixies,
@@ -52,7 +53,8 @@ from . import (
     ikmarkup,
     filters,
     size_bytes,
-    suppress,)
+    suppress,
+    _HELP_ACCEPT,)
 
 lock = Lock()
 
@@ -282,17 +284,23 @@ async def _speedtest_net(
     ["dping", "devping"],
     supersu=["PYTEL"],
     force_edit=False,
-    supergroups=True,
+    supergroups=False,
     disable_errors=True,
 )
 @pytel.instruction(
     ["ping", "pong"],
     outgoing=True,
     force_edit=False,
-    supergroups=True,
+    supergroups=False,
     disable_errors=True,
 )
 async def _iping(client, message):
+    if client:
+        users = client.me.id
+    if client not in pytel._client:
+        client.append(client)
+        pytel.append(client)
+        pytl.append(client)
     if (
         message.command[0] == "ping"
         or "pong"
@@ -308,6 +316,9 @@ async def _iping(client, message):
                     await message.reply_inline_bot_result(
                         _.query_id,
                         name.id,
+                    )
+                    _HELP_ACCEPT.add(
+                        users
                     )
                 except ChatSendInlineForbidden:
                     txt = (
@@ -333,17 +344,23 @@ async def _iping(client, message):
     ["dalive", "don"],
     supersu=["PYTEL"],
     force_edit=False,
-    supergroups=True,
+    supergroups=False,
     disable_errors=True,
 )
 @pytel.instruction(
     ["alive", "on"],
     outgoing=True,
     force_edit=False,
-    supergroups=True,
+    supergroups=False,
     disable_errors=True,
 )
 async def _ialv(client, message):
+    if client:
+        users = client.me.id
+    if client not in pytel._client:
+        client.append(client)
+        pytel.append(client)
+        pytl.append(client)
     if (
         message.command[0] == "alive"
         or "on"
@@ -359,6 +376,9 @@ async def _ialv(client, message):
                     await message.reply_inline_bot_result(
                         _.query_id,
                         name.id,
+                    )
+                    _HELP_ACCEPT.add(
+                        users
                     )
                 except ChatSendInlineForbidden:
                     text = _ialive()
@@ -478,6 +498,12 @@ async def _alive_inline(
             buttons(
                 "REPOSITORY",
                 url="https://github.com/kastaid/pytel",
+            ),
+        ],
+        [
+            buttons(
+                "ᴄʟᴏꜱᴇ",
+                callback_data="help_close",
             ),
         ],
     ]

@@ -14,7 +14,6 @@ from pyrogram.raw.functions.phone import (
 from pyrogram.raw.types import (
     InputPeerChannel,)
 from . import (
-    Rooters,
     eor,
     extract_user,
     get_text,
@@ -22,7 +21,6 @@ from . import (
     plugins_helper,
     px,
     pytel,
-    _try_purged,
     _supersu,
     suppress,
     humanboolean,
@@ -538,35 +536,10 @@ async def _video_chats_information(
                 par.count,
             )
 
-        if len(_) >= 4096:
-            files = "cache/vcinfo.txt"
-            with open(files, "w+") as f:
-                f.write(_)
-            with suppress(
-                BaseException
-            ):
-                caption = f"""
-<u><b>Video Chats Information</u></b>
-{chat.title}
-"""
-                await client.send_document(
-                    message.chat.id,
-                    document=files,
-                    caption=caption,
-                )
-                await _try_purged(x)
-                (
-                    Rooters / files
-                ).unlink(
-                    missing_ok=True
-                )
-                return
-        else:
-            await eor(
-                x,
-                text=_,
-            )
-            return
+        await eor(
+            x,
+            text=_,
+        )
 
 
 @pytel.instruction(

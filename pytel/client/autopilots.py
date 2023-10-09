@@ -6,6 +6,8 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
+from pyrogram.errors.exceptions.bad_request_400 import (
+    BotMethodInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
 from pyrogram.types import (
@@ -92,6 +94,8 @@ async def auto_pilots(_, tgb) -> None:
         )
     except FloodWait as flood:
         await sleep(flood.value + 5)
+    except BotMethodInvalid:
+        pass
     except BaseException as excp:
         send_log.error(excp)
 

@@ -11,15 +11,12 @@ import sys
 import traceback
 from . import (
     DEFAULT_SHELL_BLACKLISTED,
-    Rooters,
     RunningCommand,
     eor,
     plugins_helper,
     px,
     pytel,
     suppress,
-    _try_purged,
-    replied,
     get_text,
     get_blacklisted,
     random_prefixies,)
@@ -107,35 +104,8 @@ async def _bash_script(client, message):
     if not stderr and not stdout:
         out = "<b>Results:</b>\n<code>success</code>"
     result += err + out
-    if len(result) > 4096:
-        files = "cache/shell.txt"
-        with open(files, "w+") as f:
-            f.write(result)
-        with suppress(BaseException):
-            caption = f"""
- <b>⟩ <u>Unix Shell</u></b>
-Command: <pre>{cmd}</pre>
-"""
-            await client.send_document(
-                message.chat.id,
-                document=files,
-                caption=caption,
-            )
-            await _try_purged(x)
-            (Rooters / files).unlink(
-                missing_ok=True
-            )
-            return
 
-    await client.send_message(
-        message.chat.id,
-        text=result,
-        protect_content=True,
-        reply_to_message_id=replied(
-            message
-        ),
-    )
-    return await _try_purged(x, 1.5)
+    await eor(x, text=result)
 
 
 @pytel.instruction(
@@ -199,36 +169,7 @@ async def _exec_script(client, message):
     output = "<b>⟩ <u>Python Execution</u></b>\n"
     output += f"Command: <pre>{code}</pre>\n\n"
     output += f"<b>Results:</b>\n<pre>{execute}</pre>"
-
-    if len(output) > 4096:
-        files = "cache/exec.txt"
-        with open(files, "w+") as f:
-            f.write(output)
-        with suppress(BaseException):
-            caption = f"""
-<b>⟩ Python Execution</b> ( <i>Script</i> )
-<u>Command:</u> <pre>{code}</pre>
-"""
-            await client.send_document(
-                message.chat.id,
-                document=files,
-                caption=caption,
-            )
-            await _try_purged(x)
-            (Rooters / files).unlink(
-                missing_ok=True
-            )
-            return
-
-    await client.send_message(
-        message.chat.id,
-        text=output,
-        protect_content=True,
-        reply_to_message_id=replied(
-            message
-        ),
-    )
-    return await _try_purged(x, 1.5)
+    await eor(x, text=output)
 
 
 async def python_execution(

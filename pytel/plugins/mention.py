@@ -11,10 +11,8 @@ from pyrogram.enums import (
     ChatMembersFilter,
     ChatMemberStatus,)
 from . import (
-    Rooters,
     ParseMode,
     FloodWait,
-    _try_purged,
     eor,
     get_text,
     get_chat_ids,
@@ -22,6 +20,7 @@ from . import (
     px,
     pytel,
     suppress,
+    _try_purged,
     mentioned,
     random_prefixies,)
 
@@ -291,43 +290,15 @@ async def _mention_admins(
         else:
             text += " └ Anonymous\n\n"
         text += f"<b><u>TOTAL ADMINISTRATORS</b></u> <code>{total_adm}</code> account."
-        if len(text) > 4096:
-            files = (
-                "cache/list_admins.txt"
-            )
-            with open(files, "w+") as f:
-                f.write(text)
-            with suppress(
-                BaseException
-            ):
-                caption = f"""
-<u><b>LIST ADMINS</u></b>
-{chat.title}
-"""
-                await client.send_document(
-                    message.chat.id,
-                    document=files,
-                    caption=caption,
-                )
-                await _try_purged(msg)
-                (
-                    Rooters / files
-                ).unlink(
-                    missing_ok=True
-                )
-                town.clear()
-                tadmins.clear()
-                badmins.clear()
-                return
-        else:
-            await eor(
-                msg,
-                text=text,
-            )
-            town.clear()
-            tadmins.clear()
-            badmins.clear()
-            return
+        await eor(
+            msg,
+            text=text,
+        )
+        return (
+            town.clear(),
+            tadmins.clear(),
+            badmins.clear(),
+        )
 
 
 plugins_helper["mention"] = {

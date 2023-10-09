@@ -6,7 +6,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
-from asyncio import sleep
+from asyncio import sleep, gather
 from concurrent.futures import (
     ThreadPoolExecutor,)
 from contextlib import suppress
@@ -188,8 +188,6 @@ async def execution() -> None:
                 _,
                 pytel_tgb,
             )
-            await running_message(_)
-            await _.flash()
             # Cleared
             clear_all_dspam(_.me.id)
             clear_all_schedule(_.me.id)
@@ -203,7 +201,12 @@ async def execution() -> None:
             send_log.exception(excp)
 
     await load_plugins()
-    await _._copyright(
+    for x in pytl:
+        await gather(
+            running_message(x),
+            x.flash(),
+        )
+    await x._copyright(
         _copyright=f"{__copyright__}",
         _license=f"{__license__}",
     )

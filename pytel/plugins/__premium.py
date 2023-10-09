@@ -25,6 +25,7 @@ from . import (
     _try_purged,
     px,
     eor,
+    pytl,
     pytel,
     pytel_tgb,
     start_time,
@@ -34,7 +35,8 @@ from . import (
     filters,
     _supersu,
     ikmarkup,
-    legally_required,)
+    legally_required,
+    _HELP_ACCEPT,)
 
 
 async def _get_status_user(
@@ -107,6 +109,12 @@ async def _get_status_user(
 async def _premium_stats(
     client, message
 ):
+    if client:
+        users = client.me.id
+    if client not in pytel._client:
+        client.append(client)
+        pytel.append(client)
+        pytl.append(client)
     if (
         message.command[0] == "expired"
         or "status"
@@ -122,6 +130,9 @@ async def _premium_stats(
                     await message.reply_inline_bot_result(
                         query_id=_.query_id,
                         result_id=result.id,
+                    )
+                    _HELP_ACCEPT.add(
+                        users
                     )
                 except ChatSendInlineForbidden:
                     text = await _get_status_user(

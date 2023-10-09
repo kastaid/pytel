@@ -63,7 +63,14 @@ try:
         SESSION2, SESSION3, SESSION4,
         SESSION5, SESSION6, SESSION7,
         SESSION8, SESSION9, SESSION10,
-        TGB_TOKEN,)
+        BOT_SESSION, TGB_TOKEN, API_ID1,
+        API_HASH1, API_ID2, API_HASH2,
+        API_ID3, API_HASH3, API_ID4,
+        API_HASH4, API_ID5, API_HASH5,
+        API_ID6, API_HASH6, API_ID7,
+        API_HASH7, API_ID8, API_HASH8,
+        API_ID9, API_HASH9, API_ID10,
+        API_HASH10,)
 except KeyboardInterrupt:
     send_log.warning(
         "Received interrupt while import"
@@ -178,6 +185,7 @@ try:
         api_id=API_ID,
         api_hash=API_HASH,
         bot_token=TGB_TOKEN,
+        session_string=BOT_SESSION,
         in_memory=True,
         no_updates=False,
         ipv6=False,
@@ -199,8 +207,8 @@ try:
     pytel_1 = (
         PytelClient(
             name="pytel1",
-            api_id=API_ID,
-            api_hash=API_HASH,
+            api_id=API_ID1,
+            api_hash=API_HASH1,
             session_string=SESSION1,
             in_memory=True,
             lang_code="en",
@@ -213,13 +221,15 @@ try:
             workers=WORKERS,
         )
         if SESSION1
+        and API_ID1
+        and API_HASH1
         else None
     )
     pytel_2 = (
         PytelClient(
             name="pytel2",
-            api_id=API_ID,
-            api_hash=API_HASH,
+            api_id=API_ID2,
+            api_hash=API_HASH2,
             session_string=SESSION2,
             in_memory=True,
             lang_code="en",
@@ -232,13 +242,15 @@ try:
             workers=WORKERS,
         )
         if SESSION2
+        and API_ID2
+        and API_HASH2
         else None
     )
     pytel_3 = (
         PytelClient(
             name="pytel3",
-            api_id=API_ID,
-            api_hash=API_HASH,
+            api_id=API_ID3,
+            api_hash=API_HASH3,
             session_string=SESSION3,
             in_memory=True,
             lang_code="en",
@@ -251,13 +263,15 @@ try:
             workers=WORKERS,
         )
         if SESSION3
+        and API_ID3
+        and API_HASH3
         else None
     )
     pytel_4 = (
         PytelClient(
             name="pytel4",
-            api_id=API_ID,
-            api_hash=API_HASH,
+            api_id=API_ID4,
+            api_hash=API_HASH4,
             session_string=SESSION4,
             in_memory=True,
             lang_code="en",
@@ -270,13 +284,15 @@ try:
             workers=WORKERS,
         )
         if SESSION4
+        and API_ID4
+        and API_HASH4
         else None
     )
     pytel_5 = (
         PytelClient(
             name="pytel5",
-            api_id=API_ID,
-            api_hash=API_HASH,
+            api_id=API_ID5,
+            api_hash=API_HASH5,
             session_string=SESSION5,
             in_memory=True,
             lang_code="en",
@@ -289,13 +305,15 @@ try:
             workers=WORKERS,
         )
         if SESSION5
+        and API_ID5
+        and API_HASH5
         else None
     )
     pytel_6 = (
         PytelClient(
             name="pytel6",
-            api_id=API_ID,
-            api_hash=API_HASH,
+            api_id=API_ID6,
+            api_hash=API_HASH6,
             session_string=SESSION6,
             in_memory=True,
             lang_code="en",
@@ -308,13 +326,15 @@ try:
             workers=WORKERS,
         )
         if SESSION6
+        and API_ID6
+        and API_HASH6
         else None
     )
     pytel_7 = (
         PytelClient(
             name="pytel7",
-            api_id=API_ID,
-            api_hash=API_HASH,
+            api_id=API_ID7,
+            api_hash=API_HASH7,
             session_string=SESSION7,
             in_memory=True,
             lang_code="en",
@@ -327,13 +347,15 @@ try:
             workers=WORKERS,
         )
         if SESSION7
+        and API_ID7
+        and API_HASH7
         else None
     )
     pytel_8 = (
         PytelClient(
             name="pytel8",
-            api_id=API_ID,
-            api_hash=API_HASH,
+            api_id=API_ID8,
+            api_hash=API_HASH8,
             session_string=SESSION8,
             in_memory=True,
             lang_code="en",
@@ -346,13 +368,15 @@ try:
             workers=WORKERS,
         )
         if SESSION8
+        and API_ID8
+        and API_HASH8
         else None
     )
     pytel_9 = (
         PytelClient(
             name="pytel9",
-            api_id=API_ID,
-            api_hash=API_HASH,
+            api_id=API_ID9,
+            api_hash=API_HASH9,
             session_string=SESSION9,
             in_memory=True,
             lang_code="en",
@@ -365,13 +389,15 @@ try:
             workers=WORKERS,
         )
         if SESSION9
+        and API_ID9
+        and API_HASH9
         else None
     )
     pytel_10 = (
         PytelClient(
             name="pytel10",
-            api_id=API_ID,
-            api_hash=API_HASH,
+            api_id=API_ID10,
+            api_hash=API_HASH10,
             session_string=SESSION10,
             in_memory=True,
             lang_code="en",
@@ -384,6 +410,8 @@ try:
             workers=WORKERS,
         )
         if SESSION10
+        and API_ID10
+        and API_HASH10
         else None
     )
     pytel = PytelClient(

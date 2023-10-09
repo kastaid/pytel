@@ -281,14 +281,13 @@ async def _limited(client, message):
         x,
         text=f"{status.text}",
     )
-    await client.invoke(
+    return await client.invoke(
         DeleteHistory(
             peer=history,
             max_id=0,
             revoke=True,
         )
     )
-    return
 
 
 @pytel.instruction(

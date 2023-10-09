@@ -148,25 +148,7 @@ async def _binnary_code(
             data=str_data, convert=False
         )
 
-    if len(binnary) >= 4096:
-        files = "cache/binnary.txt"
-        with open(files, "w+") as f:
-            f.write(binnary)
-        with suppress(BaseException):
-            caption = f"""
-<u><b>{criteria}</u></b>
-"""
-            await client.send_document(
-                message.chat.id,
-                document=files,
-                caption=caption,
-            )
-            await _try_purged(x)
-            (Rooters / files).unlink(
-                missing_ok=True
-            )
-            return
-    else:
+    if binnary:
         await eor(
             x,
             text=_CODE_TEXT.format(

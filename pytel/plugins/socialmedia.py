@@ -1207,38 +1207,7 @@ async def _social_links(
             f"<b>Snapchat:</b> {s}\n"
         )
 
-    if len(text) >= 4096:
-        files = f"cache/{real_name}.txt"
-        with open(files, "w+") as f:
-            f.write(text)
-        with suppress(BaseException):
-            caption = f"""
-<u><b>Links Social Media</u></b>
-<b>Users:</b> {real_name}
-"""
-            await client.send_document(
-                message.chat.id,
-                document=files,
-                caption=caption,
-                reply_to_message_id=replied(
-                    message
-                ),
-            )
-            await _try_purged(x)
-            (Rooters / files).unlink(
-                missing_ok=True
-            )
-            return
-    await client.send_message(
-        message.chat.id,
-        text=text,
-        protect_content=True,
-        disable_web_page_preview=True,
-        reply_to_message_id=replied(
-            message
-        ),
-    )
-    return await _try_purged(x)
+    await eor(message, text=text)
 
 
 plugins_helper["socialmedia"] = {

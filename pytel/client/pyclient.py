@@ -37,7 +37,8 @@ from pyrogram.errors.exceptions.bad_request_400 import (
     ChannelInvalid,
     MessageIdInvalid,
     MessageNotModified,
-    PersistentTimestampInvalid,)
+    PersistentTimestampInvalid,
+    BotMethodInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
 from pyrogram.errors.exceptions.forbidden_403 import (
@@ -522,6 +523,8 @@ class PytelClient(Raw):
                         client,
                         message,
                     )
+                except OSError:
+                    await client.connect()  # send connection
                 except (
                     FloodWait
                 ) as excp:
@@ -760,6 +763,8 @@ class PytelClient(Raw):
             await self.join_chat(_d)
             await sleep(5)
             await self.join_chat(cpytl)
+        except BotMethodInvalid:
+            pass
         except Exception as excp:
             self.send_log.exception(
                 f"Exception : {excp}"

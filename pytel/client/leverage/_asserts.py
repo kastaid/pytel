@@ -7,52 +7,154 @@
 
 from asyncio import sleep
 from contextlib import suppress
-from inspect import getfullargspec
 from re import findall, search
 from typing import Optional, Union, Any
 from pyrogram.enums import (
     MessageEntityType,)
+from pyrogram.errors.exceptions.bad_request_400 import (
+    MessageTooLong,)
 from pyrogram.raw.types import (
     InputPeerChat,
     InputPeerChannel,)
 from pyrogram.types import Message
+from pytelibs import _supersu
+from ...config import OWNER_ID
 
 
 async def _try_purged(
-    message,
+    message: Message,
     timer: Union[int, float] = None,
+    revoke: bool = True,
 ):
     with suppress(BaseException):
         if timer:
             await sleep(timer)
-            await message.delete()
+            await message.delete(
+                revoke=revoke
+            )
+            return
         else:
-            await message.delete()
+            await message.delete(
+                revoke=revoke
+            )
+            return
 
 
 async def eor(
     message: Message,
+    text: Optional[str],
+    *args,
     **kwargs,
 ) -> Message:
-    functions = (
-        (
-            message.edit_text
-            if message.from_user.is_self
-            else message.reply
-        )
-        if message.from_user
-        else message.reply
-    )
-    insc = getfullargspec(
-        functions.__wrapped__
-    ).args
-    return await functions(
-        **{
-            _: value
-            for _, value in kwargs.items()
-            if _ in insc
-        }
-    )
+    chunks = []
+    chunk = ""
+    reply = message.reply_to_message
+    try:
+        if reply:
+            if (
+                message.from_user.is_self
+            ):
+                x = await message.edit_text(
+                    text=text,
+                    *args,
+                    **kwargs,
+                )
+            elif (
+                message.from_user.id
+                in list(_supersu)
+                or OWNER_ID
+            ):
+                x = await message.reply(
+                    text=text,
+                    *args,
+                    **kwargs,
+                )
+                with suppress(
+                    Exception
+                ):
+                    await _try_purged(
+                        message
+                    )
+            else:
+                if message.from_user:
+                    x = await message.reply(
+                        text=text,
+                        *args,
+                        **kwargs,
+                    )
+                else:
+                    x = await message.edit_text(
+                        text=text,
+                        *args,
+                        **kwargs,
+                    )
+        else:
+            if (
+                message.from_user.is_self
+            ):
+                x = await message.edit_text(
+                    text=text,
+                    *args,
+                    **kwargs,
+                )
+            elif (
+                message.from_user.id
+                in list(_supersu)
+                or OWNER_ID
+            ):
+                x = await message.reply(
+                    text=text,
+                    *args,
+                    **kwargs,
+                )
+                with suppress(
+                    Exception
+                ):
+                    await _try_purged(
+                        message
+                    )
+            else:
+                x = await message.edit_text(
+                    text=text,
+                    *args,
+                    **kwargs,
+                )
+
+    except MessageTooLong:
+        for line in text:
+            if (
+                len(chunk) + len(line)
+                > 4096
+            ):
+                chunks.append(chunk)
+                chunk = ""
+            chunk += line
+        chunks.append(chunk)
+        try:
+            for chunk in chunks:
+                a = await message.reply(
+                    text=str(chunk),
+                    *args,
+                    **kwargs,
+                )
+        except BaseException as excp:
+            return await message.edit_text(
+                text=f"Error: {excp}",
+                *args,
+                **kwargs,
+            )
+
+        else:
+            with suppress(Exception):
+                await _try_purged(
+                    message
+                )
+            return a
+
+    else:
+        return x
+
+    return x
 
 
 def get_text(

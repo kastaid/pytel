@@ -20,6 +20,66 @@ API_ID: Optional[int] = gets(
 API_HASH: Optional[str] = gets(
     "API_HASH", ""
 )
+API_ID1: Optional[int] = gets(
+    "API_ID1", ""
+)
+API_HASH1: Optional[str] = gets(
+    "API_HASH1", ""
+)
+API_ID2: Optional[int] = gets(
+    "API_ID2", ""
+)
+API_HASH2: Optional[str] = gets(
+    "API_HASH2", ""
+)
+API_ID3: Optional[int] = gets(
+    "API_ID3", ""
+)
+API_HASH3: Optional[str] = gets(
+    "API_HASH3", ""
+)
+API_ID4: Optional[int] = gets(
+    "API_ID4", ""
+)
+API_HASH4: Optional[str] = gets(
+    "API_HASH4", ""
+)
+API_ID5: Optional[int] = gets(
+    "API_ID5", ""
+)
+API_HASH5: Optional[str] = gets(
+    "API_HASH5", ""
+)
+API_ID6: Optional[int] = gets(
+    "API_ID6", ""
+)
+API_HASH6: Optional[str] = gets(
+    "API_HASH6", ""
+)
+API_ID7: Optional[int] = gets(
+    "API_ID7", ""
+)
+API_HASH7: Optional[str] = gets(
+    "API_HASH7", ""
+)
+API_ID8: Optional[int] = gets(
+    "API_ID8", ""
+)
+API_HASH8: Optional[str] = gets(
+    "API_HASH8", ""
+)
+API_ID9: Optional[int] = gets(
+    "API_ID9", ""
+)
+API_HASH9: Optional[str] = gets(
+    "API_HASH9", ""
+)
+API_ID10: Optional[int] = gets(
+    "API_ID10", ""
+)
+API_HASH10: Optional[str] = gets(
+    "API_HASH10", ""
+)
 OWNER_ID: int = gets("OWNER_ID", "")
 TGB_TOKEN: Optional[str] = gets(
     "TGB_TOKEN", ""
@@ -32,6 +92,9 @@ PREFIX: Union[str, List[str]] = gets(
 ).split(",")
 TimeZone: Optional[str] = gets(
     "TimeZone", ""
+)
+BOT_SESSION: Optional[str] = gets(
+    "BOT_SESSION", None
 )
 SESSION1: Optional[str] = gets(
     "SESSION1", None
