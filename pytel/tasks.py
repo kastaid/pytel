@@ -56,6 +56,11 @@ async def pytasks(
                 a.loop
             ):
                 b.cancel()
+        pylog.info(
+            "👋 See you next time !",
+        )
+        Instagram.loged_out(crash=True)
+        tasks.cancel()
         with suppress(Exception):
             proc = psutil.Process(
                 getpid()
@@ -65,12 +70,6 @@ async def pytasks(
                 + proc.connections()
             ):
                 close(_.fd)
-
-        pylog.info(
-            "👋 See you next time !",
-        )
-        Instagram.loged_out(crash=True)
-        tasks.cancel()
 
     for s in (SIGINT, SIGTERM, SIGABRT):
         signal_name(s, signal_handler)
