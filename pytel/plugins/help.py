@@ -403,6 +403,7 @@ async def _menu_opened(
         plugins_helper.total,
         random_prefixies(px),
     )
+    helper_text += "(c) @kastaid #pytel"
     menu_tclose = "<b>Menu helper has been <u>Closed</b></u>."
     menu_close = match(
         r"menu_close",
