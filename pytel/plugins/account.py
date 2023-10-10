@@ -471,7 +471,7 @@ async def _set_pfp(client, message):
     outgoing=True,
 )
 async def _rempfp(client, message):
-    msg = get_args(message, normal=True)
+    msg = get_args(message)
     if msg == "all":
         limit = 0
     elif msg.isdigit():
