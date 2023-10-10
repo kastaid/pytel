@@ -15,6 +15,7 @@ from contextlib import suppress
 from datetime import datetime
 from multiprocessing import Process
 from sys import exc_info, exit
+from time import time
 from traceback import format_exc as fmex
 from typing import (
     Any,
@@ -74,7 +75,7 @@ from pytgcalls.group_call_factory import (
     GroupCallFactory,)
 from pytgcalls.mtproto_client_type import (
     MTProtoClientType,)
-from .. import loopers
+from .. import loopers, Rooters
 from ..config import (
     LOGCHAT_ID,
     PREFIX,
@@ -89,6 +90,7 @@ from .utils import (
     get_blacklisted,
     gg_restricted,
     mentioned,
+    progress,
     tz,)
 
 
@@ -810,6 +812,210 @@ class PytelClient(Raw):
             self.send_log.exception(
                 excp
             )
+
+    async def downloads_media(
+        self,
+        message: Message,
+        m: Any,
+        x: Any,
+    ):
+        caption = (
+            m.caption
+            or m.caption_entities
+            or None
+        )
+        with suppress(Exception):
+            if (m.text) or (m.sticker):
+                await m.copy(
+                    message.chat.id,
+                    reply_to_message_id=message.id,
+                )
+            s_time = time()
+            if m.photo:
+                photo = await self.download_media(
+                    m.photo,
+                    "/cache",
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        s_time,
+                        "`Downloading File!`",
+                        "Telegram Photo",
+                    ),
+                )
+                u_time = time()
+                await self.send_photo(
+                    message.chat.id,
+                    photo=photo,
+                    caption=caption,
+                    reply_to_message_id=message.id,
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        u_time,
+                        "`Uploading File!`",
+                        "Telegram Photo",
+                    ),
+                )
+                (
+                    Rooters / photo
+                ).unlink(
+                    missing_ok=True
+                )
+            if m.video:
+                video = await self.download_media(
+                    m.video,
+                    "/cache",
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        s_time,
+                        "`Downloading File!`",
+                        "Telegram Video",
+                    ),
+                )
+                u_time = time()
+                await self.send_video(
+                    message.chat.id,
+                    video=video,
+                    caption=caption,
+                    supports_streaming=True,
+                    reply_to_message_id=message.id,
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        u_time,
+                        "`Uploading File!`",
+                        "Telegram Video",
+                    ),
+                )
+                (
+                    Rooters / video
+                ).unlink(
+                    missing_ok=True
+                )
+            if m.document:
+                file = await self.download_media(
+                    m.document,
+                    "/cache",
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        s_time,
+                        "`Downloading File!`",
+                        "Telegram Document",
+                    ),
+                )
+                u_time = time()
+                await self.send_document(
+                    message.chat.id,
+                    document=file,
+                    caption=caption,
+                    force_document=True,
+                    reply_to_message_id=message.id,
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        u_time,
+                        "`Uploading File!`",
+                        "Telegram Document",
+                    ),
+                )
+                (Rooters / file).unlink(
+                    missing_ok=True
+                )
+            if m.audio:
+                audio = await self.download_media(
+                    m.audio,
+                    "/cache",
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        s_time,
+                        "`Downloading File!`",
+                        "Telegram Audio",
+                    ),
+                )
+                u_time = time()
+                await self.send_audio(
+                    message.chat.id,
+                    audio,
+                    caption,
+                    reply_to_message_id=message.id,
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        u_time,
+                        "`Uploading File!`",
+                        "Telegram Audio",
+                    ),
+                )
+                (
+                    Rooters / audio
+                ).unlink(
+                    missing_ok=True
+                )
+            if m.voice:
+                voice = await self.download_media(
+                    m.voice,
+                    "/cache",
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        s_time,
+                        "`Downloading File!`",
+                        "Telegram Voice",
+                    ),
+                )
+                u_time = time()
+                await self.send_voice(
+                    message.chat.id,
+                    voice,
+                    caption,
+                    reply_to_message_id=message.id,
+                    progress_args=(
+                        x,
+                        u_time,
+                        "`Uploading File!`",
+                        "Telegram Voice",
+                    ),
+                )
+                (
+                    Rooters / voice
+                ).unlink(
+                    missing_ok=True
+                )
+            if m.animation:
+                animation = await self.download_media(
+                    m.animation,
+                    "/cache",
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        s_time,
+                        "`Downloading File!`",
+                        "Telegram Animation",
+                    ),
+                )
+                u_time = time()
+                await self.send_animation(
+                    message.chat.id,
+                    animation,
+                    caption,
+                    reply_to_message_id=message.id,
+                    progress=progress,
+                    progress_args=(
+                        x,
+                        u_time,
+                        "`Uploading File!`",
+                        "Telegram Animation",
+                    ),
+                )
+                (
+                    Rooters / animation
+                ).unlink(
+                    missing_ok=True
+                )
 
     async def get_group_call(
         self,
