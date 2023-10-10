@@ -75,7 +75,7 @@ from pytgcalls.group_call_factory import (
     GroupCallFactory,)
 from pytgcalls.mtproto_client_type import (
     MTProtoClientType,)
-from .. import loopers, Rooters
+from .. import loopers
 from ..config import (
     LOGCHAT_ID,
     PREFIX,
@@ -819,6 +819,7 @@ class PytelClient(Raw):
         m: Any,
         x: Any,
     ):
+        from pytel import Rooters
         caption = (
             m.caption
             or m.caption_entities
