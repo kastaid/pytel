@@ -7,7 +7,11 @@
 
 from asyncio import Lock
 from datetime import datetime
-from os import getpid, close, execvp
+from os import (
+    getpid,
+    close,
+    execvp,
+    cpu_count,)
 from platform import (
     python_version,
     uname,)
@@ -179,8 +183,24 @@ def _ialive() -> Optional[str]:
 
 def sys_stats() -> str:
     cpu = psutil.cpu_percent()
+    cpu_freq = psutil.cpu_freq().current
+    if cpu_freq >= 1000:
+        cpu_freq = "{}GHz".format(
+            round(cpu_freq / 1000, 2)
+        )
+    else:
+        cpu_freq = "{}MHz".format(
+            round(cpu_freq, 2)
+        )
     mem = (
         psutil.virtual_memory().percent
+    )
+    ram = psutil.virtual_memory().total
+    swap_ram = (
+        psutil.swap_memory().total
+    )
+    swap_mem = (
+        psutil.swap_memory().percent
     )
     disk = psutil.disk_usage(
         "/"
@@ -188,13 +208,15 @@ def sys_stats() -> str:
     process = psutil.Process(getpid())
     stats = f"""
 STATISTICS ( PYTEL-Premium )
------------------------
+
+CPU | RAM | DISK
+-----------------------------
+CPU: ({cpu_count()}) {cpu_freq} | {cpu}%
+RAM: {size_bytes(int(ram))} | {mem}%
+SWAP RAM: {size_bytes(int(swap_ram))} | {swap_mem}%
+DISK USAGE: {size_bytes(process.memory_info()[0])} | {disk}%
+-----------------------------
 Uptime: {time_formatter((time() - start_time) * 1000)}
-CPU: {cpu}%
-RAM: {mem}%
-DISK: {disk}%
-Memory Usage: {size_bytes(process.memory_info()[0])}
------------------------
 
 Copyright (C) 2023-present @kastaid
 """
@@ -531,7 +553,7 @@ async def _alive_inline(
 
 async def restarting(
     message,
-) -> None:
+):
     try:
         import psutil
 
@@ -614,7 +636,7 @@ async def _restart(client, message):
     x = await message.reply(
         "Restarting client, wait for 1 minutes.."
     )
-    await restarting(x)
+    return await restarting(x)
 
 
 @pytel.instruction(

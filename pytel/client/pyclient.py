@@ -820,6 +820,7 @@ class PytelClient(Raw):
         x: Any,
     ):
         from pytel import Rooters
+
         caption = (
             m.caption
             or m.caption_entities
