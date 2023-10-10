@@ -591,12 +591,6 @@ async def _updates(client, message):
                 x,
                 text=f"<u><b>Updating</u>!!</b>\nInstall requirements...",
             )
-            with suppress(
-                BaseException
-            ):
-                RunningCommand(
-                    "pip3 install -U -r main.txt"
-                )
             xy = await eor(
                 yy,
                 text=f"Update successfuly.\nRestarting, wait for 1 minutes.",
