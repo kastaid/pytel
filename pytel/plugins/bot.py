@@ -22,6 +22,7 @@ from time import time
 from typing import Optional
 import packaging
 import psutil
+import textwrap
 from git import __version__ as git_ver
 from pip import __version__ as pipver
 from pyrogram import __version__
@@ -88,16 +89,10 @@ async def _er_iping(
     #    lock.release()
     d1 = time()
     delay_ping = f"{str(round((start_delay - d1) * -50, 2))}"
-    # OS
-    lsb = freedesktop_os_release()
-    my_cpuinfo = get_cpu_info()
     text = f"""
 <b><u>PYROGRAM</b></u>
  ├ <b>Speed:</b> <code>{pings_} ms</code>
  └ <b>Delay:</b> <code>{delay_ping} ms</code>
-
-<b>OS:</b> {lsb['PRETTY_NAME']} ({lsb['VERSION_CODENAME']}
-<b>CPU:</b> {my_cpuinfo['brand_raw']}
 
 (c) @kastaid #pytel
 """
@@ -196,8 +191,14 @@ def sys_stats() -> str:
         "/"
     ).percent
     process = psutil.Process(getpid())
+    lsb = freedesktop_os_release()
+    my_cpuinfo = get_cpu_info()
+    cpuin = textwrap.shorten(my_cpuinfo["brand_raw"], width=100)
     stats = f"""
 STATISTICS ( PYTEL-Premium )
+
+OS: {lsb['PRETTY_NAME']} ({lsb['VERSION_CODENAME'])}
+CORE: {cpuin}
 -------------------------
 CPU: {psutil.cpu_percent()}%
 RAM: {ram}%
