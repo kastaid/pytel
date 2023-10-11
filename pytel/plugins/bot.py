@@ -178,30 +178,38 @@ def _ialive() -> Optional[str]:
 
 
 def sys_stats() -> str:
-    cpu = psutil.cpu_percent()
-    cpu_freq = psutil.cpu_freq().current
-    if cpu_freq >= 1000:
-        cpu_freq = "{}GHz".format(
-            round(cpu_freq / 1000, 2)
+    try:
+        cpu_freq = (
+            psutil.cpu_freq().current
         )
-    else:
-        cpu_freq = "{}MHz".format(
-            round(cpu_freq, 2)
-        )
+        if cpu_freq >= 1000:
+            cpu_freq = "{}GHz".format(
+                round(
+                    cpu_freq / 1000, 2
+                )
+            )
+        else:
+            cpu_freq = "{}MHz".format(
+                round(cpu_freq, 2)
+            )
+        cpu = "f{psutil.cpu_percent()}% ({psutil.cpu_count()}) {cpu_freq}"
+    except BaseException:
+        try:
+            cpu = f"{psutil.cpu_percent()}%"
+        except BaseException:
+            cpu = "0%"
     try:
         mem = psutil.virtual_memory()
         ram = f"{size_bytes(mem.total)} | {mem.percent or 0}%"
     except BaseException:
         ram = "0 | 0%"
-    else:
-        pass
+
     try:
         mem_swap = psutil.swap_memory()
         swap = f"{size_bytes(mem_swap.total)} | {mem_swap.percent or 0}%"
     except BaseException:
         swap = "0 | 0%"
-    else:
-        pass
+
     disk = psutil.disk_usage(
         "/"
     ).percent
@@ -211,7 +219,7 @@ STATISTICS ( PYTEL-Premium )
 
 CPU | RAM | DISK
 -----------------------------
-CPU: ({psutil.cpu_count()}) {cpu_freq} | {cpu}%
+CPU: {cpu}
 RAM: {ram}
 SWAP RAM: {swap}
 DISK USAGE: {size_bytes(process.memory_info()[0])} | {disk}%
