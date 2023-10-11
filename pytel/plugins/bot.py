@@ -14,13 +14,13 @@ from os import (
     cpu_count,)
 from platform import (
     python_version,
+    freedesktop_os_release,
     uname,)
-from re import sub, findall
-from subprocess import check_output
 from sys import executable
 from textwrap import indent
 from time import time
 from typing import Optional
+import cpuinfo
 import packaging
 import psutil
 from git import __version__ as git_ver
@@ -183,21 +183,9 @@ def _ialive() -> Optional[str]:
     return str(wrp)
 
 
-def sys_stats() -> str:
-    cmd = "cat /proc/cpuinfo | grep 'model name'"
-    info = check_output(
-        cmd, shell=True
-    ).decode()
-    s = findall(r".*", str(info))
-    x = s[0]
-    model_name = sub(
-        r"model.name.:.", "", x
-    )
-    cmd1 = "cat /etc/os-release | grep 'PRETTY_NAME='"
-    o1 = check_output(
-        cmd1, shell=True
-    ).decode()
-    ls_b = sub(r"PRETTY_NAME=", "", o1)
+async def sys_stats() -> str:
+    my_cpuinfo = cpuinfo.get_cpu_info()
+    lsb = freedesktop_os_release()
     cpu = f"{psutil.cpu_percent()}% ({cpu_count()}) Core"
     ram = (
         psutil.virtual_memory().percent
@@ -209,9 +197,9 @@ def sys_stats() -> str:
     stats = f"""
 STATISTICS ( PYTEL-Premium )
 
-{model_name}
+OS: {lsb['PRETTY_NAME']} ({lsb['VERSION_CODENAME']}
+CPU: {my_cpuinfo['brand_raw']}
 -------------------------
-OS: {ls_b}
 CPU: {cpu}
 RAM: {ram}%
 DISK: {disk}%
@@ -427,7 +415,7 @@ async def _sys_callback(
     client,
     cq: CallbackQuery,
 ):
-    text = sys_stats()
+    text = await sys_stats()
     await pytel_tgb.answer_callback_query(
         cq.id,
         text,

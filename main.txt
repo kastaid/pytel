@@ -28,6 +28,7 @@ emoji
 httpx
 phonenumbers
 psutil
+py-cpuinfo
 pybase64
 Pytanggalmerah
 pyroaddon
