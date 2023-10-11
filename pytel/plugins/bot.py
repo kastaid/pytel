@@ -7,11 +7,7 @@
 
 from asyncio import Lock
 from datetime import datetime
-from os import (
-    getpid,
-    close,
-    execvp,
-    cpu_count,)
+from os import getpid, close, execvp
 from platform import (
     python_version,
     uname,)
@@ -192,16 +188,20 @@ def sys_stats() -> str:
         cpu_freq = "{}MHz".format(
             round(cpu_freq, 2)
         )
-    mem = (
-        psutil.virtual_memory().percent
-    )
-    ram = psutil.virtual_memory().total
-    swap_ram = (
-        psutil.swap_memory().total
-    )
-    swap_mem = (
-        psutil.swap_memory().percent
-    )
+    try:
+        mem = psutil.virtual_memory()
+        ram = f"{size_bytes(mem.total)} | {mem.percent or 0}%"
+    except BaseException:
+        ram = "0 | 0%"
+    else:
+        pass
+    try:
+        mem_swap = psutil.swap_memory()
+        swap = f"{size_bytes(mem_swap.total)} | {mem_swap.percent or 0}%"
+    except BaseException:
+        swap = "0 | 0%"
+    else:
+        pass
     disk = psutil.disk_usage(
         "/"
     ).percent
@@ -211,9 +211,9 @@ STATISTICS ( PYTEL-Premium )
 
 CPU | RAM | DISK
 -----------------------------
-CPU: ({cpu_count()}) {cpu_freq} | {cpu}%
-RAM: {size_bytes(int(ram))} | {mem}%
-SWAP RAM: {size_bytes(int(swap_ram))} | {swap_mem}%
+CPU: ({psutil.cpu_count()}) {cpu_freq} | {cpu}%
+RAM: {ram}
+SWAP RAM: {swap}
 DISK USAGE: {size_bytes(process.memory_info()[0])} | {disk}%
 -----------------------------
 Uptime: {time_formatter((time() - start_time) * 1000)}
