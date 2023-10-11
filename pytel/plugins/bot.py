@@ -89,12 +89,19 @@ async def _er_iping(
     #    lock.release()
     d1 = time()
     delay_ping = f"{str(round((start_delay - d1) * -50, 2))}"
+    # OS
+    my_cpuinfo = get_cpu_info()
+    cpuin = textwrap.shorten(my_cpuinfo["brand_raw"], width=100)
     text = f"""
 <b><u>PYROGRAM</b></u>
  ├ <b>Speed:</b> <code>{pings_} ms</code>
  └ <b>Delay:</b> <code>{delay_ping} ms</code>
 
-(c) @kastaid #pytel
+<b><u>OS</b></u>
+ ├ {lsb['PRETTY_NAME']}
+ └ {cpuin}
+
+(c) kastaid #pytel
 """
     return str(text)
 
@@ -192,13 +199,8 @@ def sys_stats() -> str:
     ).percent
     process = psutil.Process(getpid())
     lsb = freedesktop_os_release()
-    my_cpuinfo = get_cpu_info()
-    cpuin = textwrap.shorten(my_cpuinfo["brand_raw"], width=100)
     stats = f"""
 STATISTICS ( PYTEL-Premium )
-
-OS: {lsb['PRETTY_NAME']} ({lsb['VERSION_CODENAME'])}
-CORE: {cpuin}
 -------------------------
 CPU: {psutil.cpu_percent()}%
 RAM: {ram}%
