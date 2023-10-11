@@ -7,10 +7,16 @@
 
 from asyncio import Lock
 from datetime import datetime
-from os import getpid, close, execvp
+from os import (
+    getpid,
+    close,
+    execvp,
+    cpu_count,)
 from platform import (
     python_version,
     uname,)
+from re import sub, findall
+from subprocess import check_output
 from sys import executable
 from textwrap import indent
 from time import time
@@ -178,38 +184,24 @@ def _ialive() -> Optional[str]:
 
 
 def sys_stats() -> str:
-    try:
-        cpu_freq = (
-            psutil.cpu_freq().current
-        )
-        if cpu_freq >= 1000:
-            cpu_freq = "{}GHz".format(
-                round(
-                    cpu_freq / 1000, 2
-                )
-            )
-        else:
-            cpu_freq = "{}MHz".format(
-                round(cpu_freq, 2)
-            )
-        cpu = "f{psutil.cpu_percent()}% ({psutil.cpu_count()}) {cpu_freq}"
-    except BaseException:
-        try:
-            cpu = f"{psutil.cpu_percent()}%"
-        except BaseException:
-            cpu = "0%"
-    try:
-        mem = psutil.virtual_memory()
-        ram = f"{size_bytes(mem.total)} | {mem.percent or 0}%"
-    except BaseException:
-        ram = "0 | 0%"
-
-    try:
-        mem_swap = psutil.swap_memory()
-        swap = f"{size_bytes(mem_swap.total)} | {mem_swap.percent or 0}%"
-    except BaseException:
-        swap = "0 | 0%"
-
+    cmd = "cat /proc/cpuinfo | grep 'model name'"
+    info = check_output(
+        cmd, shell=True
+    ).decode()
+    s = findall(r".*", str(info))
+    x = s[0]
+    model_name = sub(
+        r"model.name.:.", "", x
+    )
+    cmd1 = "cat /etc/os-release | grep 'PRETTY_NAME='"
+    o1 = check_output(
+        cmd1, shell=True
+    ).decode()
+    ls_b = sub(r"PRETTY_NAME=", "", o1)
+    cpu = f"{psutil.cpu_percent()}% ({cpu_count()}) Core"
+    ram = (
+        psutil.virtual_memory().percent
+    )
     disk = psutil.disk_usage(
         "/"
     ).percent
@@ -217,13 +209,14 @@ def sys_stats() -> str:
     stats = f"""
 STATISTICS ( PYTEL-Premium )
 
-CPU | RAM | DISK
------------------------------
+{model_name}
+-------------------------
+OS: {ls_b}
 CPU: {cpu}
-RAM: {ram}
-SWAP RAM: {swap}
-DISK USAGE: {size_bytes(process.memory_info()[0])} | {disk}%
------------------------------
+RAM: {ram}%
+DISK: {disk}%
+Memory Usage: {size_bytes(process.memory_info()[0])}
+-------------------------
 Uptime: {time_formatter((time() - start_time) * 1000)}
 
 Copyright (C) 2023-present @kastaid
