@@ -10,8 +10,7 @@ from datetime import datetime
 from os import (
     getpid,
     close,
-    execvp,
-    cpu_count,)
+    execvp,)
 from platform import (
     python_version,
     freedesktop_os_release,
@@ -93,6 +92,9 @@ async def _er_iping(
 <b><u>PYROGRAM</b></u>
  ├ <b>Speed:</b> <code>{pings_} ms</code>
  └ <b>Delay:</b> <code>{delay_ping} ms</code>
+
+<b>OS:</b> {lsb['PRETTY_NAME']} ({lsb['VERSION_CODENAME']}
+<b>CPU:</b> {my_cpuinfo['brand_raw']}
 
 (c) @kastaid #pytel
 """
@@ -183,10 +185,7 @@ def _ialive() -> Optional[str]:
     return str(wrp)
 
 
-async def sys_stats() -> str:
-    my_cpuinfo = cpuinfo.get_cpu_info()
-    lsb = freedesktop_os_release()
-    cpu = f"{psutil.cpu_percent()}% ({cpu_count()}) Core"
+def sys_stats() -> str:
     ram = (
         psutil.virtual_memory().percent
     )
@@ -196,14 +195,13 @@ async def sys_stats() -> str:
     process = psutil.Process(getpid())
     stats = f"""
 STATISTICS ( PYTEL-Premium )
-
-OS: {lsb['PRETTY_NAME']} ({lsb['VERSION_CODENAME']}
-CPU: {my_cpuinfo['brand_raw']}
 -------------------------
-CPU: {cpu}
+
+CPU: {psutil.cpu_percent()}%
 RAM: {ram}%
 DISK: {disk}%
 Memory Usage: {size_bytes(process.memory_info()[0])}
+
 -------------------------
 Uptime: {time_formatter((time() - start_time) * 1000)}
 
@@ -415,7 +413,7 @@ async def _sys_callback(
     client,
     cq: CallbackQuery,
 ):
-    text = await sys_stats()
+    text = sys_stats()
     await pytel_tgb.answer_callback_query(
         cq.id,
         text,
