@@ -6,6 +6,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import Lock
+from cpuinfo import get_cpu_info
 from datetime import datetime
 from os import (
     getpid,
@@ -19,7 +20,6 @@ from sys import executable
 from textwrap import indent
 from time import time
 from typing import Optional
-import cpuinfo
 import packaging
 import psutil
 from git import __version__ as git_ver
@@ -88,6 +88,9 @@ async def _er_iping(
     #    lock.release()
     d1 = time()
     delay_ping = f"{str(round((start_delay - d1) * -50, 2))}"
+    # OS
+    lsb = freedesktop_os_release()
+    my_cpuinfo = get_cpu_info()
     text = f"""
 <b><u>PYROGRAM</b></u>
  ├ <b>Speed:</b> <code>{pings_} ms</code>
@@ -196,12 +199,10 @@ def sys_stats() -> str:
     stats = f"""
 STATISTICS ( PYTEL-Premium )
 -------------------------
-
 CPU: {psutil.cpu_percent()}%
 RAM: {ram}%
 DISK: {disk}%
 Memory Usage: {size_bytes(process.memory_info()[0])}
-
 -------------------------
 Uptime: {time_formatter((time() - start_time) * 1000)}
 
