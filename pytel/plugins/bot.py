@@ -90,6 +90,7 @@ async def _er_iping(
     d1 = time()
     delay_ping = f"{str(round((start_delay - d1) * -50, 2))}"
     # OS
+    lsb = freedesktop_os_release()
     my_cpuinfo = get_cpu_info()
     cpuin = textwrap.shorten(my_cpuinfo["brand_raw"], width=100)
     text = f"""
@@ -198,7 +199,6 @@ def sys_stats() -> str:
         "/"
     ).percent
     process = psutil.Process(getpid())
-    lsb = freedesktop_os_release()
     stats = f"""
 STATISTICS ( PYTEL-Premium )
 -------------------------
