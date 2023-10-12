@@ -181,5 +181,7 @@ pytel.json
 *.jpg
 *.ogg
 *.gif
-# paid
-paid.py
+
+# Linux Group
+*paid.py
+*tgm.py

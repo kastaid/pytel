@@ -5,13 +5,10 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
+import textwrap
 from asyncio import Lock
-from cpuinfo import get_cpu_info
 from datetime import datetime
-from os import (
-    getpid,
-    close,
-    execvp,)
+from os import getpid, close, execvp
 from platform import (
     python_version,
     freedesktop_os_release,
@@ -22,7 +19,7 @@ from time import time
 from typing import Optional
 import packaging
 import psutil
-import textwrap
+from cpuinfo import get_cpu_info
 from git import __version__ as git_ver
 from pip import __version__ as pipver
 from pyrogram import __version__
@@ -92,7 +89,10 @@ async def _er_iping(
     # OS
     lsb = freedesktop_os_release()
     my_cpuinfo = get_cpu_info()
-    cpuin = textwrap.shorten(my_cpuinfo["brand_raw"], width=100)
+    cpuin = textwrap.shorten(
+        my_cpuinfo["brand_raw"],
+        width=100,
+    )
     text = f"""
 <b><u>PYROGRAM</b></u>
  ├ <b>Speed:</b> <code>{pings_} ms</code>

@@ -48,18 +48,32 @@ async def eor(
 ) -> Message:
     chunks = []
     chunk = ""
-    reply = message.reply_to_message
     try:
+        reply = message.reply_to_message
         if reply:
-            if (
-                message.from_user.is_self
-            ):
-                x = await message.edit_text(
+            try:
+                if (
+                    message.from_user.is_self
+                ):
+                    x = await message.edit_text(
+                        text=text,
+                        *args,
+                        **kwargs,
+                    )
+            except BaseException:
+                x = await message.reply(
                     text=text,
                     *args,
                     **kwargs,
                 )
-            elif (
+                with suppress(
+                    Exception
+                ):
+                    await _try_purged(
+                        message
+                    )
+
+            if (
                 message.from_user.id
                 in list(_supersu)
                 or OWNER_ID
@@ -89,15 +103,29 @@ async def eor(
                         **kwargs,
                     )
         else:
-            if (
-                message.from_user.is_self
-            ):
-                x = await message.edit_text(
+            try:
+                if (
+                    message.from_user.is_self
+                ):
+                    x = await message.edit_text(
+                        text=text,
+                        *args,
+                        **kwargs,
+                    )
+            except BaseException:
+                x = await message.reply(
                     text=text,
                     *args,
                     **kwargs,
                 )
-            elif (
+                with suppress(
+                    Exception
+                ):
+                    await _try_purged(
+                        message
+                    )
+
+            if (
                 message.from_user.id
                 in list(_supersu)
                 or OWNER_ID
