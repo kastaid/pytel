@@ -210,6 +210,7 @@ async def _schedule_msg(
                         + timedelta(
                             seconds=schtimes
                         ),
+                        disable_web_page_preview=True,
                     )
                     await sleep(
                         timesleep
@@ -229,6 +230,7 @@ async def _schedule_msg(
                         + timedelta(
                             seconds=schtimes
                         ),
+                        disable_web_page_preview=True,
                     )
                     await sleep(
                         timesleep
@@ -291,6 +293,7 @@ async def _dspam_msg(client, message):
                     await client.send_message(
                         int(chat_id),
                         text=mesg,
+                        disable_web_page_preview=True,
                     )
                     await sleep(
                         timesleep
@@ -304,6 +307,7 @@ async def _dspam_msg(client, message):
                     await client.send_message(
                         int(chat_id),
                         text=mesg,
+                        disable_web_page_preview=True,
                     )
                     await sleep(
                         timesleep

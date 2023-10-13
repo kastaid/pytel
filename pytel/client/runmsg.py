@@ -6,6 +6,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import Lock
+from contextlib import suppress
 from os import getpid
 from pyrogram import __version__
 from pyrogram.enums import ParseMode
@@ -68,6 +69,11 @@ async def running_message(self) -> None:
                     parse_mode=ParseMode.HTML,
                     disable_notification=False,
                 )
+        except OSError:
+            with suppress(
+                BaseException
+            ):
+                await self.connect()
         except MessageIdInvalid as excp:
             self.send_log.exception(
                 excp

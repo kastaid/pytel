@@ -48,7 +48,7 @@ start()
 
 Plugins: Path = Path(__file__).parent
 ThreadLock = ThreadPoolExecutor(
-    max_workers=cpu_count() * 64,
+    max_workers=cpu_count() * 1,
     thread_name_prefix="PYTEL",
 )
 
@@ -156,6 +156,12 @@ async def start_asst() -> None:
     )
     try:
         await pytel_tgb.start()
+    except OSError:
+        try:
+            await pytel_tgb.connect()
+            await pytel_tgb.start()
+        except BaseException:
+            pass
     except KeyError:
         pass
     except FloodWait as flood:

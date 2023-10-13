@@ -46,25 +46,48 @@ async def eor(
     *args,
     **kwargs,
 ) -> Message:
-    chunks = []
-    chunk = ""
+    chunks, chunks1 = [], []
+    chunk, chunk1 = "", ""
     try:
+        if message.sender_chat:
+            try:
+                return await message.edit_text(
+                    text=text,
+                    *args,
+                    **kwargs,
+                )
+            except BaseException:
+                await message.reply(
+                    text=text,
+                    *args,
+                    **kwargs,
+                )
+                with suppress(
+                    Exception
+                ):
+                    await _try_purged(
+                        message
+                    )
+                return
+
         reply = message.reply_to_message
         if reply:
             try:
                 if (
                     message.from_user.is_self
                 ):
-                    x = await message.edit_text(
+                    return await message.edit_text(
                         text=text,
                         *args,
                         **kwargs,
                     )
             except BaseException:
-                x = await message.reply(
-                    text=text,
-                    *args,
-                    **kwargs,
+                return (
+                    await message.reply(
+                        text=text,
+                        *args,
+                        **kwargs,
+                    )
                 )
                 with suppress(
                     Exception
@@ -72,51 +95,39 @@ async def eor(
                     await _try_purged(
                         message
                     )
+                return
 
-            if (
-                message.from_user.id
-                in list(_supersu)
-                or OWNER_ID
-            ):
-                x = await message.reply(
-                    text=text,
-                    *args,
-                    **kwargs,
-                )
-                with suppress(
-                    Exception
-                ):
-                    await _try_purged(
-                        message
-                    )
-            else:
-                if message.from_user:
-                    x = await message.reply(
-                        text=text,
-                        *args,
-                        **kwargs,
-                    )
-                else:
-                    x = await message.edit_text(
-                        text=text,
-                        *args,
-                        **kwargs,
-                    )
-        else:
             try:
                 if (
-                    message.from_user.is_self
+                    message.from_user.id
+                    in list(_supersu)
+                    or OWNER_ID
                 ):
-                    x = await message.edit_text(
+                    return await message.reply(
+                        text=text,
+                        *args,
+                        **kwargs,
+                    )
+                    with suppress(
+                        Exception
+                    ):
+                        await _try_purged(
+                            message
+                        )
+                    return
+                else:
+                    return await message.edit_text(
                         text=text,
                         *args,
                         **kwargs,
                     )
             except BaseException:
-                x = await message.reply(
-                    text=text,
-                    *args,
-                    **kwargs,
+                return (
+                    await message.reply(
+                        text=text,
+                        *args,
+                        **kwargs,
+                    )
                 )
                 with suppress(
                     Exception
@@ -124,13 +135,57 @@ async def eor(
                     await _try_purged(
                         message
                     )
+                return
 
+            if message.from_user:
+                return (
+                    await message.reply(
+                        text=text,
+                        *args,
+                        **kwargs,
+                    )
+                )
+            else:
+                return await message.edit_text(
+                    text=text,
+                    *args,
+                    **kwargs,
+                )
+        else:
             if (
-                message.from_user.id
-                in list(_supersu)
-                or OWNER_ID
+                message.from_user.is_self
             ):
-                x = await message.reply(
+                return await message.edit_text(
+                    text=text,
+                    *args,
+                    **kwargs,
+                )
+
+            try:
+                if (
+                    message.from_user.id
+                    in list(_supersu)
+                    or OWNER_ID
+                ):
+                    return await message.reply(
+                        text=text,
+                        *args,
+                        **kwargs,
+                    )
+                    with suppress(
+                        Exception
+                    ):
+                        await _try_purged(
+                            message
+                        )
+                else:
+                    return await message.edit_text(
+                        text=text,
+                        *args,
+                        **kwargs,
+                    )
+            except BaseException:
+                await message.reply(
                     text=text,
                     *args,
                     **kwargs,
@@ -141,12 +196,7 @@ async def eor(
                     await _try_purged(
                         message
                     )
-            else:
-                x = await message.edit_text(
-                    text=text,
-                    *args,
-                    **kwargs,
-                )
+                return
 
     except MessageTooLong:
         for line in text:
@@ -160,11 +210,60 @@ async def eor(
         chunks.append(chunk)
         try:
             for chunk in chunks:
-                a = await message.reply(
-                    text=str(chunk),
-                    *args,
-                    **kwargs,
-                )
+                try:
+                    a = await message.reply(
+                        text=str(chunk),
+                        reply_to_message_id=replied(
+                            message
+                        ),
+                        *args,
+                        **kwargs,
+                    )
+                except MessageTooLong:
+                    for line1 in chunk1:
+                        if (
+                            len(chunk1)
+                            + len(line1)
+                            > 4096
+                        ):
+                            chunks1.append(
+                                chunk1
+                            )
+                            chunk1 = ""
+                        chunk1 += line1
+                    chunks1.append(
+                        chunk1
+                    )
+                    try:
+                        for (
+                            chunk1
+                        ) in chunks1:
+                            b = await message.reply(
+                                text=str(
+                                    chunk1
+                                ),
+                                reply_to_message_id=replied(
+                                    message
+                                ),
+                                *args,
+                                **kwargs,
+                            )
+                    except (
+                        BaseException
+                    ) as excp:
+                        return await message.edit_text(
+                            text=f"Error: {excp}",
+                            *args,
+                            **kwargs,
+                        )
+                    else:
+                        with suppress(
+                            Exception
+                        ):
+                            await _try_purged(
+                                message
+                            )
+                        return b
         except BaseException as excp:
             return await message.edit_text(
                 text=f"Error: {excp}",
@@ -178,11 +277,6 @@ async def eor(
                     message
                 )
             return a
-
-    else:
-        return x
-
-    return x
 
 
 def get_text(

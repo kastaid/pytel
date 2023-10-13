@@ -32,6 +32,11 @@ try:
             "Please make a Bot from @BotFather and add it's token in TGB_TOKEN."
         )
         exit(1)
+    if not BOT_SESSION:
+        send_log.warning(
+            "Please fill BOT_SESSION for assistant!"
+        )
+        exit(1)
     if (
         not IG_USN
         or not IG_PASS

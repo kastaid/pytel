@@ -526,7 +526,16 @@ class PytelClient(Raw):
                         message,
                     )
                 except OSError:
-                    await client.connect()  # send connection
+                    try:
+                        await client.connect()  # send connection
+                        await func(
+                            client,
+                            message,
+                        )
+                    except (
+                        BaseException
+                    ):
+                        pass
                 except (
                     FloodWait
                 ) as excp:

@@ -545,6 +545,7 @@ async def _alive_inline(
 async def restarting(
     message,
 ):
+    await _try_purged(message)
     try:
         import psutil
 
@@ -556,7 +557,7 @@ async def restarting(
             close(_.fd)
     except BaseException:
         pass
-    await _try_purged(message)
+
     execvp(
         executable,
         [
@@ -621,7 +622,7 @@ async def _updates(client, message):
 
 @pytel.instruction(
     ["restart"],
-    outgoing=True,
+    supersu=["PYTEL"],
 )
 async def _restart(client, message):
     x = await message.reply(

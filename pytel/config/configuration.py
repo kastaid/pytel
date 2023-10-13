@@ -129,11 +129,6 @@ SESSION10: Optional[str] = gets(
     "SESSION10", None
 )
 
-# ChatGPT API_KEY
-AI_KEY: Optional[str] = gets(
-    "AI_KEY", ""
-)
-
 # Instagram Account
 IG_USN: Optional[str] = gets(
     "IG_USN", ""

@@ -1138,7 +1138,7 @@ async def _tiktok_dl(client, message):
 @pytel.instruction(
     ["scl", "social"],
     outgoing=True,
-    supergroups=True,
+    supergroups=False,
 )
 async def _social_links(
     client, message

@@ -6,6 +6,7 @@
 # < https://github.com/kastaid/getter/blob/main/LICENSE/ >.
 
 import argparse
+import os
 import shlex
 import sys
 from contextlib import suppress
@@ -162,6 +163,7 @@ parser.add_argument(
 def main():
     args = parser.parse_args()
     if args.prod:
+        os.system("clear")
         print(
             f"{BOLD}{GREEN}PRODUCTION MODE...{RST}"
         )
@@ -171,6 +173,7 @@ def main():
         )
         run_cmd(app)
     elif args.dev:
+        os.system("clear")
         print(
             f"{BOLD}{GREEN}DEVELOPMENT MODE...{RST}"
         )
@@ -181,6 +184,7 @@ def main():
         )
         run_cmd(app)
     elif args.watch:
+        os.system("clear")
         print(
             f"{BOLD}{GREEN}WATCHED DEVELOPMENT MODE...{RST}"
         )
@@ -190,12 +194,14 @@ def main():
         )
         run_cmd(app_watch)
     elif args.lint:
+        os.system("clear")
         print(
             f"{BOLD}{YELLOW}Run linting and format code...{RST}"
         )
         clean()
         lint()
     elif args.clean:
+        os.system("clear")
         clean()
         print(
             f"{BOLD}{BLUE}✓ Cached has been clear.{RST}"
