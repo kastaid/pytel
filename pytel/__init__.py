@@ -171,7 +171,7 @@ else:
 
 APP_VERSION = f"PYTEL-Premium v.{pyver}"
 WORKERS = min(
-    64, (cpu_count() or 1) + 16
+    64, (cpu_count() or 1) + 32
 )
 SYSTEM_VERSION = f"{uname().system}"
 DEVICE_MODEL = f"{uname().machine}"

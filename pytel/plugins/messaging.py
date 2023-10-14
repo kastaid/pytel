@@ -26,6 +26,7 @@ from . import (
     eor,
     tz,
     ParseMode,
+    SlowmodeWait,
     FloodWait,)
 
 schedule_and_delay_example = f"""
@@ -216,6 +217,26 @@ async def _schedule_msg(
                         timesleep
                     )
                 except (
+                    SlowmodeWait
+                ) as flood:
+                    await sleep(
+                        flood.value
+                    )
+                    await client.send_message(
+                        int(chat_id),
+                        text=mesg,
+                        schedule_date=datetime.now(
+                            tz
+                        )
+                        + timedelta(
+                            seconds=schtimes
+                        ),
+                        disable_web_page_preview=True,
+                    )
+                    await sleep(
+                        timesleep
+                    )
+                except (
                     FloodWait
                 ) as excp:
                     await sleep(
@@ -290,6 +311,20 @@ async def _dspam_msg(client, message):
                 ):
                     break
                 try:
+                    await client.send_message(
+                        int(chat_id),
+                        text=mesg,
+                        disable_web_page_preview=True,
+                    )
+                    await sleep(
+                        timesleep
+                    )
+                except (
+                    SlowmodeWait
+                ) as flood:
+                    await sleep(
+                        flood.value
+                    )
                     await client.send_message(
                         int(chat_id),
                         text=mesg,

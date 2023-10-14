@@ -21,7 +21,8 @@ from pyrogram.errors.exceptions.bad_request_400 import (
     UserNotParticipant,
     UserNotMutualContact,)
 from pyrogram.errors.exceptions.flood_420 import (
-    FloodWait,)
+    FloodWait,
+    SlowmodeWait,)
 from pyrogram.errors.exceptions.forbidden_403 import (
     ChatSendMediaForbidden,
     ChatSendInlineForbidden,

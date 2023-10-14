@@ -7,7 +7,11 @@
 
 import shlex
 import sys
-from os import close, getpid, execvp, system
+from os import (
+    close,
+    getpid,
+    execvp,
+    system,)
 from subprocess import run
 from pytelibs import __version__
 from requests import get
@@ -73,12 +77,8 @@ def check_pypi_version():
             send_log.info(
                 f"New pytelibs pypi version: {latest_version} (current: {__version__})"
             )
-            send_log.info(
-                "Pulling..."
-            )
-            commands(
-                cmd="git pull"
-            )
+            send_log.info("Pulling...")
+            commands(cmd="git pull")
             send_log.info(
                 "Installing..."
             )

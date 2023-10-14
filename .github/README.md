@@ -26,7 +26,7 @@ Copy file sample.env or rename to config.env
 
     cp sample.env config.env
 
-### Build ( Advanced Package Tool )
+### Build set ( Advanced Package Tool )
   <kbd>
 Perform this command to install the package.
   </kbd>
@@ -41,15 +41,28 @@ Perform this command to install the package.
         libavdevice-dev libavutil-dev libswscale-dev \
         libswresample-dev libavfilter-dev libzbar0 linux-libc-dev
 
+  <kbd>
+Perform this command to cleared package & cleared cache.
+  </kbd>
+
+    apt-get -qqy clean \
+    && rm -rf -- ~/.cache \
+        /var/lib/apt/lists/* \
+        /var/cache/apt/archives/* \
+        /etc/apt/sources.list.d/* \
+        /usr/share/man/* /usr/share/doc/* \
+        /var/log/* /tmp/* /var/tmp/*
+
+
 ### Guide Command ›_
   * <strong>Install requirements:</strong>
-    > pip3 install -U -r main.txt
+    > pip3 install -U --no-cache-dir -r main.txt
   * <strong>Run pytel:</strong>
     > python3 -m start --help
 
 ## License
 [GNU AGPL-3.0][license] © [2023-present KASTA ID 🇮🇩][kastaid]
-  * Author - [@Unknownkz][unknownkz]
+  * Author: Developer - [@Unknownkz][unknownkz]
 
 [license]: https://opensource.org/license/agpl-v3/
 [kastaid]: https://github.com/kastaid
