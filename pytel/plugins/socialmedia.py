@@ -757,15 +757,11 @@ Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( F
 Copyright (C) 2023-present @kastaid
 """
         if purl:
-            get_pic = search(
-                r"https://instagram.(.*)",
-                purl,
-            )
-            filn = f"cache/{username_ig}.jpg"
             r = getreq(
-                get_pic.group(0),
+                purl,
                 stream=True,
             )
+            filn = f"cache/{username_ig}.jpg"
             with open(filn, "wb") as f:
                 for (
                     chunk
