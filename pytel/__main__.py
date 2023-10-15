@@ -67,10 +67,10 @@ PYTEL = r"""
   / |##!##| \   |_|    |___/
  /  |##!##|  \
 |  / ^ | ^ \  |   [ USERBOT-TELEGRAM ] 🤖
-| /  ( | )  \ |    • Multi Client Session.
-|/   ( | )   \|    • Multi Featured.
-    ((   ))        • API Development Tools.
-   ((  :  ))       • Plugins.
+| /  ( | )  \ |    • Multi Client Session. ( User )
+|/   ( | )   \|    • ChatGPT. ( OpenAI )
+    ((   ))        • Managing Group. ( Telegram )
+   ((  :  ))       • Social Media. ( Searching & Downloader )
    ((  :  ))
     ((   ))
      (( ))

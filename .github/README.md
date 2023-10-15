@@ -31,7 +31,9 @@ Copy file sample.env or rename to config.env
 Perform this command to install the package.
   </kbd>
 
-    apt-get install -y --no-install-recommends \
+    apt-get update -y && apt list --upgradeable \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
         wget curl git python3-dev \
         python3-pip python3-venv \
         python3-testresources python2-dev \
@@ -39,7 +41,7 @@ Perform this command to install the package.
         pkg-config build-essential \
         ffmpeg libavformat-dev libavcodec-dev \
         libavdevice-dev libavutil-dev libswscale-dev \
-        libswresample-dev libavfilter-dev libzbar0 linux-libc-dev
+        libswresample-dev libavfilter-dev libzbar0 linux-libc-dev \
 
   <kbd>
 Perform this command to cleared package & cleared cache.
@@ -52,7 +54,6 @@ Perform this command to cleared package & cleared cache.
         /etc/apt/sources.list.d/* \
         /usr/share/man/* /usr/share/doc/* \
         /var/log/* /tmp/* /var/tmp/*
-
 
 ### Guide Command ›_
   * <strong>Install requirements:</strong>

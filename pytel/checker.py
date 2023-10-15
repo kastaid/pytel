@@ -83,7 +83,7 @@ def check_pypi_version():
                 "Installing..."
             )
             commands(
-                cmd="pip3 install -U pytelibs"
+                cmd="pip3 install -U --no-cache-dir g4f pytelibs"
             )
             send_log.success(
                 f"pytelibs v{latest_version} has been installed."
