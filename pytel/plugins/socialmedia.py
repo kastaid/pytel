@@ -54,7 +54,7 @@ _YOUTUBE_DLDR = """
 @pytel.instruction(
     ["ytv", "ytvdl"],
     outgoing=True,
-    supergroups=True,
+    supergroups=False,
     privileges=[
         "can_send_media_messages"
     ],
@@ -268,7 +268,7 @@ async def _youtube_video_dl(
 @pytel.instruction(
     ["yta", "ytadl"],
     outgoing=True,
-    supergroups=True,
+    supergroups=False,
     privileges=[
         "can_send_media_messages"
     ],
@@ -540,6 +540,10 @@ async def _youtube_searching(
 @pytel.instruction(
     ["ghs", "ghsearch", "github"],
     outgoing=True,
+    supergroups=False,
+    privileges=[
+        "can_send_media_messages"
+    ],
 )
 async def _github_searching(
     client, message
@@ -688,7 +692,7 @@ async def _google_searching(
 @pytel.instruction(
     ["igsr", "igsearch"],
     outgoing=True,
-    supergroups=True,
+    supergroups=False,
     privileges=[
         "can_send_media_messages"
     ],
@@ -808,7 +812,7 @@ Copyright (C) 2023-present @kastaid
 @pytel.instruction(
     ["igpdl", "igvdl", "igsdl"],
     outgoing=True,
-    supergroups=True,
+    supergroups=False,
     privileges=[
         "can_send_media_messages"
     ],
@@ -961,7 +965,7 @@ Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( F
 @pytel.instruction(
     ["pintdl", "pindl"],
     outgoing=True,
-    supergroups=True,
+    supergroups=False,
     privileges=[
         "can_send_media_messages"
     ],
@@ -1047,7 +1051,7 @@ Made with <a href='https://developers.pinterest.com/'>Pinterest</a> ( Developers
 @pytel.instruction(
     ["tiktokdl", "ttdl"],
     outgoing=True,
-    supergroups=True,
+    supergroups=False,
     privileges=[
         "can_send_media_messages"
     ],
