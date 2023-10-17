@@ -39,6 +39,7 @@ from pyrogram.raw.functions import (
 from pytelibs import (
     _chpytel,
     _supersu,
+    OUT_AFK,
     DEFAULT_SHELL_BLACKLISTED,
     GCAST_BLACKLIST,
     GUCAST_BLACKLIST,
@@ -120,6 +121,7 @@ from ..client import (
     making_code,
     scanner_code,
     quotlymaker,)
+from ..client.leverage import client_afk
 from ..config import (
     PREFIX as px,
     TimeZone,

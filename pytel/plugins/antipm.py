@@ -44,8 +44,10 @@ from . import (
 async def _anti_pm_status(
     client, message
 ):
-    if not (pydb.get_key("ANTIPM")) or (
-        not message.from_user
+    if (
+        not (pydb.get_key("ANTIPM"))
+        or (not message.from_user)
+        or (not message)
     ):
         return
     _ = client.me.id

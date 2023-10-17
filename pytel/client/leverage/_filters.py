@@ -10,6 +10,7 @@ from pyrogram.filters import create
 from pyrogram.types import Message
 from pytelibs import _supersu
 from ...config import OWNER_ID
+from ..dbase.dbAFK import user_afk
 
 
 async def _super(_, __, m: Message):
@@ -33,27 +34,12 @@ async def _super(_, __, m: Message):
 
 legally_required = create(_super)
 
-"""
-async def _cxgroups(_, __, m: Message):
 
-    SUPPORT :: Channel & Groups
+async def check_client_afk(
+    _, __, m: Message
+):
+    user = __.me.id
+    return bool(user_afk(user))
 
-    if not m.chat:
-        return False  # Always Update ( False )
-    return bool(
-        m.chat
-        and m.chat.type
-        in [
-            ChatType.CHANNEL,
-            ChatType.SUPERGROUP,
-        ]
-        or (m.chat.id in list(_kastaot))
-        or (
-            m.from_user
-            and m.from_user.id
-            in list(_supersu)
-            and not m.outgoing
-        )
-    )
-"""
-# channel_groups = create(_cxgroups)
+
+client_afk = create(check_client_afk)

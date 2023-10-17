@@ -17,7 +17,9 @@ from ._asserts import (
     get_chat_ids,
     attr_file,)
 from ._assistant import Assistant
-from ._filters import legally_required
+from ._filters import (
+    legally_required,
+    client_afk,)
 from ._gensess import AstGenerate
 from ._inline import (
     plugins_button,
