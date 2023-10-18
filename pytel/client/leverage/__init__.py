@@ -19,7 +19,8 @@ from ._asserts import (
 from ._assistant import Assistant
 from ._filters import (
     legally_required,
-    client_afk,)
+    client_afk,
+    client_antipm,)
 from ._gensess import AstGenerate
 from ._inline import (
     plugins_button,

@@ -11,6 +11,8 @@ from pyrogram.types import Message
 from pytelibs import _supersu
 from ...config import OWNER_ID
 from ..dbase.dbAFK import user_afk
+from ..dbase.dbAntipm import (
+    get_antipm_status,)
 
 
 async def _super(_, __, m: Message):
@@ -43,3 +45,18 @@ async def check_client_afk(
 
 
 client_afk = create(check_client_afk)
+
+
+async def check_client_antipm(
+    _, __, m: Message
+):
+    user = __.me.id
+    return (
+        get_antipm_status(user_id=user)
+        == "On"
+    )
+
+
+client_antipm = create(
+    check_client_antipm
+)

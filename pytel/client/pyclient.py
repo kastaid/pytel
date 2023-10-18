@@ -190,9 +190,6 @@ class PytelClient(Raw):
         supergroups: Union[
             bool, bool
         ] = False,
-        is_antipm: Union[
-            bool, bool
-        ] = None,
         outgoing: Union[
             bool, bool
         ] = False,
@@ -259,12 +256,6 @@ class PytelClient(Raw):
                     prefixes=handler,
                 )
                 & filters.me
-            )
-        if is_antipm:
-            filt = (
-                filters.private
-                & ~filters.me
-                & ~filters.bot
             )
 
         @cached(cache={})

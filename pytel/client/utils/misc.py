@@ -175,32 +175,32 @@ def time_formatter(
     ) = divmod(days, 7)
     tmp = (
         (
-            (str(weeks) + "w, ")
+            (str(weeks) + "wk, ")
             if weeks
             else ""
         )
         + (
-            (str(days) + "d, ")
+            (str(days) + "dy, ")
             if days
             else ""
         )
         + (
-            (str(hours) + "h, ")
+            (str(hours) + "hr, ")
             if hours
             else ""
         )
         + (
-            (str(minutes) + "m, ")
+            (str(minutes) + "min, ")
             if minutes
             else ""
         )
         + (
-            (str(seconds) + "s, ")
+            (str(seconds) + "sec, ")
             if seconds
             else ""
         )
     )
-    return tmp and tmp[:-2] or "0s"
+    return tmp and tmp[:-2] or "0sec"
 
 
 def RunningCommand(

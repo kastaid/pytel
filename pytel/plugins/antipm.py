@@ -26,6 +26,8 @@ from . import (
     LOGCHAT_ID,
     ParseMode,
     eor,
+    filters,
+    client_antipm,
     _supersu,
     functions,
     plugins_helper,
@@ -40,7 +42,12 @@ from . import (
     ikmarkup,)
 
 
-@pytel.instruction(is_antipm=True)
+@pytel.instruction(
+    filt=client_antipm
+    & filters.private
+    & ~filters.me
+    & ~filters.bot
+)
 async def _anti_pm_status(
     client, message
 ):
@@ -50,7 +57,8 @@ async def _anti_pm_status(
         or (not message)
     ):
         return
-    _ = client.me.id
+    for cl in client._client:
+        _ = cl.me.id
     (
         is_blocked,
         is_reported,
@@ -398,7 +406,8 @@ async def _anti_pm_status(
     supergroups=True,
 )
 async def _anti_pm(client, message):
-    _ = client.me.id
+    for x in client._client:
+        _ = x.me.id
     if len(message.command) == 1:
         if (
             get_antipm_status(user_id=_)
@@ -480,7 +489,8 @@ Enable with: </b><code>{}antipm enable</code>
 async def _antipm_report(
     client, message
 ):
-    _ = client.me.id
+    for x in client._client:
+        _ = x.me.id
     if len(message.command) == 1:
         if (
             get_pmreport_status(
@@ -559,7 +569,8 @@ Enable with: </b><code>{}pmreport enable</code>
 async def _antipm_block(
     client, message
 ):
-    _ = client.me.id
+    for x in client._client:
+        _ = x.me.id
     if len(message.command) == 1:
         if (
             get_pmblock_status(
@@ -638,7 +649,8 @@ Enable with: </b><code>{}pmblock enable</code>
 async def _antipm_purged(
     client, message
 ):
-    _ = client.me.id
+    for x in client._client:
+        _ = x.me.id
     if len(message.command) == 1:
         if (
             get_antipm_purged(user_id=_)
@@ -713,7 +725,8 @@ Enable with: </b><code>{}pmpurged enable</code>
     supergroups=True,
 )
 async def _pmlog_media(client, message):
-    _ = client.me.id
+    for x in client._client:
+        _ = x.me.id
     if len(message.command) == 1:
         if (
             get_pmlog_media(user_id=_)

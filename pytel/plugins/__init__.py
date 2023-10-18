@@ -121,7 +121,9 @@ from ..client import (
     making_code,
     scanner_code,
     quotlymaker,)
-from ..client.leverage import client_afk
+from ..client.leverage import (
+    client_afk,
+    client_antipm,)
 from ..config import (
     PREFIX as px,
     TimeZone,
