@@ -23,25 +23,23 @@ from . import (
     _try_purged,)
 
 _AFK_ON_NO_REASON = """
-{} still <b><u>AFK</u>!</b>
+{} is <b><u>AFK</u>!</b>
 <b>Since:</b> {}
 """
 
 _AFK_ON_REASON = """
-{} still <b><u>AFK</u>!</b>
+{} is <b><u>AFK</u>!</b>
 <b>Reason:</b> {}
 <b>Since:</b> {}
 """
 
 _AFK_OUT_NO_REASON = """
-{}
-<b>Status:</b><b><u>{}</u></b>
+{} </b><b><u>{}</u></b>
 <b>Since:</b> {}
 """
 
 _AFK_OUT_REASON = """
-{}
-<b>Status:</b> <b><u>{}</u></b>
+{} <b><u>{}</u></b>
 <b>Reason:</b> {}
 <b>Since:</b> {}
 """
