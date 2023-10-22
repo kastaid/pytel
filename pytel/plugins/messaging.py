@@ -25,6 +25,7 @@ from . import (
     random_prefixies,
     eor,
     tz,
+    suppress,
     ParseMode,
     SlowmodeWait,
     FloodWait,)
@@ -258,9 +259,11 @@ async def _schedule_msg(
                     )
                 except BaseException:
                     pass
-            cancel_schedule(
-                int(user_id), chat_id
-            )
+            with suppress(Exception):
+                cancel_schedule(
+                    int(user_id),
+                    chat_id,
+                )
 
 
 @pytel.instruction(
@@ -349,9 +352,11 @@ async def _dspam_msg(client, message):
                     )
                 except BaseException:
                     pass
-            cancel_dspam(
-                int(user_id), chat_id
-            )
+            with suppress(Exception):
+                cancel_dspam(
+                    int(user_id),
+                    chat_id,
+                )
 
 
 @pytel.instruction(
