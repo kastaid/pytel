@@ -1023,9 +1023,9 @@ async def _zombies(client, message):
                 await sleep(1)
 
         except UserAdminInvalid:
-            zombie = zombie - [
+            zombie = set(zombie) - set(
                 member.user.id
-            ]
+            )
         except FloodWait as flood:
             await sleep(flood.value)  # type: ignore
             await client.ban_chat_member(
