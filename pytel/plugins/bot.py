@@ -35,6 +35,7 @@ from . import (
     BotResponseTimeout,
     QueryIdInvalid,
     RunningCommand,
+    OWNER_ID,
     ParseMode,
     Ping,
     PingDelayDisconnect,
@@ -573,6 +574,8 @@ async def restarting(
     supersu=["PYTEL"],
 )
 async def _updates(client, message):
+    if message.from_user.id != OWNER_ID:
+        return
     if lock.locked():
         await message.edit(
             "Please wait until --**updating**-- done."
@@ -625,6 +628,8 @@ async def _updates(client, message):
     supersu=["PYTEL"],
 )
 async def _restart(client, message):
+    if message.from_user.id != OWNER_ID:
+        return
     x = await message.reply(
         "Restarting client, wait for 1 minutes.."
     )

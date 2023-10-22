@@ -12,6 +12,8 @@ from . import (
     plugins_helper,
     px,
     pytel,
+    eor,
+    replied,
     random_prefixies,)
 
 
@@ -30,15 +32,16 @@ async def _lyrics(client, message):
 
     else:
         _ = LE()
-        kz = await message.edit(
-            "Search lyrics..."
+        kz = await eor(
+            message,
+            text="Search lyrics...",
         )
         cx = "{}".format(search_text)
         songs = _.getting_my_lyrics(
             "{}".format(cx)
         )
 
-        if "No results found" in songs:
+        if songs.get("error"):
             x = "No results found."
             return await kz.edit(
                 "{}".format(x)
@@ -55,11 +58,15 @@ async def _lyrics(client, message):
                 "\n",
             )
             MyLyrics = "{}".format(cxz)
-        await kz.reply(
-            MyLyrics,
+        await client.send_message(
+            message.chat.id,
+            text=MyLyrics,
             disable_notification=True,
+            reply_to_message_id=replied(
+                message
+            ),
         )
-        return await _try_purged(kz, 3)
+        await _try_purged(kz, 2.5)
 
 
 plugins_helper["lyrics"] = {
