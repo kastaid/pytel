@@ -36,18 +36,13 @@ async def _lyrics(client, message):
             message,
             text="Search lyrics...",
         )
-        cx = "{}".format(search_text)
-        songs = _.getting_my_lyrics(
-            "{}".format(cx)
-        )
-
-        if songs.get("error"):
-            x = "No results found."
-            return await kz.edit(
-                "{}".format(x)
+        try:
+            cx = "{}".format(
+                search_text
             )
-
-        else:
+            songs = _.getting_my_lyrics(
+                "{}".format(cx)
+            )
             rxv = (
                 songs.pop("title")
                 + "\n\n"
@@ -58,15 +53,22 @@ async def _lyrics(client, message):
                 "\n",
             )
             MyLyrics = "{}".format(cxz)
-        await client.send_message(
-            message.chat.id,
-            text=MyLyrics,
-            disable_notification=True,
-            reply_to_message_id=replied(
-                message
-            ),
-        )
-        await _try_purged(kz, 2.5)
+            await client.send_message(
+                message.chat.id,
+                text=MyLyrics,
+                disable_notification=True,
+                reply_to_message_id=replied(
+                    message
+                ),
+            )
+            await _try_purged(kz, 2.5)
+            return
+        except BaseException:
+            await eor(
+                kz,
+                text="No results found.",
+            )
+            return
 
 
 plugins_helper["lyrics"] = {
