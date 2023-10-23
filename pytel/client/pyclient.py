@@ -581,8 +581,8 @@ class PytelClient(Raw):
                         )
                         format_text += "\n\n<b>Evidence ⬇️ </b>"
                         format_text += f"\n\n👤 User: {await mentioned(client, user_id=user_id, use_html=True)}"
-                        format_text += f"\nGroup Name: {message.chat.title}"
-                        format_text += f"\nGroup ID: <code>{message.chat.id}</code>"
+                        format_text += f"\n👥 Group Name: {message.chat.title}"
+                        format_text += f"\n🔎 Group ID: <code>{message.chat.id}</code>"
                         format_text += (
                             "\n\n<b>🖐🏻 Event Trigger:</b> <code>"
                             + str(

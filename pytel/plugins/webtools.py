@@ -11,6 +11,7 @@ from . import (
     _try_purged,
     eor,
     get_text,
+    links_checker,
     is_ipv4,
     is_url,
     plugins_helper,
@@ -25,6 +26,48 @@ from . import (
     replied,
     random_prefixies,
     screenshots,)
+
+_PHISHING_TEXT = """
+<b><u>LINKS CHECKER</u></b>
+
+<b>{}
+"""
+
+
+@pytel.instruction(
+    ["clink", "clinks", "checklinks"],
+    outgoing=True,
+)
+async def _check_phishing(
+    client, message
+):
+    url = get_text(
+        message, save_link=True
+    )
+    if not url or not (
+        is_url(url) is True
+    ):
+        await eor(
+            message,
+            text="Provide a valid link!",
+        )
+        return
+
+    x = await eor(
+        message,
+        text="Checking...",
+    )
+    resp = await links_checker(url)
+    if resp:
+        await eor(
+            x,
+            text=resp,
+        )
+    else:
+        await eor(
+            x,
+            text="Can't fetches",
+        )
 
 
 @pytel.instruction(
@@ -308,6 +351,7 @@ async def _numbers_info(
 
 
 plugins_helper["webtools"] = {
+    f"{random_prefixies(px)}clinks / checklinks [links/reply to message links]": "To check malicious links. ( Phishing )",
     f"{random_prefixies(px)}webss [url]/[reply link]": "To capture the screen on the link.",
     f"{random_prefixies(px)}short_[isgd/tiny/clck] [url]/[reply link]": "To shorten your link/url.",
     f"{random_prefixies(px)}unshort [url]/[reply link]": "To un-shorten your link/url.",

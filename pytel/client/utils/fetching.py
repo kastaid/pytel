@@ -38,6 +38,7 @@ from pytz import (
     timezone,
     country_names,)
 from version import __version__ as versi
+from ...config import IPQUALITY_KEY
 from .misc import humanboolean
 
 _SPAMWATCH_CACHE = TTLCache(
@@ -720,6 +721,42 @@ async def fetch_dns(
         )
 
     return text
+
+
+async def links_checker(
+    message: Optional[str],
+) -> Optional[str]:
+    if not IPQUALITY_KEY:
+        return "Please visit ipqualityscore.com to get API_KEY"
+
+    url = f"https://ipqualityscore.com/api/json/url?key={IPQUALITY_KEY}&url={message}"
+    links = await fetching(
+        url,
+        re_json=True,
+    )
+    if links:
+        text = "<b><u>LINKS CHECKER</u></b>\n"
+        if links["ip_address"]:
+            text += f"<b>IP Address:</b> {links['ip_address']}\n"
+        else:
+            pass
+        text += f"<b>Domain Name:</b> {links['domain']}\n"
+        text += f"<b>Domain Age:</b> {links['domain_age']['human']}\n"
+        text += f"<b>Risk Score:</b> {links['risk_score']}%\n"
+        text += f"<b>Server:</b> {links['server']}\n\n"
+        text += f"<b><u>MORE INFORMATION</b></u>\n"
+        text += f" ├ <b>Is Adult:</b> {humanboolean(links['adult'])}\n"
+        text += f" ├ <b>Is DNS Valid:</b> {humanboolean(links['dns_valid'])}\n"
+        text += f" ├ <b>Is Parking:</b> {humanboolean(links['parking'])}\n"
+        text += f" ├ <b>Is Phishing:</b> {humanboolean(links['phishing'])}\n"
+        text += f" ├ <b>Is Spamming:</b> {humanboolean(links['spamming'])}\n"
+        text += f" ├ <b>Is Suspicious:</b> {humanboolean(links['suspicious'])}\n"
+        text += f" ├ <b>Is Unsafe:</b> {humanboolean(links['unsafe'])}\n"
+        text += f" └ <b>Is Virus Malware:</b> {humanboolean(links['malware'])}\n\n"
+        text += f"<code>Copyright (C) 2023-present kastaid</code>"
+        return text
+    else:
+        return "Can't fetches"
 
 
 async def fetch_github(

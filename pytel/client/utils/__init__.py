@@ -25,7 +25,8 @@ from .fetching import (
     fetch_ipinfo,
     fetch_dns,
     fetch_github,
-    fetch_weather,)
+    fetch_weather,
+    links_checker,)
 from .helper import (
     plugins_helper,
     SaveDict,)

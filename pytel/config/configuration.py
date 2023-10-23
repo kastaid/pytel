@@ -145,4 +145,9 @@ RAPID_KEY: Optional[str] = gets(
     "RAPID_KEY", ""
 )
 
+# IPQUALITY API KEY
+IPQUALITY_KEY: Optional[str] = gets(
+    "IPQUALITY_KEY", ""
+)
+
 del load_dotenv, gets
