@@ -736,10 +736,6 @@ async def links_checker(
     )
     if links:
         text = "<b><u>LINKS CHECKER</u></b>\n"
-        if links["ip_address"]:
-            text += f"<b>IP Address:</b> {links['ip_address']}\n"
-        else:
-            pass
         text += f"<b>Domain Name:</b> {links['domain']}\n"
         text += f"<b>Domain Age:</b> {links['domain_age']['human']}\n"
         text += f"<b>Risk Score:</b> {links['risk_score']}%\n"
