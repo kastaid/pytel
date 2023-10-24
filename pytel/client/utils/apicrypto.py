@@ -14,6 +14,7 @@ from ...config import RAPID_KEY
 def fetch_crypto(
     coin: Optional[str],
 ) -> Optional[str]:
+    hlp = []
     url = "https://coinranking1.p.rapidapi.com/coins"
     querystring = {
         "referenceCurrencyUuid": "yhjMzLPhuIDl",
@@ -73,16 +74,16 @@ def fetch_crypto(
         text += f"<b>Price to BTC:</b> {btcprice} ₿\n"
     text += f"<b>Market Cap:</b> <code>${crypto_format(int(resp['data']['coins'][0]['marketCap']))}</code>\n"
     text += f"<b>Volume 24 Hours:</b> <code>${crypto_format(int(resp['data']['coins'][0]['24hVolume']))}</code>\n"
-    high = max(
-        resp["data"]["coins"][0][
-            "sparkline"
-        ]
-    )
-    low = min(
-        resp["data"]["coins"][0][
-            "sparkline"
-        ]
-    )
+    for x in resp["data"]["coins"][0][
+        "sparkline"
+    ]:
+        if x is None:
+            pass
+        else:
+            hlp.append(x)
+    prc = list(hlp)
+    high = max(map(str, list(prc)))
+    low = min(map(str, list(prc)))
     text += f"<b>Price High:</b> <code>${crypto_format(high)}</code>\n"
     text += f"<b>Price Low:</b> <code>${crypto_format(low)}</code>"
     return text
