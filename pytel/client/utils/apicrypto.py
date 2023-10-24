@@ -45,25 +45,34 @@ def fetch_crypto(
         "change"
     ]
     if not percent.startswith("-"):
-        percent = "+" + percent
+        percent = (
+            "<code>"
+            + percent
+            + "%</code> 🟢"
+        )
     else:
-        pass
-    text = f"<b>#{coin.upper()} ( <a href='{resp['data']['coins'][0]['coinrankingUrl']}'>Market Cap</a> )</b> | <code>{percent}%</code>\n<pre>"
-    text += f"Rank: {int(resp['data']['coins'][0]['rank'])}\n"
+        percent = (
+            "<code>"
+            + percent
+            + "%</code> 🔴"
+        )
+    text = f"<b>#{coin.upper()} ( <a href='{resp['data']['coins'][0]['coinrankingUrl']}'>Market Cap</a> )</b>\n"
+    text += f"<b>Rank:</b> {int(resp['data']['coins'][0]['rank'])}\n"
+    text += f"<b>Percentage Today:</b> <code>{percent}</code>\n"
     price_now: Union[int, float] = resp[
         "data"
     ]["coins"][0]["price"]
     price = crypto_format(price_now)
-    text += f"Price to USD: ${price}\n"
+    text += f"<b>Price to USD:</b> <code>${price}</code>\n"
     if resp["data"]["coins"][0][
         "btcPrice"
     ]:
         btcprice = resp["data"][
             "coins"
         ][0]["btcPrice"]
-        text += f"Price to BTC: {crypto_format(btcprice)} ₿\n"
-    text += f"Market Cap: ${crypto_format(int(resp['data']['coins'][0]['marketCap']))}\n"
-    text += f"Volume 24 Hours: ${crypto_format(int(resp['data']['coins'][0]['24hVolume']))}\n"
+        text += f"<b>Price to BTC:</b> {btcprice} ₿\n"
+    text += f"<b>Market Cap:</b> </code>${crypto_format(int(resp['data']['coins'][0]['marketCap']))}</code>\n"
+    text += f"<b>Volume 24 Hours:</b> <code>${crypto_format(int(resp['data']['coins'][0]['24hVolume']))}</code>\n"
     high = max(
         resp["data"]["coins"][0][
             "sparkline"
@@ -74,6 +83,6 @@ def fetch_crypto(
             "sparkline"
         ]
     )
-    text += f"Price High: ${crypto_format(high)}\n"
-    text += f"Price Low: ${crypto_format(low)}</pre>"
+    text += f"<b>Price High:</b> <code>${crypto_format(high)}</code>\n"
+    text += f"<b>Price Low:</b> <code>${crypto_format(low)}</code>"
     return text
