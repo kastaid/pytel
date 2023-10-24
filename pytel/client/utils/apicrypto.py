@@ -45,20 +45,20 @@ def fetch_crypto(
         "change"
     ]
     if not percent.startswith("-"):
-        percent = (
+        prcn = (
             "<code>+"
             + percent
             + "%</code> 🟢"
         )
     else:
-        percent = (
+        prcn = (
             "<code>"
             + percent
             + "%</code> 🔴"
         )
     text = f"<b>#{coin.upper()} ( <a href='{resp['data']['coins'][0]['coinrankingUrl']}'>Market Cap</a> )</b>\n"
     text += f"<b>Rank:</b> {int(resp['data']['coins'][0]['rank'])}\n"
-    text += f"<b>Percentage Today:</b> <code>{percent}</code>\n"
+    text += f"<b>Percentage Today:</b> {prcn}\n"
     price_now: Union[int, float] = resp[
         "data"
     ]["coins"][0]["price"]
