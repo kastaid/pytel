@@ -46,7 +46,7 @@ def fetch_crypto(
     ]
     if not percent.startswith("-"):
         percent = (
-            "<code>"
+            "<code>+"
             + percent
             + "%</code> 🟢"
         )
@@ -71,7 +71,7 @@ def fetch_crypto(
             "coins"
         ][0]["btcPrice"]
         text += f"<b>Price to BTC:</b> {btcprice} ₿\n"
-    text += f"<b>Market Cap:</b> </code>${crypto_format(int(resp['data']['coins'][0]['marketCap']))}</code>\n"
+    text += f"<b>Market Cap:</b> <code>${crypto_format(int(resp['data']['coins'][0]['marketCap']))}</code>\n"
     text += f"<b>Volume 24 Hours:</b> <code>${crypto_format(int(resp['data']['coins'][0]['24hVolume']))}</code>\n"
     high = max(
         resp["data"]["coins"][0][
