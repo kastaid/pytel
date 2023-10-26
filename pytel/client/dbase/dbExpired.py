@@ -6,10 +6,11 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from datetime import datetime, timedelta
+from functools import lru_cache
 from time import perf_counter
 from typing import Optional, Any
 from asyncache import cached
-from cachetools import TTLCache, func
+from cachetools import TTLCache
 from ..utils import tz
 from ._BaseClient import pydb
 
@@ -60,12 +61,11 @@ async def countdown_to_datetime(
     return str(result)
 
 
-@func.lru_cache
+@lru_cache
 def user_expired():
     return pydb.get_key("EXP_DT") or {}
 
 
-@func.lru_cache
 def set_expired_days(
     user_id: Optional[int],
     duration,
@@ -128,7 +128,6 @@ async def get_expired_date(
     return None, None
 
 
-@func.lru_cache
 def rem_expired(
     user_id,
 ):

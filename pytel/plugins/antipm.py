@@ -249,7 +249,7 @@ async def _anti_pm_status(
                     randrange(
                         3,
                         5,
-                    )
+                    ),
                 )
                 x = await client.send_voice(
                     chat_id,
@@ -406,11 +406,11 @@ async def _anti_pm_status(
     supergroups=True,
 )
 async def _anti_pm(client, message):
-    for x in client._client:
-        _ = x.me.id
     if len(message.command) == 1:
         if (
-            get_antipm_status(user_id=_)
+            get_antipm_status(
+                user_id=client.me.id
+            )
             == "On"
         ):
             text = """
@@ -444,7 +444,7 @@ Enable with: </b><code>{}antipm enable</code>
         "true",
     ]:
         set_antipm(
-            user_id=_,
+            user_id=client.me.id,
             status="On",
         )
         await eor(
@@ -460,7 +460,7 @@ Enable with: </b><code>{}antipm enable</code>
         "false",
     ]:
         set_antipm(
-            user_id=_,
+            user_id=client.me.id,
             status="Off",
         )
         await eor(
@@ -489,12 +489,10 @@ Enable with: </b><code>{}antipm enable</code>
 async def _antipm_report(
     client, message
 ):
-    for x in client._client:
-        _ = x.me.id
     if len(message.command) == 1:
         if (
             get_pmreport_status(
-                user_id=_
+                user_id=client.me.id
             )
             == "On"
         ):
@@ -529,7 +527,7 @@ Enable with: </b><code>{}pmreport enable</code>
         "true",
     ]:
         set_pmreport(
-            user_id=_,
+            user_id=client.me.id,
             status="On",
         )
         await eor(
@@ -545,7 +543,7 @@ Enable with: </b><code>{}pmreport enable</code>
         "false",
     ]:
         set_pmreport(
-            user_id=_,
+            user_id=client.me.id,
             status="Off",
         )
         await eor(
@@ -569,12 +567,10 @@ Enable with: </b><code>{}pmreport enable</code>
 async def _antipm_block(
     client, message
 ):
-    for x in client._client:
-        _ = x.me.id
     if len(message.command) == 1:
         if (
             get_pmblock_status(
-                user_id=_
+                user_id=client.me.id
             )
             == "On"
         ):
@@ -609,7 +605,7 @@ Enable with: </b><code>{}pmblock enable</code>
         "true",
     ]:
         set_pmblock(
-            user_id=_,
+            user_id=client.me.id,
             status="On",
         )
         await eor(
@@ -625,7 +621,7 @@ Enable with: </b><code>{}pmblock enable</code>
         "false",
     ]:
         set_pmblock(
-            user_id=_,
+            user_id=client.me.id,
             status="Off",
         )
         await eor(
@@ -649,11 +645,11 @@ Enable with: </b><code>{}pmblock enable</code>
 async def _antipm_purged(
     client, message
 ):
-    for x in client._client:
-        _ = x.me.id
     if len(message.command) == 1:
         if (
-            get_antipm_purged(user_id=_)
+            get_antipm_purged(
+                user_id=client.me.id
+            )
             == "On"
         ):
             text = """
@@ -687,7 +683,7 @@ Enable with: </b><code>{}pmpurged enable</code>
         "true",
     ]:
         set_pmpurged(
-            user_id=_,
+            user_id=client.me.id,
             status="On",
         )
         await eor(
@@ -703,7 +699,7 @@ Enable with: </b><code>{}pmpurged enable</code>
         "false",
     ]:
         set_pmpurged(
-            user_id=_,
+            user_id=client.me.id,
             status="Off",
         )
         await eor(
@@ -725,11 +721,11 @@ Enable with: </b><code>{}pmpurged enable</code>
     supergroups=True,
 )
 async def _pmlog_media(client, message):
-    for x in client._client:
-        _ = x.me.id
     if len(message.command) == 1:
         if (
-            get_pmlog_media(user_id=_)
+            get_pmlog_media(
+                user_id=client.me.id
+            )
             == "On"
         ):
             text = """
@@ -763,7 +759,7 @@ Enable with: </b><code>{}pmlogmedia enable</code>
         "true",
     ]:
         set_pmlogmedia(
-            user_id=_,
+            user_id=client.me.id,
             status="On",
         )
         await eor(
@@ -779,7 +775,7 @@ Enable with: </b><code>{}pmlogmedia enable</code>
         "false",
     ]:
         set_pmlogmedia(
-            user_id=_,
+            user_id=client.me.id,
             status="Off",
         )
         await eor(
