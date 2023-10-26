@@ -512,7 +512,13 @@ async def _video_chats_information(
                 "Participants List",
             )
             for i in par.users:
-                _ += f"├ <code>{int(i.id)}</code>  -  <a href=tg://user?id={int(i.id)}>{await client.user_fullname(int(i.id))}</a>\n"
+                _ += "├ <code>{}</code>  -  <a href=tg://user?id={}>{}</a>\n".format(
+                    i.id,
+                    i.id,
+                    await client.user_fullname(
+                        i.id,
+                    ),
+                )
 
         else:
             _ = """

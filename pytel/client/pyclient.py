@@ -13,6 +13,7 @@ from asyncio import (
     AbstractEventLoop,)
 from contextlib import suppress
 from datetime import datetime
+from html import escape
 from multiprocessing import Process
 from sys import exc_info, exit
 from time import time
@@ -70,7 +71,9 @@ from pytelibs import (
     _g,
     _l,
     _supersu,
-    cpytl,)
+    cpytl,
+    replace_all,
+    _CHARACTER_NAMES,)
 from pytgcalls.group_call_factory import (
     GroupCallFactory,)
 from pytgcalls.mtproto_client_type import (
@@ -688,21 +691,23 @@ class PytelClient(Raw):
         self,
         user_id: Optional[int],
     ) -> Optional[str]:
+        separator: str = ""
         user = await self.get_users(
             user_id
         )
-        first_n = (
-            user.first_name
-            if user.first_name
-            else "ㅤ"  # blank-font
+        fname = (
+            hasattr(user, "last_name")
+            and user.last_name
+            and f"{separator}{user.first_name} {user.last_name}"
+            or f"{separator}{user.first_name}"
         )
-        last_n = (
-            user.last_name
-            if user.last_name
-            else "ㅤ"  # blank-font
+        fullname = " ".join(
+            replace_all(
+                escape(fname),
+                _CHARACTER_NAMES,
+            ).split()
         )
-        full_name = first_n + last_n
-        return str(full_name)
+        return fullname
 
     async def username(
         self,
