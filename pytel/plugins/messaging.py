@@ -33,9 +33,13 @@ from . import (
 schedule_and_delay_example = f"""
 Command Guide Schedule and Delay
 
-Examples:
+Examples
+   Schedule:
 {random_prefixies(px)}schmsg 240 5 360 Hello
+
+   Delay Spam:
 {random_prefixies(px)}dsp 240 5 Hello
+
 
 240    5     360   Hello
  |     |      |      |
@@ -298,6 +302,7 @@ async def _dspam_msg(client, message):
                 message,
                 text=schedule_and_delay_example,
                 parse_mode=ParseMode.DISABLED,
+                disable_web_page_preview=True,
             )
             return
         timesleep = (
