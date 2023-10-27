@@ -282,10 +282,6 @@ async def _invited_all(client, message):
                                 message.chat.id,
                                 member.user.id,
                             )
-                            success = (
-                                success
-                                + 1
-                            )
                             run_status = (
                                 False
                             )
@@ -368,6 +364,11 @@ async def _invited_all(client, message):
                         except BaseException:
                             failed = (
                                 failed
+                                + 1
+                            )
+                        else:
+                            success = (
+                                success
                                 + 1
                             )
 

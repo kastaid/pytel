@@ -23,25 +23,37 @@ from . import (
     _try_purged,)
 
 _AFK_ON_NO_REASON = """
-{} is <b><u>AFK</u>!</b>
+#Notify
+{}'s still <b><u>AFK</u>!</b>
 <b>Since:</b> {}
+
+<code>Copyright (C) 2023-present kastaid</code>
 """
 
 _AFK_ON_REASON = """
-{} is <b><u>AFK</u>!</b>
-<b>Reason:</b> {}
+#Notify
+{}'s still <b><u>AFK</u>!</b>
 <b>Since:</b> {}
+<b>For Reason:</b> {}
+
+<code>Copyright (C) 2023-present kastaid</code>
 """
 
 _AFK_OUT_NO_REASON = """
+#Notify
 {} </b><b><u>{}</u></b>
 <b>Since:</b> {}
+
+<code>Copyright (C) 2023-present kastaid</code>
 """
 
 _AFK_OUT_REASON = """
+#Notify
 {} <b><u>{}</u></b>
-<b>Reason:</b> {}
 <b>Since:</b> {}
+<b>For Reason:</b> {}
+
+<code>Copyright (C) 2023-present kastaid</code>
 """
 
 
@@ -157,8 +169,8 @@ async def OngoingAFK(client, message):
             await message.reply_text(
                 _AFK_ON_REASON.format(
                     name,
-                    get_reason,
                     afk_since,
+                    get_reason,
                 ),
             )
             return
@@ -180,26 +192,25 @@ async def OutgoingAFK(client, message):
             )
         )
         if get_reason == "N/A":
-            await message.reply_text(
+            x = await message.reply_text(
                 _AFK_OUT_NO_REASON.format(
                     name,
                     choice(OUT_AFK),
                     afk_since,
                 ),
             )
-            rem_afk(int(user))
-            return
         else:
-            await message.reply_text(
+            x = await message.reply_text(
                 _AFK_OUT_REASON.format(
                     name,
                     choice(OUT_AFK),
-                    get_reason,
                     afk_since,
+                    get_reason,
                 ),
             )
-            rem_afk(int(user))
-            return
+
+        rem_afk(int(user))
+        return await _try_purged(x, 5)
 
 
 async def ClientAFK(client, message):
@@ -220,9 +231,16 @@ async def ClientAFK(client, message):
     else:
         reason = get_reason
 
+    go_afk = """
+{} stepped <b><u>AFK</u>!</b>
+<b><u>For Reason</u>:</b> {}
+"""
     await eor(
         message,
-        text=f"{name} stepped <b><u>AFK</u>!</b>",
+        text=go_afk.format(
+            name,
+            reason,
+        ),
     )
     await _try_purged(message, 4.5)
     add_afk(int(user), str(reason))
