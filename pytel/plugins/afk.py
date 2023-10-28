@@ -23,37 +23,25 @@ from . import (
     _try_purged,)
 
 _AFK_ON_NO_REASON = """
-#Notify
-{}'s still <b><u>AFK</u>!</b>
-<b>Since:</b> {}
-
-<code>Copyright (C) 2023-present kastaid</code>
+{} is still <b><u>AFK</u> !!</b>
+Since {} ago
 """
 
 _AFK_ON_REASON = """
-#Notify
-{}'s still <b><u>AFK</u>!</b>
-<b>Since:</b> {}
-<b>For Reason:</b> {}
-
-<code>Copyright (C) 2023-present kastaid</code>
+{} is still <b><u>AFK</u> !!</b>
+Since {} ago
+<b><u>Reason</u>:</b> {}
 """
 
 _AFK_OUT_NO_REASON = """
-#Notify
 {} </b><b><u>{}</u></b>
-<b>Since:</b> {}
-
-<code>Copyright (C) 2023-present kastaid</code>
+Since {} ago
 """
 
 _AFK_OUT_REASON = """
-#Notify
 {} <b><u>{}</u></b>
-<b>Since:</b> {}
-<b>For Reason:</b> {}
-
-<code>Copyright (C) 2023-present kastaid</code>
+Since {} ago
+<b><u>Reason</u>:</b> {}
 """
 
 
@@ -210,7 +198,7 @@ async def OutgoingAFK(client, message):
             )
 
         rem_afk(int(user))
-        return await _try_purged(x, 5)
+        return await _try_purged(x, 8)
 
 
 async def ClientAFK(client, message):
@@ -228,12 +216,14 @@ async def ClientAFK(client, message):
     )
     if not get_reason:
         reason = "N/A"
+        go_afk = """
+{} stepped <b><u>AFK</u> !!</b>
+"""
     else:
         reason = get_reason
-
-    go_afk = """
-{} stepped <b><u>AFK</u>!</b>
-<b><u>For Reason</u>:</b> {}
+        go_afk = """
+{} stepped <b><u>AFK</u> !!</b>
+<b><u>Reason</u>:</b> {}
 """
     await eor(
         message,
