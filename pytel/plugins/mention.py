@@ -5,7 +5,6 @@
 # Please read the GNU Affero General Public License in
 
 from asyncio import sleep
-from typing import Set
 from pyrogram.enums import (
     ChatType,
     ChatMembersFilter,
@@ -13,6 +12,7 @@ from pyrogram.enums import (
 from . import (
     ParseMode,
     FloodWait,
+    _MENTION_LOCKED,
     eor,
     get_text,
     get_chat_ids,
@@ -24,7 +24,6 @@ from . import (
     mentioned,
     random_prefixies,)
 
-_MENTION_LOCK: Set[int] = set()
 mention_chats = []
 
 
@@ -36,7 +35,7 @@ mention_chats = []
 async def _mention_all(client, message):
     if client:
         user_id = client.me.id
-    if user_id in _MENTION_LOCK:
+    if user_id in _MENTION_LOCKED:
         await eor(
             message,
             text="Please wait until previous **--mention--** finished...",
@@ -53,7 +52,7 @@ async def _mention_all(client, message):
 
     await _try_purged(message, 0.6)
     mention_chats.append(chat_id)
-    _MENTION_LOCK.add(user_id)
+    _MENTION_LOCKED.add(user_id)
     usrnum = 0
     usrtxt = ""
     async for usr in client.get_chat_members(
@@ -62,7 +61,8 @@ async def _mention_all(client, message):
         if (
             chat_id not in mention_chats
         ) and (
-            user_id not in _MENTION_LOCK
+            user_id
+            not in _MENTION_LOCKED
         ):
             break
         elif (usr.user.is_bot) or (
@@ -98,7 +98,7 @@ async def _mention_all(client, message):
                     usrnum = 0
                     usrtxt = ""
     with suppress(Exception):
-        _MENTION_LOCK.discard(user_id)
+        _MENTION_LOCKED.discard(user_id)
         mention_chats.remove(chat_id)
 
 
@@ -114,7 +114,7 @@ async def _cancel_mention(
         user_id = client.me.id
         chat_id = message.chat.id
     if (
-        user_id not in _MENTION_LOCK
+        user_id not in _MENTION_LOCKED
     ) and (
         chat_id not in mention_chats
     ):
@@ -128,7 +128,7 @@ async def _cancel_mention(
         text="Canceling mention members...",
     )
     mention_chats.remove(chat_id)
-    _MENTION_LOCK.discard(user_id)
+    _MENTION_LOCKED.discard(user_id)
     await eor(
         x,
         text="Successfully stopped mentioning member.",

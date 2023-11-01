@@ -7,6 +7,7 @@
 
 import textwrap
 from asyncio import Lock
+from functools import lru_cache
 from datetime import datetime
 from os import getpid, close, execvp
 from platform import (
@@ -192,6 +193,7 @@ def _ialive() -> Optional[str]:
     return str(wrp)
 
 
+@lru_cache
 def sys_stats() -> str:
     ram = (
         psutil.virtual_memory().percent
@@ -349,6 +351,21 @@ async def _iping(client, message):
             await message.reply(
                 "Did not answer the request, please try again.",
             )
+        except ChatSendInlineForbidden:
+            txt = (
+                await _er_iping(
+                    client
+                )
+            )
+            await client.send_message(
+                message.chat.id,
+                text=txt,
+                disable_web_page_preview=True,
+            )
+            await _try_purged(
+                message
+            )
+            return
         return await _try_purged(
             message
         )
@@ -404,6 +421,17 @@ async def _ialv(client, message):
         except BotResponseTimeout:
             await message.reply(
                 text="Did not answer the request, please try again.",
+            )
+            return
+        except ChatSendInlineForbidden:
+            text = _ialive()
+            await client.send_message(
+                message.chat.id,
+                text=text,
+                disable_web_page_preview=True,
+            )
+            await _try_purged(
+                message
             )
             return
         return await _try_purged(

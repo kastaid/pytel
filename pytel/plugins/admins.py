@@ -133,6 +133,14 @@ async def tgroups_lock(
                 **permissions
             ),
         )
+    except ChatNotModified:
+        return await message.edit_text(
+            (
+                f"🔒 **Locked for non-admin!**\n  **Type:** `{parameter}`\n  **Chat:** {message.chat.title}"
+                if lock
+                else f"🔓 **Unlocked for non-admin!**\n  **Type:** `{parameter}`\n  **Chat:** {message.chat.title}"
+            )
+        )
     except Exception as excp:
         client.send_log.exception(excp)
     await message.edit_text(
@@ -232,6 +240,10 @@ async def _locked_group(
                     can_pin_messages=False,
                 ),
             )
+        except ChatNotModified:
+            return await message.edit_text(
+                f"🔓 **Unlocked for non-admin!**\n  **Type:** `{parameter}`\n  **Chat:** {message.chat.title}"
+            )
         except Exception as excp:
             client.send_log.exception(
                 excp
@@ -244,19 +256,24 @@ async def _locked_group(
         parameter == "all"
         and state == "unlock"
     ):
-        await client.set_chat_permissions(
-            chat_id,
-            ChatPermissions(
-                can_send_messages=True,
-                can_send_media_messages=True,
-                can_send_other_messages=True,
-                can_add_web_page_previews=True,
-                can_send_polls=True,
-                can_change_info=False,
-                can_invite_users=True,
-                can_pin_messages=False,
-            ),
-        )
+        try:
+            await client.set_chat_permissions(
+                chat_id,
+                ChatPermissions(
+                    can_send_messages=True,
+                    can_send_media_messages=True,
+                    can_send_other_messages=True,
+                    can_add_web_page_previews=True,
+                    can_send_polls=True,
+                    can_change_info=False,
+                    can_invite_users=True,
+                    can_pin_messages=False,
+                ),
+            )
+        except ChatNotModified:
+            return await message.edit_text(
+                f"🔓 <b>Unlocked for `all`</b> <code>{message.chat.title}</code>",
+            )
         await eor(
             message,
             f"🔓 <b>Unlocked for `all`</b> <code>{message.chat.title}</code>",

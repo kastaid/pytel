@@ -549,8 +549,50 @@ async def _kicked_all(client, message):
                     return
 
 
+@pytel.instruction(
+    ["dkacancel"],
+    supersu=["PYTEL"],
+    supergroups=True,
+    privileges=["can_restricted"],
+)
+@pytel.instruction(
+    ["kacancel"],
+    outgoing=True,
+    supergroups=True,
+    privileges=["can_restricted"],
+)
+async def _kicked_all_canceled(
+    client, message
+):
+    if client:
+        user_id = client.me.id
+        chat_id = message.chat.id
+
+    if (
+        user_id not in _KICKED_LOCKED
+    ) and (
+        chat_id not in _WORKER_KICKED
+    ):
+        await eor(
+            message,
+            text="There are no plugins running here..",
+        )
+        return
+    x = await eor(
+        message,
+        text="Canceling kicking all members...",
+    )
+    _WORKER_KICKED.remove(chat_id)
+    _KICKED_LOCKED.discard(user_id)
+    await eor(
+        x,
+        text="Successfully stopped kicking all member.",
+    )
+
+
 plugins_helper["addktools"] = {
     f"{random_prefixies(px)}add [id/username: list/not (limit 25 username/id)]": "To adding user/bot.",
     f"{random_prefixies(px)}addall [target: id/username/link messages]": "To adding user from target.",
     f"{random_prefixies(px)}[s]kickall (s: silent)": "To kicked all users in channel/groups.",
+    f"{random_prefixies(px)}kacancel": "To cancelling kicked all users in channel/groups.",
 }

@@ -49,6 +49,7 @@ from pytelibs import (
     _UNGBAN_LOCKED,
     _INVITED_LOCKED,
     _KICKED_LOCKED,
+    _MENTION_LOCKED,
     _HELP_LOCK,
     _HELP_ACCEPT,
     SETMODE_ONLINE,

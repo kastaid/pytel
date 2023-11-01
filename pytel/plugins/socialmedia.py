@@ -612,7 +612,7 @@ async def _github_searching(
 
 
 @pytel.instruction(
-    ["ggs", "ggsearch"],
+    ["ggs", "ggsearch", "google"],
     outgoing=True,
 )
 async def _google_searching(
@@ -1219,7 +1219,7 @@ plugins_helper["socialmedia"] = {
     f"{random_prefixies(px)}ytsearch [text/reply]": "Search engine for youtube.",
     f"{random_prefixies(px)}ytadl [url]/[reply/text]": "To get Youtube. ( audio/mp3 )",
     f"{random_prefixies(px)}ytvdl [url]/[reply/text]": "To get Youtube. ( video/mp4 )",
-    f"{random_prefixies(px)}ggsearch [text/reply]": "Search engine for google.",
+    f"{random_prefixies(px)}ggsearch / google [text/reply]": "Search engine for google.",
     f"{random_prefixies(px)}ttdl [url]/[reply link]": "To get Tiktok. ( video & original audio ) ( Without Watermark )",
     f"{random_prefixies(px)}pintdl [url]/[reply link]": "To get Pinterest. ( images/video )",
     f"{random_prefixies(px)}github [username/link github]": "To get the User/Organization Github Profile.",
