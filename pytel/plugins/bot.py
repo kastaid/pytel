@@ -7,8 +7,8 @@
 
 import textwrap
 from asyncio import Lock
-from functools import lru_cache
 from datetime import datetime
+from functools import lru_cache
 from os import getpid, close, execvp
 from platform import (
     python_version,
@@ -352,19 +352,15 @@ async def _iping(client, message):
                 "Did not answer the request, please try again.",
             )
         except ChatSendInlineForbidden:
-            txt = (
-                await _er_iping(
-                    client
-                )
+            txt = await _er_iping(
+                client
             )
             await client.send_message(
                 message.chat.id,
                 text=txt,
                 disable_web_page_preview=True,
             )
-            await _try_purged(
-                message
-            )
+            await _try_purged(message)
             return
         return await _try_purged(
             message
@@ -430,9 +426,7 @@ async def _ialv(client, message):
                 text=text,
                 disable_web_page_preview=True,
             )
-            await _try_purged(
-                message
-            )
+            await _try_purged(message)
             return
         return await _try_purged(
             message

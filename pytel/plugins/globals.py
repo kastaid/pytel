@@ -67,6 +67,10 @@ _GB_TEXT = """
 
 
 @pytel.instruction(
+    ["daddbl"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
     ["addbl"],
     outgoing=True,
 )

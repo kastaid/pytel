@@ -5,19 +5,26 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from asyncio import sleep, gather
+from asyncio import sleep
+from html import escape
 from pyrogram.raw.functions.messages import (
     DeleteHistory,)
 from . import (
+    ParseMode,
     eor,
     plugins_helper,
     px,
     extract_user,
     pytel,
+    _try_purged,
     replied,
     random_prefixies,)
 
 
+@pytel.instruction(
+    ["dsang", "dsg"],
+    supersu=["PYTEL"],
+)
 @pytel.instruction(
     [
         "sang",
@@ -45,28 +52,77 @@ async def _sangmata(client, message):
         sang, user_id
     )
     await sleep(3)
-    async for s in client.search_messages(
-        sang, limit=3
-    ):
-        try:
-            if s.text:
-                await gather(
-                    s.copy(
-                        message.chat.id,
-                        reply_to_message_id=replied(
-                            message
-                        ),
-                    ),
-                    x.delete(),
-                )
-        except BaseException as excp:
-            await eor(
-                x,
-                text=f"Error: {excp}",
-            )
     info = await client.resolve_peer(
         sang
     )
+    texts = []
+    async for s in client.get_chat_history(
+        sang
+    ):
+        if not s.outgoing:
+            res = s.text
+            if res.lower().startswith(
+                "no data"
+            ):
+                await x.edit(
+                    "Got no records."
+                )
+                await client.read_chat_history(
+                    s.chat.id
+                )
+                return (
+                    await client.invoke(
+                        DeleteHistory(
+                            peer=info,
+                            max_id=0,
+                            revoke=True,
+                        )
+                    )
+                )
+            if (
+                "your quota"
+                in res.lower()
+            ):
+                await x.edit(
+                    "Your quota is limited. Try again Tomorrow!"
+                )
+                await client.read_chat_history(
+                    s.chat.id
+                )
+                return (
+                    await client.invoke(
+                        DeleteHistory(
+                            peer=info,
+                            max_id=0,
+                            revoke=True,
+                        )
+                    )
+                )
+            texts.append(escape(res))
+            if "history" in res.lower():
+                await client.read_chat_history(
+                    s.chat.id
+                )
+                break
+    if not texts:
+        await x.edit(
+            "Cannot get any records.`"
+        )
+        return
+    for txt in texts:
+        await client.send_message(
+            message.chat.id,
+            f"<pre>{txt}</pre>",
+            reply_to_message_id=replied(
+                message
+            ),
+            parse_mode=ParseMode.HTML,
+            disable_web_page_preview=True,
+        )
+        await sleep(1)
+
+    await _try_purged(x, 1.5)
+
     return await client.invoke(
         DeleteHistory(
             peer=info,
