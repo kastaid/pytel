@@ -50,10 +50,6 @@ RUN set -ex \
     && git clone -qb $BRANCH https://github.com/$ORG/$PROJECT . \
     && python3 -m pip install -Uq pip \
     && python3 -m venv $VIRTUAL_ENV \
-    && pip3 install --no-cache-dir -r https://raw.githubusercontent.com/$ORG/$PROJECT/$BRANCH/main.txt \
-    && apt-get -qqy purge --auto-remove \
-        build-essential \
-    && apt-get -qqy clean \
-    && rm -rf -- ~/.cache /var/lib/apt/lists/* /var/cache/apt/archives/* /etc/apt/sources.list.d/* /usr/share/man/* /usr/share/doc/* /var/log/* /tmp/* /var/tmp/*
+    && pip3 install --no-cache-dir -r https://raw.githubusercontent.com/$ORG/$PROJECT/$BRANCH/main.txt
 
 CMD ["python3", "-m", "pytel"]
