@@ -7,3 +7,4 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
 from ._BaseClient import pydb
+from ._func import memorize

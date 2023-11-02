@@ -8,7 +8,6 @@
 import textwrap
 from asyncio import Lock
 from datetime import datetime
-from functools import lru_cache
 from os import getpid, close, execvp
 from platform import (
     python_version,
@@ -193,7 +192,6 @@ def _ialive() -> Optional[str]:
     return str(wrp)
 
 
-@lru_cache
 def sys_stats() -> str:
     ram = (
         psutil.virtual_memory().percent

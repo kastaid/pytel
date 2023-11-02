@@ -14,7 +14,6 @@ from asyncio import (
 from contextlib import suppress
 from datetime import datetime
 from html import escape
-from multiprocessing import Process
 from sys import exc_info, exit
 from time import time
 from traceback import format_exc as fmex
@@ -24,7 +23,6 @@ from typing import (
     List,
     Optional,
     Union,)
-from cachetools import cached
 from pyrogram import (
     Client as Raw,
     __version__,
@@ -84,6 +82,7 @@ from ..config import (
     PREFIX,
     OWNER_ID,)
 from ..logger import pylog
+from .dbase import memorize
 from .dbase.dbLogger import (
     already_logger,
     check_logger,)
@@ -261,7 +260,7 @@ class PytelClient(Raw):
                 & filters.me
             )
 
-        @cached(cache={})
+        @memorize
         def decorator(
             func: Callable,
         ) -> Callable:
@@ -681,10 +680,8 @@ class PytelClient(Raw):
                         f"Error: {excp}"
                     )
 
-            Process(target=wrapper)
             return wrapper
 
-        Process(target=decorator)
         return decorator
 
     async def user_fullname(
