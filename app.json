@@ -1,4 +1,9 @@
 {
+    "name": "PYTEL-Premium",
+    "description": "KASTA ID ( PYTEL )",
+    "keywords": ["telegram", "pyrogram", "multiclient", "chatgpt"],
+    "repository": "https://github.com/kastaid/pytel",
+    "stack": "container",
     "env": {
         "API_ID": {
             "description": "from my.telegram.org/apps ( for assistant )",
@@ -63,8 +68,6 @@
             "value": "-",
         }
     },
-    "stack": "container",
-    "success_url": "https://t.me/kastaot",
     "buildpacks": [
         {
             "url": "heroku/python"
@@ -76,4 +79,10 @@
             "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
         }
     ],
+    "formation": {
+        "worker": {
+            "quantity": 1,
+            "size": "basic"
+        }
+    }
 }
