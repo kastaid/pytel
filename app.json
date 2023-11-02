@@ -1,0 +1,85 @@
+{
+    "env": {
+        "API_ID": {
+            "description": "from my.telegram.org/apps ( for assistant )",
+            "required": true
+        },
+        "API_HASH": {
+            "description": "from my.telegram.org/apps ( for assistant )",
+            "required": true
+        },
+        "TGB_TOKEN": {
+            "description": "Bot token by @BotFather",
+            "required": true
+        },
+        "BOT_SESSION": {
+            "description": "Session",
+            "required": true
+        },
+        "OWNER_ID": {
+            "description": "OWNER ID ( Telegram ID )",
+            "required": true
+        },
+        "API_ID1": {
+            "description": "from my.telegram.org/apps ( owner assistant )",
+            "required": true
+        },
+        "API_HASH1": {
+            "description": "from my.telegram.org/apps ( owner assistant )",
+            "required": true
+        },
+        "SESSION1": {
+            "description": "Session ( owner assistant )",
+            "required": true
+        },
+        "IG_USN": {
+            "description": "Instagram Downloader ( IG Username )",
+            "required": true
+        },
+        "IG_PASS": {
+            "description": "Instagram Downloader ( IG Password )",
+            "required": true
+        },
+        "IG_SECRET": {
+            "description": "Instagram Downloader ( IG Secret OAuth2)",
+            "required": true
+        },
+        "IPQUALITY_KEY": {
+            "description": "Plugins Link Checker ( for Phishing ) visit https://www.ipqualityscore.com/",
+            "required": true
+        },
+        "RAPID_KEY": {
+            "description": "get key from https://rapidapi.com",
+            "required": true
+        },
+        "TimeZone": {
+            "description": "Time Zone ( Datetime )",
+            "required": true,
+            "value": "Asia/Jakarta",
+        },
+        "PREFIX": {
+            "description": "Handler ( separated with comma )",
+            "required": true,
+            "value": ".,!,?,;,:,',_,-,+,@",
+        },
+    },
+    "stack": "heroku22",
+    "success_url": "https://t.me/kastaot",
+    "buildpacks": [
+        {
+            "url": "heroku/python"
+        },
+        {
+            "url": "https://github.com/heroku/heroku-buildpack-apt"
+        },
+        {
+            "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
+        },
+        {
+            "url": "https://github.com/heroku/heroku-buildpack-chromedriver"
+        },
+        {
+            "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
+        }
+    ],
+}
