@@ -60,10 +60,10 @@
         "PREFIX": {
             "description": "Handler ( separated with comma )",
             "required": true,
-            "value": ".,!,?,;,:,',_,-,+,@",
+            "value": "-",
         }
     },
-    "stack": "heroku22",
+    "stack": "container",
     "success_url": "https://t.me/kastaot",
     "buildpacks": [
         {
@@ -71,12 +71,6 @@
         },
         {
             "url": "https://github.com/heroku/heroku-buildpack-apt"
-        },
-        {
-            "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
-        },
-        {
-            "url": "https://github.com/heroku/heroku-buildpack-chromedriver"
         },
         {
             "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
