@@ -61,7 +61,7 @@
             "description": "Handler ( separated with comma )",
             "required": true,
             "value": ".,!,?,;,:,',_,-,+,@",
-        },
+        }
     },
     "stack": "heroku22",
     "success_url": "https://t.me/kastaot",
