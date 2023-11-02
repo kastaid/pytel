@@ -50,22 +50,22 @@
             "required": true
         },
         "IPQUALITY_KEY": {
-            "description": "Plugins Link Checker ( for Phishing ) visit https://www.ipqualityscore.com/",
+            "description": "Plugins Link Checker ( for Phishing ) visit www.ipqualityscore.com",
             "required": true
         },
         "RAPID_KEY": {
-            "description": "get key from https://rapidapi.com",
+            "description": "get key from www.rapidapi.com",
             "required": true
         },
         "TimeZone": {
             "description": "Time Zone ( Datetime )",
             "required": true,
-            "value": "Asia/Jakarta",
+            "value": "Asia/Jakarta"
         },
         "PREFIX": {
             "description": "Handler ( separated with comma )",
             "required": true,
-            "value": "-",
+            "value": ".,!,?,;,:,',_,-,+,/,~,@"
         }
     },
     "buildpacks": [
