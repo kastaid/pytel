@@ -11,7 +11,6 @@ ENV PROJECT=pytel \
     PATH=/venv/bin:/app/bin:$PATH
 
 WORKDIR /app
-COPY . .
 
 RUN set -ex \
     && apt-get update -y && apt list --upgradeable \
@@ -48,6 +47,7 @@ RUN set -ex \
     && ln -snf /usr/share/zoneinfo/$TimeZone /etc/localtime && echo $TimeZone > /etc/timezone \
     && dpkg-reconfigure --force -f noninteractive tzdata >/dev/null 2>&1 \
     && git clone -qb $BRANCH https://github.com/$ORG/$PROJECT . \
+    && cp -rf .config ~/ \
     && python3 -m pip install -Uq pip \
     && python3 -m venv $VIRTUAL_ENV \
     && pip3 install --no-cache-dir -U -r main.txt \
