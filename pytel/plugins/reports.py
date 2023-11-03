@@ -88,7 +88,7 @@ async def _reported(client, message):
     ) = await user_and_reason(
         client,
         message,
-        sender_chat=True,
+        sender_chat=False,
     )
     if not user:
         await eor(

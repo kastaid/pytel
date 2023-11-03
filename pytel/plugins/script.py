@@ -53,6 +53,11 @@ async def _sysinfo_script(
 
 
 @pytel.instruction(
+    ["dshell", "dbash"],
+    supersu=["PYTEL"],
+    sensitive=False,
+)
+@pytel.instruction(
     [
         "shell",
         "bash",
@@ -108,6 +113,11 @@ async def _bash_script(client, message):
     await eor(x, text=result)
 
 
+@pytel.instruction(
+    ["daexec", "dexec"],
+    supersu=["PYTEL"],
+    sensitive=False,
+)
 @pytel.instruction(
     [
         "aexec",

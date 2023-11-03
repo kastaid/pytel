@@ -61,3 +61,4 @@ instagrapi
 # database
 attrs
 localdb.json
+psycopg2-binary

@@ -10,7 +10,9 @@ from contextlib import suppress
 from sys import exit
 from typing import Optional
 import attrs
+import psycopg2
 from localdb import Database
+from ...config import DATABASE_URL
 from ...logger import pylog
 
 
@@ -132,4 +134,120 @@ class Local(BaseDB):
         return f"<Pytel.Local\n -total_keys: {len(self.keys())}\n>"
 
 
-pydb = Local()
+class SqlDB(BaseDB):
+    def __init__(self, url):
+        self._url = url
+        self._connection = None
+        self._cursor = None
+        try:
+            self._connection = (
+                psycopg2.connect(
+                    dsn=url
+                )
+            )
+            self._connection.autocommit = (
+                True
+            )
+            self._cursor = (
+                self._connection.cursor()
+            )
+            self._cursor.execute(
+                "CREATE TABLE IF NOT EXISTS PYTEL (pytelClient varchar(70))"
+            )
+        except Exception as error:
+            pylog.exception(error)
+            pylog.info(
+                "Invaid SQL Database"
+            )
+            if self._connection:
+                self._connection.close()
+            exit()
+        super().__init__()
+
+    @property
+    def name(self):
+        return "SQL"
+
+    @property
+    def sizes(self):
+        self._cursor.execute(
+            "SELECT pg_size_pretty(pg_relation_size('PYTEL')) AS size"
+        )
+        data = self._cursor.fetchall()
+        return int(
+            data[0][0].split()[0]
+        )
+
+    def keys(self):
+        self._cursor.execute(
+            "SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name  = 'pytel'"
+        )  # case sensitive
+        data = self._cursor.fetchall()
+        return [_[0] for _ in data]
+
+    def get(self, variable):
+        try:
+            self._cursor.execute(
+                f"SELECT {variable} FROM PYTEL"
+            )
+        except (
+            psycopg2.errors.UndefinedColumn
+        ):
+            return None
+        data = self._cursor.fetchall()
+        if not data:
+            return None
+        if len(data) >= 1:
+            for i in data:
+                if i[0]:
+                    return i[0]
+
+    def set(self, key, value):
+        try:
+            self._cursor.execute(
+                f"ALTER TABLE Ultroid DROP COLUMN IF EXISTS {key}"
+            )
+        except (
+            psycopg2.errors.UndefinedColumn,
+            psycopg2.errors.SyntaxError,
+        ):
+            pass
+        except BaseException as er:
+            pylog.exception(er)
+        self._cache.update({key: value})
+        self._cursor.execute(
+            f"ALTER TABLE Ultroid ADD {key} TEXT"
+        )
+        self._cursor.execute(
+            f"INSERT INTO Ultroid ({key}) values (%s)",
+            (str(value),),
+        )
+        return True
+
+    def delete(self, key):
+        try:
+            self._cursor.execute(
+                f"ALTER TABLE PYTEL DROP COLUMN {key}"
+            )
+        except (
+            psycopg2.errors.UndefinedColumn
+        ):
+            return False
+        return True
+
+    def flushall(self):
+        self._cache.clear()
+        self._cursor.execute(
+            "DROP TABLE PYTEL"
+        )
+        self._cursor.execute(
+            "CREATE TABLE IF NOT EXISTS PYTEL (pytelClient varchar(70))"
+        )
+        return True
+
+
+pydb = (
+    SqlDB(DATABASE_URL)
+    if DATABASE_URL
+    else Local()
+)

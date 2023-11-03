@@ -129,6 +129,11 @@ SESSION10: Optional[str] = gets(
     "SESSION10", None
 )
 
+# DATABASE SQL
+DATABASE_URL: Optional[str] = gets(
+    "DATABASE_URL", None
+)
+
 # Instagram Account
 IG_USN: Optional[str] = gets(
     "IG_USN", ""

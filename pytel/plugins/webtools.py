@@ -35,6 +35,10 @@ _PHISHING_TEXT = """
 
 
 @pytel.instruction(
+    ["dclink", "devclinks"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
     ["clink", "clinks", "checklinks"],
     outgoing=True,
 )
@@ -149,6 +153,14 @@ async def _screenshots(client, message):
 
 @pytel.instruction(
     [
+        "dshort_isgd",
+        "dshort_tiny",
+        "dshort_clck",
+    ],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
+    [
         "short_isgd",
         "short_tiny",
         "short_clck",
@@ -175,6 +187,7 @@ async def _shorten_url(client, message):
     if (
         message.command[0]
         == "short_isgd"
+        or "dshort_isgd"
     ):
         rsp = get(
             "https://is.gd/create.php",
@@ -186,6 +199,7 @@ async def _shorten_url(client, message):
     elif (
         message.command[0]
         == "short_tiny"
+        or "dshort_tiny"
     ):
         rsp = get(
             "http://tinyurl.com/api-create.php",
@@ -194,6 +208,7 @@ async def _shorten_url(client, message):
     elif (
         message.command[0]
         == "short_clck"
+        or "dshort_clck"
     ):
         rsp = get(
             "https://clck.ru/--",
@@ -214,6 +229,10 @@ async def _shorten_url(client, message):
             return
 
 
+@pytel.instruction(
+    ["dunshort"],
+    supersu=["PYTEL"],
+)
 @pytel.instruction(
     ["unshort"],
     outgoing=True,
@@ -261,6 +280,10 @@ async def _unshortens(client, message):
 
 
 @pytel.instruction(
+    ["dipinfo"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
     ["ipinfo"],
     outgoing=True,
 )
@@ -286,6 +309,10 @@ async def _ip_info(client, message):
 
 
 @pytel.instruction(
+    ["ddns", "devdomain"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
     ["dns", "domain"],
     outgoing=True,
 )
@@ -310,6 +337,10 @@ async def _domain_ns(client, message):
         await eor(x, text=dn_server)
 
 
+@pytel.instruction(
+    ["dinb", "devinfonumber"],
+    supersu=["PYTEL"],
+)
 @pytel.instruction(
     ["inb", "infonumber"],
     outgoing=True,

@@ -52,6 +52,14 @@ _YOUTUBE_DLDR = """
 
 
 @pytel.instruction(
+    ["dytv", "devytvdl"],
+    supersu=["PYTEL"],
+    supergroups=False,
+    privileges=[
+        "can_send_media_messages"
+    ],
+)
+@pytel.instruction(
     ["ytv", "ytvdl"],
     outgoing=True,
     supergroups=False,
@@ -266,6 +274,14 @@ async def _youtube_video_dl(
 
 
 @pytel.instruction(
+    ["dyta", "devytadl"],
+    supersu=["PYTEL"],
+    supergroups=False,
+    privileges=[
+        "can_send_media_messages"
+    ],
+)
+@pytel.instruction(
     ["yta", "ytadl"],
     outgoing=True,
     supergroups=False,
@@ -474,6 +490,10 @@ async def _youtube_audio_dl(
             return
 
 
+@pytel.instruction(
+    ["dyts", "devytsearch"],
+    supersu=["PYTEL"],
+)
 @pytel.instruction(
     ["yts", "ytsearch"],
     outgoing=True,
@@ -690,6 +710,14 @@ async def _google_searching(
 
 
 @pytel.instruction(
+    ["digsr", "devigsr"],
+    supersu=["PYTEL"],
+    supergroups=False,
+    privileges=[
+        "can_send_media_messages"
+    ],
+)
+@pytel.instruction(
     ["igsr", "igsearch"],
     outgoing=True,
     supergroups=False,
@@ -810,6 +838,14 @@ Copyright (C) 2023-present @kastaid
 
 
 @pytel.instruction(
+    ["digpdl", "digvdl", "digsdl"],
+    supersu=["PYTEL"],
+    supergroups=False,
+    privileges=[
+        "can_send_media_messages"
+    ],
+)
+@pytel.instruction(
     ["igpdl", "igvdl", "igsdl"],
     outgoing=True,
     supergroups=False,
@@ -844,7 +880,10 @@ async def _instagram_dl(
         text="Processing...",
     )
 
-    if message.command[0] == "igpdl":
+    if (
+        message.command[0] == "igpdl"
+        or "digpdl"
+    ):
         photo = Instagram.ig_download(
             ig_url=str_link,
             type_dl="photo",
@@ -883,7 +922,10 @@ Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( F
                 text="Can't fetching photo Instagram. Try again!",
             )
 
-    elif message.command[0] == "igvdl":
+    elif (
+        message.command[0] == "igvdl"
+        or "digvdl"
+    ):
         video = Instagram.ig_download(
             ig_url=str_link,
             type_dl="video",
@@ -922,7 +964,10 @@ Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( F
                 text="Can't fetching video Instagram. Try again!",
             )
 
-    elif message.command[0] == "igsdl":
+    elif (
+        message.command[0] == "igsdl"
+        or "digsdl"
+    ):
         story_ = Instagram.ig_download(
             ig_url=str_link,
             type_dl="story",
@@ -962,6 +1007,14 @@ Made with <a href='https://developers.facebook.com/docs/instagram/'>Meta</a> ( F
             )
 
 
+@pytel.instruction(
+    ["dpintdl", "dpindl"],
+    supersu=["PYTEL"],
+    supergroups=False,
+    privileges=[
+        "can_send_media_messages"
+    ],
+)
 @pytel.instruction(
     ["pintdl", "pindl"],
     outgoing=True,
@@ -1049,6 +1102,14 @@ Made with <a href='https://developers.pinterest.com/'>Pinterest</a> ( Developers
 
 
 @pytel.instruction(
+    ["dttdl", "devtiktokdl"],
+    supersu=["PYTEL"],
+    supergroups=False,
+    privileges=[
+        "can_send_media_messages"
+    ],
+)
+@pytel.instruction(
     ["tiktokdl", "ttdl"],
     outgoing=True,
     supergroups=False,
@@ -1135,6 +1196,10 @@ async def _tiktok_dl(client, message):
     return await _try_purged(x, 1)
 
 
+@pytel.instruction(
+    ["dscl", "devsocial"],
+    supersu=["PYTEL"],
+)
 @pytel.instruction(
     ["scl", "social"],
     outgoing=True,
