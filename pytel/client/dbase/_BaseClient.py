@@ -205,7 +205,7 @@ class SqlDB(BaseDB):
     def set(self, key, value):
         try:
             self._cursor.execute(
-                f"ALTER TABLE Ultroid DROP COLUMN IF EXISTS {key}"
+                f"ALTER TABLE PYTEL DROP COLUMN IF EXISTS {key}"
             )
         except (
             psycopg2.errors.UndefinedColumn,
@@ -216,10 +216,10 @@ class SqlDB(BaseDB):
             pylog.exception(er)
         self._cache.update({key: value})
         self._cursor.execute(
-            f"ALTER TABLE Ultroid ADD {key} TEXT"
+            f"ALTER TABLE PYTEL ADD {key} TEXT"
         )
         self._cursor.execute(
-            f"INSERT INTO Ultroid ({key}) values (%s)",
+            f"INSERT INTO PYTEL ({key}) values (%s)",
             (str(value),),
         )
         return True
