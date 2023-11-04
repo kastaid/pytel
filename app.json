@@ -2,8 +2,17 @@
     "name": "PYTEL-Premium",
     "description": "KASTA ID ( PYTEL )",
     "keywords": ["telegram", "pyrogram", "multiclient", "chatgpt"],
-    "repository": "https://github.com/kastaid/pytel",
+    "r3epository": "https://github.com/kastaid/pytel",
     "stack": "container",
+    "addons": [
+        {
+            "plan": "heroku-postgresql"
+            "as": "DATABASE_URL"
+            "options": {
+                "version": "15"
+            }
+        }
+    ],
     "env": {
         "API_ID": {
             "description": "from my.telegram.org/apps ( for assistant )",
@@ -75,14 +84,5 @@
             "description": "Heroku api ( API Account )",
             "required": true
         }
-    },
-    "addons": [
-        {
-            "plan": "heroku-postgresql"
-            "as": "DATABASE_URL"
-            "options": {
-                "version": "15"
-            }
-        }
-    ]
+    }
 }
