@@ -114,6 +114,7 @@ from ..client import (
     attr_file,
     RunningCommand,
     humanboolean,
+    herogay,
     legally_required,
     subs_like_view_format,
     short_dict,

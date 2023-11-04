@@ -134,6 +134,14 @@ DATABASE_URL: Optional[str] = gets(
     "DATABASE_URL", None
 )
 
+# HEROKU
+HEROKU_NAME: Optional[str] = gets(
+    "HEROKU_NAME", None
+)
+HEROKU_API: Optional[str] = gets(
+    "HEROKU_API", None
+)
+
 # Instagram Account
 IG_USN: Optional[str] = gets(
     "IG_USN", ""

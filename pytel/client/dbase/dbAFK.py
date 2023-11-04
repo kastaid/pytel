@@ -5,6 +5,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
+from contextlib import suppress
 from datetime import datetime
 from ..utils import time_formatter
 from ._BaseClient import pydb
@@ -17,13 +18,17 @@ def get_afk():
 def add_afk(user, reason):
     afk = get_afk()
     time = datetime.now().timestamp()
-    afk.update(
-        {
-            int(user): {
-                "status": [reason, time]
+    with suppress(Exception):
+        afk.update(
+            {
+                int(user): {
+                    "status": [
+                        reason,
+                        time,
+                    ]
+                }
             }
-        }
-    )
+        )
     pydb.set_key("AFK", afk)
 
 

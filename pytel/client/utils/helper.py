@@ -14,7 +14,13 @@ from typing import (
     Dict,
     Any,
     Optional,)
+from cachetools import cached, LRUCache
+from heroku3 import from_key
 from pymediainfo import MediaInfo
+from ...config import (
+    HEROKU_NAME,
+    HEROKU_API,)
+from ...logger import pylog
 
 
 class SaveDict(dict):
@@ -284,4 +290,40 @@ class MediaInformation:
         return None
 
 
+class Heroku:
+    def __init__(self) -> None:
+        self.name: str = HEROKU_NAME
+        self.api: str = HEROKU_API
+
+    def heroku(self) -> Any:
+        _conn = None
+        try:
+            if self.is_heroku:
+                _conn = from_key(
+                    self.api
+                )
+        except BaseException as err:
+            pylog.exception(err)
+        return _conn
+
+    @property
+    @cached(LRUCache(maxsize=512))
+    def stack(self) -> str:
+        try:
+            app = self.heroku().app(
+                self.name
+            )
+            stack = app.info.stack.name
+        except BaseException:
+            stack = "none"
+        return stack
+
+    @property
+    def is_heroku(self) -> bool:
+        return bool(
+            self.api and self.name
+        )
+
+
 plugins_helper = PluginsHelp()
+herogay = Heroku()

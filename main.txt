@@ -25,7 +25,9 @@ lxml>=4.6.5, <5
 # extended
 fonttools
 emoji
+GitPython
 httpx
+heroku3
 phonenumbers
 psutil
 py-cpuinfo

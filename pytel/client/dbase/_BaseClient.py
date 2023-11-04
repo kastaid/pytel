@@ -41,6 +41,10 @@ class BaseDB:
                 {key: self.get_key(key)}
             )
 
+    @property
+    def sizes(self):
+        return 0
+
     def keys(self):
         return []
 
@@ -118,7 +122,7 @@ class Local(BaseDB):
 
     @property
     def name(self):
-        nm: str = "Local"
+        nm: str = "Local-DB"
         return nm
 
     @property
@@ -166,7 +170,8 @@ class SqlDB(BaseDB):
 
     @property
     def name(self):
-        return "SQL"
+        nm: str = "SQLAlchemy"
+        return nm
 
     @property
     def sizes(self):

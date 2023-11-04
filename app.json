@@ -67,5 +67,22 @@
             "required": true,
             "value": ".,!,?,;,:,',_,-,+,/,~,@"
         }
-    }
+        "HEROKU_NAME": {
+            "description": "Heroku name ( app name )",
+            "required": true
+        },
+        "HEROKU_API": {
+            "description": "Heroku api ( API Account )",
+            "required": true
+        }
+    },
+    "addons": [
+        {
+            "plan": "heroku-postgresql"
+            "as": "DATABASE_URL"
+            "options": {
+                "version": "15"
+            }
+        }
+    ]
 }

@@ -28,6 +28,7 @@ from .fetching import (
     fetch_weather,
     links_checker,)
 from .helper import (
+    herogay,
     plugins_helper,
     SaveDict,)
 from .misc import (

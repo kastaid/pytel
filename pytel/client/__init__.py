@@ -41,6 +41,7 @@ from .utils import (
     fetch_weather,
     fetch_ipinfo,
     fetch_phonenumbers,
+    herogay,
     humanboolean,
     get_blacklisted,
     get_youtube_info,

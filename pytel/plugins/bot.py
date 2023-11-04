@@ -20,7 +20,13 @@ from typing import Optional
 import packaging
 import psutil
 from cpuinfo import get_cpu_info
-from git import __version__ as git_ver
+from git import (
+    __version__ as git_ver,
+    Repo,)
+from git.exc import (
+    GitCommandError,
+    InvalidGitRepositoryError,
+    NoSuchPathError,)
 from pip import __version__ as pipver
 from pyrogram import __version__
 from pyrogram.types import (
@@ -58,9 +64,11 @@ from . import (
     filters,
     size_bytes,
     suppress,
+    herogay,
+    _supersu,
     _HELP_ACCEPT,)
 
-lock = Lock()
+_PYTEL_UPDATE = Lock()
 
 
 async def _er_iping(
@@ -563,10 +571,19 @@ async def _alive_inline(
         )
 
 
+def force_pull() -> None:
+    RunningCommand(
+        "git pull --force && git reset --hard origin/main"
+    )
+
+
 async def restarting(
     message,
-):
-    await _try_purged(message)
+) -> None:
+    yy = await eor(
+        message,
+        text=f"<u><b>Restarting...</u> !!</b>",
+    )
     try:
         import psutil
 
@@ -578,7 +595,10 @@ async def restarting(
             close(_.fd)
     except BaseException:
         pass
+    else:
+        pass
 
+    await _try_purged(yy)
     execvp(
         executable,
         [
@@ -589,22 +609,124 @@ async def restarting(
     )
 
 
+async def push_heroku(
+    message, repo
+) -> None:
+    if not herogay.api:
+        await eor(
+            message,
+            text="Please set <pre>HEROKU_API</pre> in Config Vars.",
+        )
+        return
+    if not herogay.name:
+        await eor(
+            message,
+            text="Please set <pre>HEROKU_NAME</pre> in Config Vars.",
+        )
+        return
+    try:
+        conn = herogay.heroku()
+        app = conn.app(herogay.name)
+    except Exception as err:
+        if (
+            str(err)
+            .lower()
+            .startswith(
+                "401 client error: unauthorized"
+            )
+        ):
+            msg = "HEROKU_API invalid or expired... Please re-check."
+        else:
+            msg = err
+        nn = rf"""<b>Heroku Error:</b> <pre>{msg}</pre>"""
+        await eor(message, text=nn)
+        return
+    force_pull()
+    nn = """Update Successfully !!
+Pushing to heroku container...
+"""
+    xy = await eor(message, text=nn)
+
+    url = app.git_url.replace(
+        "https://",
+        f"https://api:{herogay.api}@",
+    )
+    if "heroku" in repo.remotes:
+        remote = repo.remote("heroku")
+        remote.set_url(url)
+    else:
+        remote = repo.create_remote(
+            "heroku", url
+        )
+    with suppress(Exception):
+        remote.push(
+            refspec="HEAD:refs/heads/main",
+            force=True,
+        )
+
+    build = app.builds(
+        order_by="created_at",
+        sort="desc",
+    )[0]
+    if build.status != "succeeded":
+        pp = """`Pushing Failed...`
+Try again later or view logs for more info."""
+        await eor(xy, text=pp)
+
+
 @pytel.instruction(
-    ["devupdate", "dupdate"],
+    ["dupdate", "dherokup"],
     supersu=["PYTEL"],
 )
+@pytel.instruction(
+    ["update", "herokup"],
+    outgoing=True,
+)
 async def _updates(client, message):
-    if message.from_user.id != OWNER_ID:
+    if message.sender_chat:
         return
-    if lock.locked():
-        await message.edit(
+    if (
+        client.me.id in list(_supersu)
+        or OWNER_ID
+    ):
+        y = await message.reply(
+            "Checking..."
+        )
+    else:
+        return
+
+    if _PYTEL_UPDATE.locked():
+        await message.reply(
             "Please wait until --**updating**-- done."
         )
 
-    async with lock:
-        x = await message.reply(
-            "Getting information up to date..."
+    async with _PYTEL_UPDATE:
+        x = await eor(
+            y,
+            text="Getting information up to date...",
         )
+        try:
+            repo = Repo()
+        except NoSuchPathError as err:
+            await eor(
+                x,
+                text=f"Directory not found : <pre>{err}</pre>",
+            )
+            return
+        except GitCommandError as err:
+            await eor(
+                x,
+                text=f"Early failure : <pre>{err}</pre>",
+            )
+            return
+        except (
+            InvalidGitRepositoryError
+        ):
+            await eor(
+                x,
+                text="`Invalid git repository.`",
+            )
+            return
         (
             stdout,
             stderr,
@@ -626,15 +748,8 @@ async def _updates(client, message):
         ):
             yy = await eor(
                 x,
-                text=f"<u><b>Updating</u>!!</b>\nInstall requirements...",
+                text=f"<u><b>Updating</u>!!</b>\nPlease wait...",
             )
-            xy = await eor(
-                yy,
-                text=f"Update successfuly.\nRestarting, wait for 1 minutes.",
-            )
-            await restarting(xy)
-            return
-
         else:
             await eor(
                 x,
@@ -642,18 +757,45 @@ async def _updates(client, message):
             )
             return
 
+        if (
+            message.command[0]
+            == "update"
+            or "dupdate"
+        ):
+            await restarting(yy)
+            return
+        elif (
+            message.command[0]
+            == "herokup"
+            or "dherokup"
+        ):
+            await push_heroku(yy, repo)
+            return
+
 
 @pytel.instruction(
-    ["restart"],
+    ["drestart"],
     supersu=["PYTEL"],
 )
+@pytel.instruction(
+    ["restart"],
+    outgoing=True,
+)
 async def _restart(client, message):
-    if message.from_user.id != OWNER_ID:
+    if (
+        client.me.id in list(_supersu)
+        or OWNER_ID
+    ):
+        x = await message.reply(
+            "Restarting client, wait for 1 minutes.."
+        )
+        await restarting(x)
         return
-    x = await message.reply(
-        "Restarting client, wait for 1 minutes.."
-    )
-    return await restarting(x)
+    else:
+        await message.reply(
+            "U can't restarting client, only developer."
+        )
+        return
 
 
 @pytel.instruction(
