@@ -252,7 +252,7 @@ class SqlDB(BaseDB):
 
 
 pydb = (
-    SqlDB(DATABASE_URL)
+    SqlDB(DATABASE_URL) and Local()
     if DATABASE_URL
     else Local()
 )

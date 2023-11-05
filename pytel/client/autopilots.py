@@ -6,6 +6,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
+from sys import exit
 from pyrogram.errors.exceptions.bad_request_400 import (
     BotMethodInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
@@ -97,8 +98,10 @@ async def auto_pilots(_, tgb) -> None:
     except BotMethodInvalid:
         pass
     except BaseException as excp:
-        send_log.error(excp)
-
+        send_log.error(
+            f"USER: {name}\nERROR: {excp}"
+        )
+        exit(1)
     send_log.success(
         "Success for creating a channel."
     )
