@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  pytel:
+    build: .
+    image: pytel:latest
+    volumes:
+      - ./:/app
+    env_file:
+      - config.env
+    restart: on-failure
+    network_mode: bridge
