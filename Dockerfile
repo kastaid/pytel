@@ -11,6 +11,6 @@ ENV PROJECT=pytel \
 RUN set -ex \
     && git clone -qb $BRANCH https://github.com/$ORG/$PROJECT . \
     && python3 -m venv $VIRTUAL_ENV \
-    && pip3 install --disable-pip-version-check --no-cache-dir -U -r main.txt
+    && pip3 install --disable-pip-version-check --use-pep517 --no-cache-dir -U -r main.txt
 
 CMD ["python3", "-m", "pytel"]
