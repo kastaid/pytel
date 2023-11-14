@@ -7,5 +7,5 @@ services:
       - ./:/app
     env_file:
       - config.env
-    restart: on-failure
+    restart: always
     network_mode: bridge

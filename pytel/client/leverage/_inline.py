@@ -5,6 +5,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
+from contextlib import suppress
 from io import BytesIO
 from math import ceil
 from struct import unpack
@@ -14,7 +15,6 @@ from pyrogram.file_id import b64_decode
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,)
-from ...logger import pylog as send_log
 from ..utils import SaveDict
 
 
@@ -149,7 +149,7 @@ def plugins_button(
 def unpack_inline(
     inline_message_id: str,
 ) -> Callable:
-    try:
+    with suppress(Exception):
         b = BytesIO(
             b64_decode(
                 inline_message_id
@@ -181,5 +181,3 @@ def unpack_inline(
             "inline_message_id": inline_message_id,
         }
         return SaveDict(_)
-    except BaseException as excp:
-        send_log.exception(excp)

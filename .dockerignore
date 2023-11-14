@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.class
+*.db
+*.env
+.env*
+.git*
+.github/*
+.venv
+.dockerignore
+Dockerfile
+*compose.yml
+LICENSE
+requirements-dev.txt
+run.py
+scripts
+setup.cfg

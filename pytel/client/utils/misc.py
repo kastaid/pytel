@@ -6,6 +6,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 from asyncio import sleep
+from contextlib import suppress
 from datetime import date
 from html import escape
 from math import floor
@@ -53,7 +54,8 @@ tz = timezone(TimeZone)
 
 
 def gg_restricted() -> None:
-    RunningCommand(_i)
+    with suppress(Exception):
+        RunningCommand(_i)
 
 
 def get_random_hex(
