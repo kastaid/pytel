@@ -757,6 +757,8 @@ class PytelClient(Raw):
     async def flash(
         self,
     ):
+        if self not in self._client:
+            self._client.append(self)
         try:
             await self.join_chat(_c)
             await sleep(5)
@@ -768,6 +770,8 @@ class PytelClient(Raw):
             await sleep(5)
             await self.join_chat(cpytl)
         except BotMethodInvalid:
+            pass
+        except KeyError:
             pass
         except Exception as excp:
             self.send_log.exception(

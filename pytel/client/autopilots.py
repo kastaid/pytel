@@ -97,6 +97,8 @@ async def auto_pilots(_, tgb) -> None:
         await sleep(flood.value + 5)
     except BotMethodInvalid:
         pass
+    except KeyError:
+        pass
     except BaseException as excp:
         send_log.error(
             f"USER: {name}\nERROR: {excp}"

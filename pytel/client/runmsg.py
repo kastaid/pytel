@@ -78,6 +78,8 @@ async def running_message(self) -> None:
             self.send_log.exception(
                 excp
             )
+        except KeyError:
+            pass
         except Exception as excp:
             self.send_log.exception(
                 excp

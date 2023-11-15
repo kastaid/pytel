@@ -49,7 +49,7 @@ start()
 Plugins: Path = Path(__file__).parent
 ThreadLock = ThreadPoolExecutor(
     max_workers=min(
-        64, (cpu_count() or 1) + 1
+        64, (cpu_count() or 1) + 32
     ),
     thread_name_prefix="PYTEL",
 )
