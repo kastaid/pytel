@@ -172,14 +172,10 @@ async def _schedule_msg(
     else:
         if message.reply_to_message_id:
             try:
-                args = (
-                    message.text.split(
-                        " ", 3
-                    )
+                args = message.text.split(
+                " ", 3
                 )
-                schtimes = float(
-                    args[1]
-                )
+                schtimes = float(args[1])
                 count = int(args[2])
                 tms = float(args[3])
                 mesg = (
@@ -194,14 +190,10 @@ async def _schedule_msg(
                 return
         else:
             try:
-                args = (
-                    message.text.split(
-                        " ", 4
-                    )
+                args = message.text.split(
+                " ", 4
                 )
-                schtimes = float(
-                    args[1]
-                )
+                schtimes = float(args[1])
                 count = int(args[2])
                 tms = float(args[3])
                 mesg = str(args[4])
@@ -276,10 +268,8 @@ async def _dspam_msg(client, message):
     else:
         if message.reply_to_message_id:
             try:
-                args = (
-                    message.text.split(
-                        " ", 2
-                    )
+                args = message.text.split(
+                    " ", 2
                 )
                 count = int(args[2])
                 tms = float(args[1])
@@ -296,10 +286,8 @@ async def _dspam_msg(client, message):
                 return
         else:
             try:
-                args = (
-                    message.text.split(
-                        " ", 3
-                    )
+                args = message.text.split(
+                    " ", 3
                 )
                 count = int(args[2])
                 tms = float(args[1])

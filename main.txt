@@ -1,3 +1,4 @@
+pyproject.toml
 wheel
 setuptools
 frozenlist
@@ -11,16 +12,16 @@ wget
 
 aiofiles==23.1.0
 aiohttp==3.8.4
-asyncache==0.3.1
+asyncache>=0.3.1
 beautifulsoup4==4.12.2
 cachetools==5.3.1
 GitPython==3.1.31
-loguru==0.7.0
+loguru>=0.7.0
 Pillow==9.5
 pathlib==1.0.1
-pyrogram==2.0.106
+pyrogram>=2.0.106
 pytgcalls==3.0.0.dev24
-lxml>=4.6.5, <5
+lxml>=4.6.5
 
 # extended
 fonttools

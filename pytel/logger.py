@@ -110,6 +110,9 @@ pylog.disable("instagrapi")
 pylog.disable("pytgcalls")
 pylog.disable("pyrogram.dispatcher")
 pylog.disable("pyrogram.connection")
+pylog.disable(
+    "pyrogram.raw.types.BadMsgNotification"
+)
 pylog.disable("asyncio.base_events")
 
 basicConfig(

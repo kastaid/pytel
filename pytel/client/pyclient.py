@@ -40,7 +40,8 @@ from pyrogram.errors.exceptions.bad_request_400 import (
     PersistentTimestampInvalid,
     BotMethodInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
-    FloodWait,)
+    FloodWait,
+    SlowmodeWait,)
 from pyrogram.errors.exceptions.forbidden_403 import (
     ChatWriteForbidden,)
 from pyrogram.errors.exceptions.internal_server_error_500 import (
@@ -530,10 +531,20 @@ class PytelClient(Raw):
                     ):
                         pass
                 except (
-                    FloodWait
-                ) as excp:
+                    SlowmodeWait
+                ) as flood:
                     await sleep(
-                        excp.value + 10
+                        flood.value + 5
+                    )
+                    await func(
+                        client,
+                        message,
+                    )
+                except (
+                    FloodWait
+                ) as flood:
+                    await sleep(
+                        flood.value + 5
                     )
                     await func(
                         client,
@@ -773,6 +784,8 @@ class PytelClient(Raw):
             pass
         except KeyError:
             pass
+        except ConnectionError:
+            await self.connect()
         except Exception as excp:
             self.send_log.exception(
                 f"Exception : {excp}"
@@ -818,6 +831,62 @@ class PytelClient(Raw):
             self.send_log.exception(
                 excp
             )
+
+    async def timer_message(
+        self,
+        message: Union[
+            Message, str
+        ] = None,
+        chat_id: int = None,
+        time: Union[int, float] = None,
+        is_schedule: bool = False,
+        schedule_date: Any = None,
+        *args,
+    ):
+        try:
+            if isinstance(message, str):
+                await self.send_message(
+                    chat_id,
+                    message,
+                    parse_mode=ParseMode.DEFAULT,
+                    disable_web_page_preview=True,
+                    disable_notification=True,
+                    schedule_date=schedule_date
+                    if is_schedule
+                    else None,
+                )
+            else:
+                await message.copy(
+                    chat_id,
+                    parse_mode=ParseMode.DEFAULT,
+                    disable_notification=True,
+                    reply_to_message_id=None,
+                    schedule_date=schedule_date
+                    if is_schedule
+                    else None,
+                )
+            await sleep(time)
+        except SlowmodeWait as flood:
+            await sleep(flood.value)
+            await self.timer_message(
+                message, chat_id, time
+            )
+        except FloodWait as flood:
+            await sleep(flood.value)
+            await self.timer_message(
+                message, chat_id, time
+            )
+        except TimeoutError:
+            try:
+                await self.timer_message(
+                    message,
+                    chat_id,
+                    time,
+                )
+            except BaseException:
+                raise
+        except BaseException:
+            raise
 
     async def downloads_media(
         self,
