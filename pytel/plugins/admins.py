@@ -156,11 +156,11 @@ async def list_admins(
     client, chat_id: int, user_id: int
 ) -> bool:
     adm = []
-    async for usr in client.get_chat_members(
+    async for m in client.get_chat_members(
         chat_id,
         filter=ChatMembersFilter.ADMINISTRATORS,
     ):
-        adm.append(usr.id)
+        adm.append(m.user.id)
     if user_id in adm:
         adm.clear()
         return True
