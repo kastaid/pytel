@@ -6,7 +6,8 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
-from pyrogram.enums import ChatMember
+from pyrogram.enums import (
+    ChatMembersFilter,)
 from pyrogram.errors import (
     UserAdminInvalid,
     ChatNotModified,)
@@ -157,7 +158,7 @@ async def list_admins(
     adm = []
     async for usr in client.get_chat_members(
         chat_id,
-        filter=ChatMember.ADMINISTRATORS,
+        filter=ChatMembersFilter.ADMINISTRATORS,
     ):
         adm.append(usr.id)
     if user_id in adm:
