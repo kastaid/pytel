@@ -69,14 +69,16 @@ Perform this command to install Docker Compose V2 or Migration V1 to V2.
 
     # create the docker plugins directory if it doesn't exist yet
     mkdir -p ~/.docker/cli-plugins
+
     # download the CLI into the plugins directory
     curl -sSL https://github.com/docker/compose/releases/download/v2.0.1/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+
     # make the CLI executable
     chmod +x ~/.docker/cli-plugins/docker-compose
 
 ### Guide Command ›_ ( via Localhost or Linux Distro )
   * <strong>Install requirements:</strong>
-    > pip3 install -U --no-cache-dir -r main.txt
+    > pip3 install -U --no-cache-dir --break-system-packages -r main.txt
   * <strong>Run pytel:</strong>
     > python3 -m start --help
 
