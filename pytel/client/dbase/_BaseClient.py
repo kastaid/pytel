@@ -41,10 +41,6 @@ class BaseDB:
                 {key: self.get_key(key)}
             )
 
-    @property
-    def sizes(self):
-        return 0
-
     def keys(self):
         return []
 
@@ -252,7 +248,7 @@ class SqlDB(BaseDB):
 
 
 pydb = (
-    SqlDB(DATABASE_URL)
-    if DATABASE_URL
-    else Local()
+    Local()
+    if not DATABASE_URL
+    else SqlDB(DATABASE_URL)
 )

@@ -224,13 +224,12 @@ Copyright (C) 2023-present @kastaid
 
 
 def db_usage() -> str:
-    if pydb.name == "Local":
-        used: int = pydb.sizes
-        c_keys = len(pydb.keys())
-        for x in pydb.keys():
-            contents = len(x)
-        sz = f"{size_bytes(used)}"
-        d_b = f"""
+    used: int = pydb.sizes
+    c_keys = len(pydb.keys())
+    for x in pydb.keys():
+        contents = len(x)
+    sz = f"{size_bytes(used)}"
+    d_b = f"""
 DATABASE ( PYTEL-Premium )
 
 • Database Type: {pydb.name}
@@ -241,7 +240,7 @@ DATABASE ( PYTEL-Premium )
 
 Copyright (C) 2023-present @kastaid
 """
-        return d_b
+    return d_b
 
 
 @pytel.instruction(

@@ -18,6 +18,7 @@ from . import (
     eor,
     attr_file,
     mentioned,
+    _try_purged,
     get_spamwatch_banned,
     get_cas_banned,
     extract_user,)
@@ -353,7 +354,7 @@ async def _user_info(client, message):
                 photo_id
             )
             await gather(
-                x.delete(),
+                _try_purged(x),
                 client.send_photo(
                     message.chat.id,
                     photo,
@@ -480,7 +481,7 @@ async def _chat_info(client, message):
                 photo_id
             )
             await gather(
-                x.delete(),
+                _try_purged(x),
                 client.send_photo(
                     message.chat.id,
                     photo,

@@ -26,7 +26,7 @@ nocache = f"{python} -B"
 app = f"{python} -m pytel"
 app_watch = f"{python} -m scripts.autoreload {app}"
 
-black = "black --line-length 40 --exclude version.py ."
+black = "black --line-length 40 --exclude version.py ./pytel"
 isort = (
     "isort --settings-file=setup.cfg ."
 )

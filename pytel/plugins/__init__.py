@@ -120,6 +120,7 @@ from ..client import (
     short_dict,
     size_bytes,
     pydb,
+    memorize,
     making_code,
     scanner_code,
     links_checker,
