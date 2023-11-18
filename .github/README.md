@@ -71,7 +71,7 @@ Perform this command to install Docker Compose V2 or Migration V1 to V2.
     mkdir -p ~/.docker/cli-plugins
 
     # download the CLI into the plugins directory
-    curl -sSL https://github.com/docker/compose/releases/download/v2.0.1/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
+    curl -sSL https://github.com/docker/compose/releases/download/v2.23.1/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
 
     # make the CLI executable
     chmod +x ~/.docker/cli-plugins/docker-compose
