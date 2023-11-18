@@ -6,8 +6,7 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
-from pyrogram.enums import (
-    ChatMemberStatus,)
+from pyrogram.enums import ChatMember
 from pyrogram.errors import (
     UserAdminInvalid,
     ChatNotModified,)
@@ -155,17 +154,17 @@ async def tgroups_lock(
 async def list_admins(
     client, chat_id: int, user_id: int
 ):
-    usr = await client.get_chat_member(
+    adm = []
+    async for usr in client.get_chat_members(
         chat_id,
-        user_id,
-    )
-    _AD = [
-        ChatMemberStatus.OWNER,
-        ChatMemberStatus.ADMINISTRATOR,
-    ]
-    if usr.status in _AD:
+        filter=ChatMember.ADMINISTRATORS,
+    ):
+        adm.append(usr.id)
+    if user_id in adm:
+        adm.clear()
         return True
     else:
+        adm.clear()
         return False
 
 

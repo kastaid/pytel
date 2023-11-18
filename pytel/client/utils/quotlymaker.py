@@ -170,7 +170,6 @@ async def quotlymaker(
         pass
     except Exception as excp:
         client.send_log.exception(excp)
-        pass
 
     titlewidth = font2.getsize(title)[0]
 

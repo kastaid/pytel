@@ -4,9 +4,9 @@ setuptools
 frozenlist
 wget
 
-# --- setup ---
+# --- setup (lint)---
 
--r dev.txt
+-U -r dev.txt
 
 # --- (bdist) ---
 

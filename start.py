@@ -26,6 +26,9 @@ nocache = f"{python} -B"
 app = f"{python} -m pytel"
 app_watch = f"{python} -m scripts.autoreload {app}"
 
+
+# Pylint
+autoflake = "autoflake --in-place --ignore-init-module-imports --remove-all-unused-imports -i -r ."
 black = "black --line-length 40 --exclude version.py ./pytel"
 isort = (
     "isort --settings-file=setup.cfg ."
@@ -75,6 +78,8 @@ def clean() -> None:
 def lint() -> None:
     print(f"{CYAN}>> {prettyjson}{RST}")
     run_cmd(prettyjson)
+    print(f"{CYAN}>> {autoflake}{RST}")
+    run_cmd(autoflake)
     print(f"{CYAN}>> {black}{RST}")
     run_cmd(black)
     print(f"{CYAN}>> {isort}{RST}")
