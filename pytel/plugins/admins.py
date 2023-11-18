@@ -153,7 +153,7 @@ async def tgroups_lock(
 
 async def list_admins(
     client, chat_id: int, user_id: int
-):
+) -> bool:
     adm = []
     async for usr in client.get_chat_members(
         chat_id,
