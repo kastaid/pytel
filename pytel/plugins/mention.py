@@ -73,11 +73,11 @@ async def _mention_all(client, message):
         usrtxt += f"👤 <a href=tg://user?id={usr.user.id}>{await client.user_fullname(usr.user.id)}</a>\n"
         if usrnum == 5:
             try:
-                txt = f"<b>{tx}</b>\n\n{usrtxt}\n"
+                txt = f"```Message\n{tx}\n```\n\n{usrtxt}\n"
                 await client.send_message(
                     chat_id,
                     txt,
-                    parse_mode=ParseMode.HTML,
+                    parse_mode=ParseMode.DEFAULT,
                 )
                 await sleep(20)
                 usrnum = 0

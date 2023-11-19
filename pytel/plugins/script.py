@@ -43,7 +43,7 @@ async def _sysinfo_script(
         result = xy + yz
         await eor(
             x,
-            text=f"<pre>{result}</pre>",
+            text=f"```System Information\n{result}\n```",
         )
     except BaseException as excp:
         await eor(
@@ -96,18 +96,14 @@ async def _bash_script(client, message):
         return
     stdout, stderr = RunningCommand(cmd)
     err, out = "", ""
-    result = (
-        " <b>⟩ <u>Unix Shell</u></b>\n"
-    )
-    result += (
-        f"Command: <pre>{cmd}</pre>\n\n"
-    )
+    result = " **⟩ --Unix Shell--**\n"
+    result += f"**Command:** \n```bash\n{cmd}\n```\n\n"
     if stderr:
-        err = f"<b>Error:</b>\n<pre>{stderr}</pre>\n\n"
+        err = f"**Error:**\n```bash\n{stderr}\n```\n\n"
     if stdout:
-        out = f"<b>Results:</b>\n<pre>{stdout}</pre>"
+        out = f"**Results:**\n```bash\n{stdout}\n```"
     if not stderr and not stdout:
-        out = "<b>Results:</b>\n<code>success</code>"
+        out = "**Results:**\n```bash\nSuccess\n```"
     result += err + out
 
     await eor(x, text=result)
@@ -176,9 +172,11 @@ async def _exec_script(client, message):
         or _parse_eval(value)
         or "Success"
     )
-    output = "<b>⟩ <u>Python Execution</u></b>\n"
-    output += f"Command: <pre>{code}</pre>\n\n"
-    output += f"<b>Results:</b>\n<pre>{execute}</pre>"
+    output = (
+        "**⟩ --Python Execution--**\n"
+    )
+    output += f"**Command:** ```python\n{code}\n```\n\n"
+    output += f"**Results:**\n```python\n{execute}\n```"
     await eor(x, text=output)
 
 

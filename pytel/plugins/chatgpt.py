@@ -41,7 +41,10 @@ async def _openai(client, message):
         )
         resp = await ChatGPT.text(args)
         if resp:
-            await eor(x, text=resp)
+            await eor(
+                x,
+                text=f"```ChatGPT\n{resp}\n```",
+            )
             return
 
         else:

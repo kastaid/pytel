@@ -24,13 +24,17 @@ from . import (
     making_code,)
 
 _CODE_TEXT = """
-<b>{}</b>
+**{}**
 
-<b><u>INPUT:</b></u>
-<code>{}</code>
+**--INPUT:--**
+```sh
+{}
+```
 
-<b><u>OUTPUT:</b></u>
-<code>{}</code>
+**--OUTPUT:--**
+```sh
+{}
+```
 """
 
 

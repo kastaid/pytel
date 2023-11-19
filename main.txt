@@ -6,7 +6,7 @@ wget
 
 # --- setup (lint)---
 
--U -r dev.txt
+-r dev.txt
 
 # --- (bdist) ---
 

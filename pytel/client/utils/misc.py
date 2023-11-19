@@ -537,7 +537,7 @@ async def scanner_code(
         text = "No barcode found on this image"
         return text
 
-    text = "<b><u>Scanner Code</b></u> ( Barcode / QR Code )\n\n"
+    text = "**--Scanner Code--** ( Barcode / QR Code )\n\n"
     for barcode in barcodes:
         # extract the points of th polygon of the barcode and create a Numpy array
         pts = np.array(
@@ -551,7 +551,7 @@ async def scanner_code(
         elif barcode.type == "CODE128":
             code += 1
 
-        text += "<b>Code:</b> <code>{}</code>\n\n".format(
+        text += "**Code:** \n```scan\n{}\n```\n\n".format(
             barcode.data.decode("utf-8")
         )
 
@@ -629,7 +629,7 @@ async def progress(
         )
         tmp = (
             progress_str
-            + "{0} of {1}\nETA: {2}".format(
+            + "{0} of {1}\nETA: {2}\n".format(
                 size_bytes(current),
                 size_bytes(total),
                 time_formatter(
@@ -640,7 +640,7 @@ async def progress(
         if file_name:
             try:
                 await message.edit(
-                    "{}\n**File Name:** `{}`\n{}".format(
+                    "```{}\n**File Name:** {}\n{}\n```".format(
                         type_of_ps,
                         file_name,
                         tmp,
@@ -653,7 +653,7 @@ async def progress(
         else:
             try:
                 await message.edit(
-                    "{}\n{}".format(
+                    "```{}\n{}\n```".format(
                         type_of_ps, tmp
                     )
                 )
