@@ -916,7 +916,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         s_time,
-                        "`Downloading File!`",
+                        "Downloading Photo",
                         "Telegram Photo",
                     ),
                 )
@@ -930,7 +930,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         u_time,
-                        "`Uploading File!`",
+                        "Uploading Photo",
                         "Telegram Photo",
                     ),
                 )
@@ -947,7 +947,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         s_time,
-                        "`Downloading File!`",
+                        "Downloading Video",
                         "Telegram Video",
                     ),
                 )
@@ -962,7 +962,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         u_time,
-                        "`Uploading File!`",
+                        "Uploading Video",
                         "Telegram Video",
                     ),
                 )
@@ -979,7 +979,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         s_time,
-                        "`Downloading File!`",
+                        "Downloading File",
                         "Telegram Document",
                     ),
                 )
@@ -994,7 +994,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         u_time,
-                        "`Uploading File!`",
+                        "Uploading File",
                         "Telegram Document",
                     ),
                 )
@@ -1009,7 +1009,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         s_time,
-                        "`Downloading File!`",
+                        "Downloading Audio",
                         "Telegram Audio",
                     ),
                 )
@@ -1023,7 +1023,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         u_time,
-                        "`Uploading File!`",
+                        "Uploading Audio",
                         "Telegram Audio",
                     ),
                 )
@@ -1040,7 +1040,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         s_time,
-                        "`Downloading File!`",
+                        "Downloading Voice",
                         "Telegram Voice",
                     ),
                 )
@@ -1053,7 +1053,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         u_time,
-                        "`Uploading File!`",
+                        "Uploading Voice",
                         "Telegram Voice",
                     ),
                 )
@@ -1070,7 +1070,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         s_time,
-                        "`Downloading File!`",
+                        "Downloading Animation",
                         "Telegram Animation",
                     ),
                 )
@@ -1084,7 +1084,7 @@ class PytelClient(Raw):
                     progress_args=(
                         x,
                         u_time,
-                        "`Uploading File!`",
+                        "Uploading Animation",
                         "Telegram Animation",
                     ),
                 )

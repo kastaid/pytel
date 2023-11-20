@@ -640,7 +640,7 @@ async def progress(
         if file_name:
             try:
                 await message.edit(
-                    "```{}\n**File Name:** {}\n{}\n```".format(
+                    "```{}\nFile Name: {}\n{}\n```".format(
                         type_of_ps,
                         file_name,
                         tmp,
