@@ -49,7 +49,7 @@ start()
 Plugins: Path = Path(__file__).parent
 ThreadLock = ThreadPoolExecutor(
     max_workers=min(
-        64, (cpu_count() or 1) + 32
+        64, (cpu_count() or 1) + 64
     ),
     thread_name_prefix="PYTEL",
 )
@@ -199,6 +199,8 @@ async def execution() -> None:
             # Cleared
             clear_all_dspam(_.me.id)
             clear_all_schedule(_.me.id)
+        except ConnectionError:
+            await _.connect()
         except FloodWait as flood:
             await sleep(flood.value + 5)
         except KeyboardInterrupt:

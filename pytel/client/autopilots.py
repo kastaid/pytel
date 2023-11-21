@@ -95,6 +95,8 @@ async def auto_pilots(_, tgb) -> None:
         )
     except FloodWait as flood:
         await sleep(flood.value + 5)
+    except ConnectionError:
+        await _.connect()
     except BotMethodInvalid:
         pass
     except KeyError:

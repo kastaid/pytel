@@ -570,6 +570,8 @@ class PytelClient(Raw):
                     ContinuePropagation
                 ):
                     raise ContinuePropagation
+                except ConnectionError:
+                    await client.connect()
                 except (
                     Exception
                 ) as excp:

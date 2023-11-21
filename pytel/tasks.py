@@ -75,7 +75,7 @@ async def pytasks(
         signal_name(s, signal_handler)
     while confirm:
         tasks = asyncio.create_task(
-            asyncio.sleep(600)
+            asyncio.sleep(99999)
         )
         try:
             await tasks

@@ -65,6 +65,7 @@ from . import (
     size_bytes,
     suppress,
     herogay,
+    memorize,
     _supersu,
     _HELP_ACCEPT,)
 
@@ -200,6 +201,7 @@ def _ialive() -> Optional[str]:
     return str(wrp)
 
 
+@memorize
 def sys_stats() -> str:
     ram = (
         psutil.virtual_memory().percent
@@ -210,12 +212,12 @@ def sys_stats() -> str:
     process = psutil.Process(getpid())
     stats = f"""
 STATISTICS ( PYTEL-Premium )
--------------------------
+---------------------------
 CPU: {psutil.cpu_percent()}%
 RAM: {ram}%
 DISK: {disk}%
 Memory Usage: {size_bytes(process.memory_info()[0])}
--------------------------
+---------------------------
 Uptime: {time_formatter((time() - start_time) * 1000)}
 
 Copyright (C) 2023-present @kastaid
