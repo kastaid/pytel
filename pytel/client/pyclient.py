@@ -695,6 +695,7 @@ class PytelClient(Raw):
 
             return wrapper
 
+        decorator.cache_reset()
         return decorator
 
     async def user_fullname(

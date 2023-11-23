@@ -5,11 +5,20 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
+from typing import (
+    Any,
+    Callable,
+    TypeVar,)
 
-def memorize(func):
-    cache = {}
+T = TypeVar(
+    "T", bound=Callable[..., Any]
+)
 
-    def wrapper(*args):
+
+def memorize(func: T) -> T:
+    cache: dict = {}
+
+    def wrapper(*args: Any) -> Any:
         if args in cache:
             return cache[args]
         else:
@@ -17,4 +26,7 @@ def memorize(func):
             cache[args] = result
             return result
 
+    wrapper.cache_reset = (
+        lambda: cache.clear()
+    )
     return wrapper

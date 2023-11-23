@@ -27,7 +27,8 @@ from git.exc import (
     GitCommandError,
     InvalidGitRepositoryError,
     NoSuchPathError,)
-from pip import __version__ as pipver
+from pkg_resources import (
+    get_distribution,)
 from pyrogram import __version__
 from pyrogram.types import (
     InlineQueryResultArticle,
@@ -130,7 +131,9 @@ def _ialive() -> Optional[str]:
     text_active += "----------------------------------------\n"
     text_active += (
         "› <code>Pip:</code> <code>"
-        + str(pipver)
+        + get_distribution(
+            "pip"
+        ).version
         + "</code> \n"
     )
     text_active += (
@@ -453,6 +456,7 @@ async def _sys_callback(
         text,
         show_alert=True,
     )
+    sys_stats.cache_reset()
 
 
 @pytel_tgb.on_callback_query(
