@@ -126,7 +126,7 @@ else:
 
 if (
     version_info.major == 3
-    and version_info.minor >= 8
+    and version_info.minor >= 9
     and version_info.micro >= 0
 ):
     major = version_info.major
