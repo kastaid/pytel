@@ -9,6 +9,7 @@ __pycache__/
 docs/*
 scripts/*
 Dockerfile
+*errors.txt
 *compose.yml
 heroku.yml
 app.json

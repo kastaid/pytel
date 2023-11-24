@@ -646,7 +646,7 @@ class PytelClient(Raw):
                                 from pytel import (
                                     pytel_tgb,)
 
-                                await pytel_tgb.send_message(
+                                emsg = await pytel_tgb.send_message(
                                     int(
                                         send_to
                                     ),
@@ -664,6 +664,10 @@ class PytelClient(Raw):
                                     text=format_text,
                                     parse_mode=ParseMode.HTML,
                                     disable_notification=False,
+                                )
+                                clog = f"t.me/c/{str(send_to).replace('-100', '')}/{emsg.id}"
+                                await message.reply(
+                                    f"<b>PYTEL</b> has been crashed.\n<u>Logger</u>: <a href='{clog}'>Click Here</a>"
                                 )
 
                 message.continue_propagation()

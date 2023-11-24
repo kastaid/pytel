@@ -167,11 +167,11 @@ async def _premstat_inline(
                 [
                     buttons(
                         "ꜱᴛᴀᴛꜱ",
-                        callback_data="sys_stats",
+                        callback_data="stat(usage)",
                     ),
                     buttons(
                         "ᴅᴀᴛᴀʙᴀꜱᴇ",
-                        callback_data="db_stats",
+                        callback_data="stat(db)",
                     ),
                 ],
                 [

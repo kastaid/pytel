@@ -6,7 +6,6 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 import textwrap
-from asyncio import Lock
 from datetime import datetime
 from os import getpid, close, execvp
 from platform import (
@@ -46,6 +45,9 @@ from . import (
     ParseMode,
     Ping,
     PingDelayDisconnect,
+    STATISTIC_PYTEL,
+    STATISTIC_DB,
+    _PYTEL_UPDATE,
     __license__,
     _try_purged,
     eor,
@@ -66,11 +68,8 @@ from . import (
     size_bytes,
     suppress,
     herogay,
-    memorize,
     _supersu,
     _HELP_ACCEPT,)
-
-_PYTEL_UPDATE = Lock()
 
 
 async def _er_iping(
@@ -202,50 +201,6 @@ def _ialive() -> Optional[str]:
         lambda line: True,
     )
     return str(wrp)
-
-
-@memorize
-def sys_stats() -> str:
-    ram = (
-        psutil.virtual_memory().percent
-    )
-    disk = psutil.disk_usage(
-        "/"
-    ).percent
-    process = psutil.Process(getpid())
-    stats = f"""
-STATISTICS ( PYTEL-Premium )
----------------------------
-CPU: {psutil.cpu_percent()}%
-RAM: {ram}%
-DISK: {disk}%
-Memory Usage: {size_bytes(process.memory_info()[0])}
----------------------------
-Uptime: {time_formatter((time() - start_time) * 1000)}
-
-Copyright (C) 2023-present @kastaid
-"""
-    return stats
-
-
-def db_usage() -> str:
-    used: int = pydb.sizes
-    c_keys = len(pydb.keys())
-    for x in pydb.keys():
-        contents = len(x)
-    sz = f"{size_bytes(used)}"
-    d_b = f"""
-DATABASE ( PYTEL-Premium )
-
-• Database Type: {pydb.name}
-• Database Size: {sz}
-• Database Table Contents:
-  › Table: {c_keys}
-  › Contents: {contents}
-
-Copyright (C) 2023-present @kastaid
-"""
-    return d_b
 
 
 @pytel.instruction(
@@ -444,34 +399,139 @@ async def _ialv(client, message):
 
 
 @pytel_tgb.on_callback_query(
-    filters.regex("sys_stats")
+    filters.regex(r"stat\((.+)\)")
 )
-async def _sys_callback(
+async def _systats_callback(
     client,
     cq: CallbackQuery,
 ):
-    text = sys_stats()
-    await pytel_tgb.answer_callback_query(
-        cq.id,
-        text,
-        show_alert=True,
-    )
-    sys_stats.cache_reset()
+    stat = cq.matches[0].group(1)
+    if stat == "usage":
+        try:
+            UPLOAD = size_bytes(
+                psutil.net_io_counters().bytes_sent
+            )
+        except BaseException:
+            UPLOAD = 0
+        try:
+            DOWN = size_bytes(
+                psutil.net_io_counters().bytes_recv
+            )
+        except BaseException:
+            DOWN = 0
+        try:
+            workdir = psutil.disk_usage(
+                "."
+            )
+            TOTAL = size_bytes(
+                workdir.total
+            )
+            USED = size_bytes(
+                workdir.used
+            )
+            FREE = size_bytes(
+                workdir.free
+            )
+        except BaseException:
+            TOTAL = 0
+            USED = 0
+            FREE = 0
+        try:
+            cpu_freq = (
+                psutil.cpu_freq().current
+            )
+            if cpu_freq >= 1000:
+                cpu_freq = (
+                    "{}GHz".format(
+                        round(
+                            cpu_freq
+                            / 1000,
+                            2,
+                        )
+                    )
+                )
+            else:
+                cpu_freq = (
+                    "{}MHz".format(
+                        round(
+                            cpu_freq, 2
+                        )
+                    )
+                )
+            CPU = "{}% ({}) {}".format(
+                psutil.cpu_percent(),
+                psutil.cpu_count(),
+                cpu_freq,
+            )
+        except BaseException:
+            try:
+                CPU = "{}%".format(
+                    psutil.cpu_percent()
+                )
+            except BaseException:
+                CPU = "0%"
+        try:
+            ram = (
+                psutil.virtual_memory()
+            )
+            RAM = "{} | {}%".format(
+                size_bytes(ram.total),
+                ram.percent or 0,
+            )
+        except BaseException:
+            RAM = "0 | 0%"
+        try:
+            swap = psutil.swap_memory()
+            SWAP = "{} | {}%".format(
+                size_bytes(swap.total),
+                swap.percent or 0,
+            )
+        except BaseException:
+            SWAP = "0 | 0%"
 
+        stts = STATISTIC_PYTEL.format(
+            UPLOAD,
+            DOWN,
+            TOTAL,
+            USED,
+            FREE,
+            CPU,
+            RAM,
+            SWAP,
+        )
+        await pytel_tgb.answer_callback_query(
+            cq.id,
+            stts,
+            show_alert=True,
+        )
 
-@pytel_tgb.on_callback_query(
-    filters.regex("db_stats")
-)
-async def _dbb_callback(
-    client,
-    cq: CallbackQuery,
-):
-    text = db_usage()
-    await pytel_tgb.answer_callback_query(
-        cq.id,
-        text,
-        show_alert=True,
-    )
+    elif stat == "db":
+        try:
+            used: int = pydb.sizes
+        except BaseException:
+            used = 0
+        try:
+            c_keys = len(pydb.keys())
+        except BaseException:
+            c_keys = "0"
+        try:
+            for x in pydb.keys():
+                contents = len(x)
+        except BaseException:
+            contents = "0"
+
+        sz = f"{size_bytes(used)}"
+        d_b = STATISTIC_DB.format(
+            pydb.name,
+            sz,
+            c_keys,
+            contents,
+        )
+        await pytel_tgb.answer_callback_query(
+            cq.id,
+            d_b,
+            show_alert=True,
+        )
 
 
 @pytel_tgb.on_inline_query(
@@ -486,11 +546,11 @@ async def _ping_inline(
         [
             buttons(
                 "ꜱᴛᴀᴛꜱ",
-                callback_data="sys_stats",
+                callback_data="stat(usage)",
             ),
             buttons(
                 "ᴅᴀᴛᴀʙᴀꜱᴇ",
-                callback_data="db_stats",
+                callback_data="stat(db)",
             ),
         ],
         [
