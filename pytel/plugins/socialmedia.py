@@ -247,7 +247,7 @@ async def _youtube_video_dl(
                 progress_args=(
                     fx,
                     u_time,
-                    "`Uploading File!`",
+                    "Uploading Video!",
                     "Youtube Video",
                 ),
             )
@@ -464,7 +464,7 @@ async def _youtube_audio_dl(
                 progress_args=(
                     fx,
                     u_time,
-                    "`Uploading File!`",
+                    "Uploading Audio!",
                     "Youtube Audio",
                 ),
             )

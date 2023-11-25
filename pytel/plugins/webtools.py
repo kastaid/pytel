@@ -136,7 +136,7 @@ async def _screenshots(client, message):
                 progress_args=(
                     z,
                     u_time,
-                    "`Uploading File!`",
+                    "Uploading File!",
                     "Screenshot Website",
                 ),
                 disable_notification=True,

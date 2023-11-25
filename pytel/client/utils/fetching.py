@@ -33,6 +33,7 @@ from phonenumbers import (
     timezone as phtimezone,)
 from phonenumbers.carrier import (
     _is_mobile,)
+from pytelibs import WEATHER_ICONS
 from pytz import (
     country_timezones,
     timezone,
@@ -271,15 +272,10 @@ async def screenshots(
 async def fetch_adzan(
     str_city: Optional[str],
 ) -> Optional[str]:
-    url = f"https://muslimsalat.p.rapidapi.com/{str_city}.json"
-    headers = {
-        "X-RapidAPI-Key": "562b8598f6msh56e1ad721a549c9p125ff9jsn70e8572dc418",
-        "X-RapidAPI-Host": "muslimsalat.p.rapidapi.com",
-    }
+    url = f"https://muslimsalat.com/{str_city}.json?key=bd099c5825cbedb9aa934e255a81a5fc"
     response = await fetching(
         url,
         re_json=True,
-        headers=headers,
     )
     if not response:
         text = "{}!".format(
@@ -298,7 +294,7 @@ async def fetch_adzan(
         )
     else:
         timefor = f"""
-<u>{response['query']}, {response['country']}, {response['items'][0]['date_for']}.</u>
+<u>{str(response['query']).capitalize()}, {response['country']}, {response['items'][0]['date_for']}.</u>
 """
         cordinates = f"{response['latitude'] or ''},{response['longitude'] or ''}"
         maps = f"https://www.google.com/maps?q={cordinates}"
@@ -321,12 +317,12 @@ async def fetch_adzan(
             )
             + "</b>\n"
         )
-        text += f"{timefor}├ <b>Fajr :</b> <code>{response['items'][0]['fajr']}</code>\n"
-        text += f"├ <b>Shurooq :</b> <code>{response['items'][0]['shurooq']}</code>\n"
-        text += f"├ <b>Dhuhr :</b> <code>{response['items'][0]['dhuhr']}</code>\n"
-        text += f"├ <b>Asr :</b> <code>{response['items'][0]['asr']}</code>\n"
-        text += f"├ <b>Maghrib :</b> <code>{response['items'][0]['maghrib']}</code>\n"
-        text += f"└ <b>Isha :</b> <code>{response['items'][0]['isha']}</code>\n\n"
+        text += f"{timefor}├ <b>Fajr</b> ❯ <code>{response['items'][0]['fajr']}</code>\n"
+        text += f"├ <b>Shurooq</b> ❯ <code>{response['items'][0]['shurooq']}</code>\n"
+        text += f"├ <b>Dhuhr</b> ❯ <code>{response['items'][0]['dhuhr']}</code>\n"
+        text += f"├ <b>Asr</b> ❯ <code>{response['items'][0]['asr']}</code>\n"
+        text += f"├ <b>Maghrib</b> ❯ <code>{response['items'][0]['maghrib']}</code>\n"
+        text += f"└ <b>Isha</b> ❯ <code>{response['items'][0]['isha']}</code>\n\n"
         text += (
             "<u>"
             + "{}".format(
@@ -339,23 +335,23 @@ async def fetch_adzan(
             + "{}".format(
                 "Code Country"
             )
-            + f" :</b> <code>{response['country_code']}</code>\n"
+            + f"</b> ❯ <code>{response['country_code']}</code>\n"
         )
         text += (
             "├ <b>"
             + "{}".format(
                 "Temperature",
             )
-            + f" :</b> <code>{temperature}</code>\n"
+            + f"</b> ❯ <code>{temperature}</code>\n"
         )
         text += (
             "├ <b>"
             + "{}".format(
                 "Cordinates",
             )
-            + f" :</b> <code>{cordinates}</code>\n"
+            + f"</b> ❯ <code>{cordinates}</code>\n"
         )
-        text += f"└ <b>Maps :</b> <code>{maps}</code>"
+        text += f"└ <b>Maps</b> ❯ <code>{maps}</code>"
 
     return str(text)
 
@@ -585,6 +581,25 @@ async def fetch_weather(
         )
         return text
 
+    desc = response["weather"][0][
+        "main"
+    ]
+    wic = response["weather"][0]["icon"]
+    ico = dict(
+        filter(
+            lambda item: wic in item[0],
+            WEATHER_ICONS.items(),
+        )
+    )
+    icon = ico.get(wic)
+    if wic.endswith("n"):
+        icons = (
+            icon + " ( <u>Night</u> ) 🌙"
+        )
+    else:
+        icons = (
+            icon + " ( <u>Day</u> ) ☀️"
+        )
     cityname = response["name"]
     curtemp = response["main"]["temp"]
     humidity = response["main"][
@@ -596,9 +611,6 @@ async def fetch_weather(
     max_temp = response["main"][
         "temp_max"
     ]
-    desc = response["weather"][0]
-    desc = desc["main"]
-    desc = "{}".format(desc)
     country = response["sys"]["country"]
     sunrise = response["sys"]["sunrise"]
     sunset = response["sys"]["sunset"]
@@ -689,9 +701,9 @@ async def fetch_weather(
         + "{}".format("Sunset")
         + f":</b> {wt_sun(sunset)}\n\n"
     )
-    text += f"<u><b>{desc}</b></u>\n"
+    text += f"<u><b>{desc}</b></u> {str(icons)}\n"
     text += f"└ {cityname}, {fullcountry_names} {time}"
-    text += f"\n\n(c) @kastaid #pytel"
+    text += f"\n\n(c) 2023-present kastaid #pytel"
 
     return text
 

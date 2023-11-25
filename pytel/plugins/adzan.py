@@ -7,38 +7,48 @@
 
 from . import (
     ParseMode,
-    _try_purged,
     eor,
-    fetch_weather,
+    fetch_adzan,
     get_text,
     plugins_helper,
     px,
     pytel,
     replied,
+    _try_purged,
     random_prefixies,)
 
 
 @pytel.instruction(
     [
-        "weather",
-        "cuaca",
+        "adzan",
+        "adzhan",
+        "azan",
+    ],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
+    [
+        "adzan",
+        "adzhan",
+        "azan",
     ],
     outgoing=True,
 )
-async def _weather(client, message):
-    region = get_text(message)
-    if not region:
+async def _adzhan(client, message):
+    str_city = get_text(message)
+    if not str_city:
         await eor(
             message,
             text="Provide a valid Region or City.",
         )
         return
+
     x = await eor(
         message,
-        text=f"Fetches weather data for the <u>{region.capitalize()}</u>",
+        text=f"Fetches to prayer data for the **{str_city.capitalize()}**",
     )
-    get_info = await fetch_weather(
-        region
+    get_info = await fetch_adzan(
+        str_city
     )
     await client.send_message(
         message.chat.id,
@@ -52,6 +62,6 @@ async def _weather(client, message):
     return await _try_purged(x)
 
 
-plugins_helper["weather"] = {
-    f"{random_prefixies(px)}weather / {random_prefixies(px)}cuaca [region/city]/[reply]": "To get weather information.",
+plugins_helper["adzan"] = {
+    f"{random_prefixies(px)}adzan / azan [region city]/[reply text (region)]": "To get call to prayer information, according to the selected region.",
 }
