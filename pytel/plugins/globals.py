@@ -27,6 +27,7 @@ from . import (
     ChatType,
     ChannelPrivate,
     UserNotParticipant,
+    PeerIdInvalid,
     FloodWait,
     ParseMode,
     eor,
@@ -620,6 +621,7 @@ async def _global_banned(
             with suppress(
                 ChannelPrivate,
                 UserNotParticipant,
+                PeerIdInvalid,
             ):
                 me = await client.get_chat_member(
                     dialog.chat.id,
@@ -673,6 +675,7 @@ async def _global_banned(
             with suppress(
                 ChannelPrivate,
                 UserNotParticipant,
+                PeerIdInvalid,
             ):
                 me = await client.get_chat_member(
                     dialog.chat.id,
@@ -726,6 +729,7 @@ async def _global_banned(
             with suppress(
                 ChannelPrivate,
                 UserNotParticipant,
+                PeerIdInvalid,
             ):
                 me = await client.get_chat_member(
                     dialog.chat.id,

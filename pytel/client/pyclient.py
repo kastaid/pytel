@@ -707,22 +707,28 @@ class PytelClient(Raw):
         user_id: Optional[int],
     ) -> Optional[str]:
         separator: str = ""
-        user = await self.get_users(
-            user_id
-        )
-        fname = (
-            hasattr(user, "last_name")
-            and user.last_name
-            and f"{separator}{user.first_name} {user.last_name}"
-            or f"{separator}{user.first_name}"
-        )
-        fullname = " ".join(
-            replace_all(
-                escape(fname),
-                _CHARACTER_NAMES,
-            ).split()
-        )
-        return fullname
+        try:
+            user = await self.get_users(
+                user_id
+            )
+            fname = (
+                hasattr(
+                    user, "last_name"
+                )
+                and user.last_name
+                and f"{separator}{user.first_name} {user.last_name}"
+                or f"{separator}{user.first_name}"
+            )
+            fullname = " ".join(
+                replace_all(
+                    escape(fname),
+                    _CHARACTER_NAMES,
+                ).split()
+            )
+            return fullname
+        except BaseException:
+            fullname = "User"
+            return fullname
 
     async def username(
         self,

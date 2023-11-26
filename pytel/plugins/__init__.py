@@ -19,7 +19,8 @@ from pyrogram.errors.exceptions.bad_request_400 import (
     UsersTooMuch,
     BotsTooMuch,
     UserNotParticipant,
-    UserNotMutualContact,)
+    UserNotMutualContact,
+    PeerIdInvalid,)
 from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,
     SlowmodeWait,)
