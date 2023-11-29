@@ -21,6 +21,7 @@ YELLOW = "\x1b[33m"
 BLUE = "\x1b[34m"
 CYAN = "\x1b[36m"
 
+filechecker = "bash filecheck.sh --log-level info"
 python = "python3"
 nocache = f"{python} -B"
 app = f"{python} -m pytel"
@@ -150,11 +151,17 @@ parser.add_argument(
     action="store_true",
 )
 parser.add_argument(
+    "-ch",
+    "--checker",
+    help="checking attributes file",
+    action="store_true",
+)
+parser.add_argument(
     "-v",
     "--version",
     help="show this program version",
     action="version",
-    version=__version__,
+    version=f"PYTEL-Premium v{__version__}",
 )
 parser.add_argument(
     "-h",
@@ -211,6 +218,12 @@ def main():
         print(
             f"{BOLD}{BLUE}✓ Cached has been clear.{RST}"
         )
+    elif args.checker:
+        os.system("clear")
+        print(
+            f"{BOLD}{GREEN}Bash >>> Checking Attributes Files{RST}"
+        )
+        run_cmd(filechecker)
     else:
         print(
             f"{python} -m start --help"

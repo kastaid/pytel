@@ -26,7 +26,7 @@ Copy file sample.env or rename to config.env
 
     cp sample.env config.env
 
-### Advanced Package Tool ( via Ubuntu 20+ )
+### Advanced Package Tool ( for Ubuntu/Debian )
   <kbd>
 Perform this command to install the package.
 Don't run this command if u're using Docker compose.
@@ -56,7 +56,7 @@ Perform this command to cleared package & cleared cache.
         /usr/share/man/* /usr/share/doc/* \
         /var/log/* /tmp/* /var/tmp/*
 
-### Advanced Package Tool ( via Docker on Linux )
+### Advanced Package Tool ( for Docker )
   <kbd>
 Perform this command to install Docker.
   </kbd>
@@ -76,13 +76,16 @@ Perform this command to install Docker Compose V2 or Migration V1 to V2.
     # make the CLI executable
     chmod +x ~/.docker/cli-plugins/docker-compose
 
-### Guide Command ›_ ( via Localhost or Linux Distro )
+### On Ubuntu/Debian ( Localhost/VPS )
   * <strong>Install requirements:</strong>
     > pip3 install -U --no-cache-dir --break-system-packages -r main.txt
   * <strong>Run pytel:</strong>
     > python3 -m start --help
 
-### via Docker ( Docker Compose )
+### On Docker ( Localhost/VPS )
+  <kbd>
+Note: this Dockerfile for amd64 builds. Check your architecture first and run command docker version to see architecture, before running docker compose.
+  </kbd>
   <kbd>
 Run command:
   </kbd>
@@ -92,10 +95,14 @@ Run command:
         && docker compose up --detach --build --remove-orphans --no-color \
         && docker compose logs -f
 
+### On Heroku
+  * Heroku - [Click Here][heroku]
+
 ## License
 [GNU AGPL-3.0][license] © [2023-present KASTA ID 🇮🇩][kastaid]
   * Author: Developer - [@Unknownkz][unknownkz]
 
+[heroku]: https://dashboard.heroku.com/new?template=https://github.com/kastaid/pytel
 [license]: https://opensource.org/license/agpl-v3/
 [kastaid]: https://github.com/kastaid
 [unknownkz]: https://github.com/unknownkz
