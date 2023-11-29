@@ -20,9 +20,9 @@ from . import (
 
 @pytel.instruction(
     [
-        "adzan",
-        "adzhan",
-        "azan",
+        "dadzan",
+        "dadzhan",
+        "dazan",
     ],
     supersu=["PYTEL"],
 )

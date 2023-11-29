@@ -6,6 +6,7 @@ __pycache__/
 .github/*
 .venv
 .dockerignore
+.gitattributes
 docs/*
 scripts/*
 Dockerfile
@@ -17,3 +18,4 @@ LICENSE
 pygen.py
 start.py
 setup.cfg
+filecheck.sh
