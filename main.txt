@@ -24,6 +24,7 @@ pytgcalls==3.0.0.dev24
 lxml>=4.6.5
 
 # extended
+cryptography
 fonttools
 emoji
 GitPython

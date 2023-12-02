@@ -5,6 +5,7 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
+from cryptography.fernet import Fernet
 from pybase64 import (
     b64encode,
     b64decode,)
@@ -36,6 +37,49 @@ _CODE_TEXT = """
 {}
 ```
 """
+
+
+@pytel.instruction(
+    ["cryptography", "cryp"],
+    outgoing=True,
+    sensitive=False,
+)
+async def _cryptography_fernet(
+    client, message
+):
+    str_data = get_text(
+        message, normal=True
+    )
+    if not str_data:
+        await eor(
+            message,
+            text="Give it something to to convert data into data cryptography.",
+        )
+    x = await eor(
+        message,
+        text="Processing...",
+    )
+    message = str_data
+    key = Fernet.generate_key()
+    fernet = Fernet(key)
+    encMessage = fernet.encrypt(
+        message.encode()
+    )
+    decMessage = fernet.decrypt(
+        encMessage
+    ).decode()
+    text = f"""
+<b><u>Cryptography</u></b> ( <u>FERNET</u> ) <u>AES-128</u>
+
+<b>Key:</b> <code>{key.decode()}</code>
+
+<b>Encrypt:</b> <code>{encMessage.decode()}</code>
+
+<b>Decrypt:</b> <code>{decMessage}</code>
+
+(c) kastaid #pytel
+"""
+    await eor(x, text=text)
 
 
 @pytel.instruction(
@@ -333,6 +377,7 @@ async def _scanning_code(
 
 
 plugins_helper["codetools"] = {
+    f"{random_prefixies(px)}cryp / cryptography [text/reply to msg]": "Cryptography provides symmetric encryption and authentication to data. (Fernet) AES-128",
     f"{random_prefixies(px)}encode [text/reply to msg]": "Base64 Transform data that can be used by various systems precisely and safely.",
     f"{random_prefixies(px)}decode [data code]": "Base64 Translate or read the contents of the code.",
     f"{random_prefixies(px)}binnary [text/reply to msg]": "Converts text or messages into a binary number.",
