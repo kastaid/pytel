@@ -34,8 +34,12 @@ from . import (
     ],
     outgoing=True,
 )
-async def _adzhan(client, message):
-    str_city = get_text(message)
+async def _adzhan(
+    client, message
+):
+    str_city = get_text(
+        message
+    )
     if not str_city:
         await eor(
             message,
@@ -59,9 +63,13 @@ async def _adzhan(client, message):
             message
         ),
     )
-    return await _try_purged(x)
+    return await _try_purged(
+        x
+    )
 
 
-plugins_helper["adzan"] = {
+plugins_helper[
+    "adzan"
+] = {
     f"{random_prefixies(px)}adzan / azan [region city]/[reply text (region)]": "To get call to prayer information, according to the selected region.",
 }

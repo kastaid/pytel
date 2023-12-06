@@ -5,7 +5,8 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from cryptography.fernet import Fernet
+from cryptography.fernet import (
+    Fernet,)
 from pybase64 import (
     b64encode,
     b64decode,)
@@ -40,7 +41,10 @@ _CODE_TEXT = """
 
 
 @pytel.instruction(
-    ["cryptography", "cryp"],
+    [
+        "cryptography",
+        "cryp",
+    ],
     outgoing=True,
     sensitive=False,
 )
@@ -48,7 +52,8 @@ async def _cryptography_fernet(
     client, message
 ):
     str_data = get_text(
-        message, normal=True
+        message,
+        normal=True,
     )
     if not str_data:
         await eor(
@@ -60,14 +65,18 @@ async def _cryptography_fernet(
         text="Processing...",
     )
     message = str_data
-    key = Fernet.generate_key()
+    key = (
+        Fernet.generate_key()
+    )
     fernet = Fernet(key)
     encMessage = fernet.encrypt(
         message.encode()
     )
-    decMessage = fernet.decrypt(
-        encMessage
-    ).decode()
+    decMessage = (
+        fernet.decrypt(
+            encMessage
+        ).decode()
+    )
     text = f"""
 <b><u>Cryptography</u></b> ( <u>FERNET</u> ) <u>AES-128</u>
 
@@ -79,7 +88,9 @@ async def _cryptography_fernet(
 
 (c) kastaid #pytel
 """
-    await eor(x, text=text)
+    await eor(
+        x, text=text
+    )
 
 
 @pytel.instruction(
@@ -94,7 +105,8 @@ async def _base64_en_de(
     client, message
 ):
     str_data = get_text(
-        message, normal=True
+        message,
+        normal=True,
     )
     if not str_data:
         await eor(
@@ -106,8 +118,16 @@ async def _base64_en_de(
         message,
         text="Processing...",
     )
-    criteria, lething = None, None
-    if message.command[0] == "encode":
+    criteria, lething = (
+        None,
+        None,
+    )
+    if (
+        message.command[
+            0
+        ]
+        == "encode"
+    ):
         criteria = "Base64 Encode"
         try:
             lething = str(
@@ -117,15 +137,24 @@ async def _base64_en_de(
                         "utf-8",
                     )
                 )
-            )[2:]
-        except BaseException as excp:
+            )[
+                2:
+            ]
+        except (
+            BaseException
+        ) as excp:
             await eor(
                 x,
                 text=f"{excp}",
             )
             return
 
-    elif message.command[0] == "decode":
+    elif (
+        message.command[
+            0
+        ]
+        == "decode"
+    ):
         criteria = "Base64 Decode"
         try:
             lething = str(
@@ -136,21 +165,32 @@ async def _base64_en_de(
                     ),
                     validate=True,
                 ),
-            )[2:]
-        except BaseException as excp:
+            )[
+                2:
+            ]
+        except (
+            BaseException
+        ) as excp:
             await eor(
                 x,
                 text=f"{excp}",
             )
             return
 
-    if lething and criteria:
+    if (
+        lething
+        and criteria
+    ):
         await eor(
             x,
             text=_CODE_TEXT.format(
                 criteria,
                 str_data,
-                str(lething[:-1]),
+                str(
+                    lething[
+                        :-1
+                    ]
+                ),
             ),
         )
         return
@@ -168,7 +208,8 @@ async def _binnary_code(
     client, message
 ):
     str_data = get_text(
-        message, normal=True
+        message,
+        normal=True,
     )
     if not str_data:
         await eor(
@@ -180,20 +221,32 @@ async def _binnary_code(
         message,
         text="Processing...",
     )
-    criteria, binnary = None, None
-    if message.command[0] == "binnary":
+    criteria, binnary = (
+        None,
+        None,
+    )
+    if (
+        message.command[
+            0
+        ]
+        == "binnary"
+    ):
         criteria = "Text to Binnary"
         binnary = converting_binnary(
-            data=str_data, convert=True
+            data=str_data,
+            convert=True,
         )
 
     elif (
-        message.command[0]
+        message.command[
+            0
+        ]
         == "unbinnary"
     ):
         criteria = "Binnary to Text"
         binnary = converting_binnary(
-            data=str_data, convert=False
+            data=str_data,
+            convert=False,
         )
 
     if binnary:
@@ -202,7 +255,9 @@ async def _binnary_code(
             text=_CODE_TEXT.format(
                 criteria,
                 str_data,
-                str(binnary),
+                str(
+                    binnary
+                ),
             ),
         )
         return
@@ -224,7 +279,8 @@ async def _making_qrcode(
     client, message
 ):
     str_data = get_text(
-        message, normal=True
+        message,
+        normal=True,
     )
     if not str_data:
         await eor(
@@ -237,11 +293,22 @@ async def _making_qrcode(
         text="Processing...",
     )
 
-    if message.command[0][0] == "s":
-        output = making_code(
-            client, str_data, "webp"
+    if (
+        message.command[
+            0
+        ][0]
+        == "s"
+    ):
+        output = (
+            making_code(
+                client,
+                str_data,
+                "webp",
+            )
         )
-        with suppress(Exception):
+        with suppress(
+            Exception
+        ):
             await client.send_sticker(
                 message.chat.id,
                 sticker=output,
@@ -250,17 +317,33 @@ async def _making_qrcode(
                     message
                 ),
             )
-            await _try_purged(x)
-            (Rooters / output).unlink(
+            await _try_purged(
+                x
+            )
+            (
+                Rooters
+                / output
+            ).unlink(
                 missing_ok=True
             )
             return
 
-    elif message.command[0][0] == "p":
-        output = making_code(
-            client, str_data, "png"
+    elif (
+        message.command[
+            0
+        ][0]
+        == "p"
+    ):
+        output = (
+            making_code(
+                client,
+                str_data,
+                "png",
+            )
         )
-        with suppress(Exception):
+        with suppress(
+            Exception
+        ):
             await client.send_photo(
                 message.chat.id,
                 photo=output,
@@ -269,17 +352,28 @@ async def _making_qrcode(
                     message
                 ),
             )
-            await _try_purged(x)
-            (Rooters / output).unlink(
+            await _try_purged(
+                x
+            )
+            (
+                Rooters
+                / output
+            ).unlink(
                 missing_ok=True
             )
             return
 
     else:
-        output = making_code(
-            client, str_data, "png"
+        output = (
+            making_code(
+                client,
+                str_data,
+                "png",
+            )
         )
-        with suppress(Exception):
+        with suppress(
+            Exception
+        ):
             await client.send_photo(
                 message.chat.id,
                 photo=output,
@@ -288,8 +382,13 @@ async def _making_qrcode(
                     message
                 ),
             )
-            await _try_purged(x)
-            (Rooters / output).unlink(
+            await _try_purged(
+                x
+            )
+            (
+                Rooters
+                / output
+            ).unlink(
                 missing_ok=True
             )
             return
@@ -306,7 +405,9 @@ async def _making_qrcode(
 async def _scanning_code(
     client, message
 ):
-    rep = message.reply_to_message
+    rep = (
+        message.reply_to_message
+    )
     if not rep:
         await eor(
             message,
@@ -320,22 +421,23 @@ async def _scanning_code(
         text="Checking...",
     )
     if rep.photo:
-        type_file = "images"
-        file = (
-            await client.download_media(
-                rep.photo, "cache/"
-            )
+        type_file = (
+            "images"
+        )
+        file = await client.download_media(
+            rep.photo,
+            "cache/",
         )
     elif (
         rep.sticker
         and rep.sticker.file_id
     ):
-        type_file = "sticker"
-        file = (
-            await client.download_media(
-                rep.sticker.file_id,
-                "cache/",
-            )
+        type_file = (
+            "sticker"
+        )
+        file = await client.download_media(
+            rep.sticker.file_id,
+            "cache/",
         )
     else:
         await eor(
@@ -361,22 +463,32 @@ async def _scanning_code(
             ),
             disable_web_page_preview=True,
         )
-        (Rooters / file).unlink(
+        (
+            Rooters
+            / file
+        ).unlink(
             missing_ok=True
         )
-        await _try_purged(x, 1.5)
+        await _try_purged(
+            x, 1.5
+        )
         return
     else:
         await eor(
             x,
             text="Can't scanning, try again later!",
         )
-        (Rooters / file).unlink(
+        (
+            Rooters
+            / file
+        ).unlink(
             missing_ok=True
         )
 
 
-plugins_helper["codetools"] = {
+plugins_helper[
+    "codetools"
+] = {
     f"{random_prefixies(px)}cryp / cryptography [text/reply to msg]": "Cryptography provides symmetric encryption and authentication to data. (Fernet) AES-128",
     f"{random_prefixies(px)}encode [text/reply to msg]": "Base64 Transform data that can be used by various systems precisely and safely.",
     f"{random_prefixies(px)}decode [data code]": "Base64 Translate or read the contents of the code.",

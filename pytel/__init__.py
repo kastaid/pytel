@@ -6,8 +6,10 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
-from .checker import check_pypi_version
-from .logger import pylog as send_log
+from .checker import (
+    check_pypi_version,)
+from .logger import (
+    pylog as send_log,)
 
 check_pypi_version()
 
@@ -17,11 +19,13 @@ try:
         set_event_loop_policy,
         DefaultEventLoopPolicy,
         SelectorEventLoop,)
-    from selectors import SelectSelector
+    from selectors import (
+        SelectSelector,)
     from requests.exceptions import (
         ChunkedEncodingError,)
     from urllib3.exceptions import (
-        IncompleteRead, ProtocolError,)
+        IncompleteRead,
+        ProtocolError,)
 
     #    from uvloop import EventLoopPolicy
     from version import (
@@ -31,64 +35,112 @@ except KeyboardInterrupt:
         "Received interrupt while import"
     )
 except Exception as excp:
-    send_log.exception(excp)
+    send_log.exception(
+        excp
+    )
 
 
-class MyPolicy(DefaultEventLoopPolicy):
-    def new_event_loop(self):
-        selector = SelectSelector()
+class MyPolicy(
+    DefaultEventLoopPolicy
+):
+    def new_event_loop(
+        self,
+    ):
+        selector = (
+            SelectSelector()
+        )
         return SelectorEventLoop(
             selector
         )
 
 
-set_event_loop_policy(MyPolicy())
-loopers = get_event_loop()
+set_event_loop_policy(
+    MyPolicy()
+)
+loopers = (
+    get_event_loop()
+)
 
 try:
-    from os import cpu_count
-    from pathlib import Path
+    from os import (
+        cpu_count,)
+    from pathlib import (
+        Path,)
     from platform import (
-        uname, system, machine,)
-    from shutil import rmtree
+        uname, system,
+        machine,)
+    from shutil import (
+        rmtree,)
     from sys import (
-        platform, maxsize, version_info,
+        platform,
+        maxsize,
+        version_info,
         exit,)
     from time import time
     from pyrogram.errors.exceptions.unauthorized_401 import (
         Unauthorized,)
-    from .client import PytelClient
+    from .client import (
+        PytelClient,)
     from .config import (
-        API_HASH, API_ID, SESSION1,
-        SESSION2, SESSION3, SESSION4,
-        SESSION5, SESSION6, SESSION7,
-        SESSION8, SESSION9, SESSION10,
-        BOT_SESSION, TGB_TOKEN, API_ID1,
-        API_HASH1, API_ID2, API_HASH2,
-        API_ID3, API_HASH3, API_ID4,
-        API_HASH4, API_ID5, API_HASH5,
-        API_ID6, API_HASH6, API_ID7,
-        API_HASH7, API_ID8, API_HASH8,
-        API_ID9, API_HASH9, API_ID10,
+        API_HASH, API_ID,
+        SESSION1,
+        SESSION2,
+        SESSION3,
+        SESSION4,
+        SESSION5,
+        SESSION6,
+        SESSION7,
+        SESSION8,
+        SESSION9,
+        SESSION10,
+        BOT_SESSION,
+        TGB_TOKEN,
+        API_ID1,
+        API_HASH1,
+        API_ID2,
+        API_HASH2,
+        API_ID3,
+        API_HASH3,
+        API_ID4,
+        API_HASH4,
+        API_ID5,
+        API_HASH5,
+        API_ID6,
+        API_HASH6,
+        API_ID7,
+        API_HASH7,
+        API_ID8,
+        API_HASH8,
+        API_ID9,
+        API_HASH9,
+        API_ID10,
         API_HASH10,)
 except KeyboardInterrupt:
     send_log.warning(
         "Received interrupt while import"
     )
-except IncompleteRead as i:
+except (
+    IncompleteRead
+) as i:
     send_log.exception(
         f"HTTP Response, ERROR: {i}"
     )
-except ProtocolError as p:
+except (
+    ProtocolError
+) as p:
     send_log.exception(
         f"Connection Broken, ERROR: {p}"
     )
-except ChunkedEncodingError as c:
+except (
+    ChunkedEncodingError
+) as c:
     send_log.exception(
         f"Connection Error, ERROR: {c}"
     )
 except Exception as excp:
-    send_log.exception(excp)
+    send_log.exception(
+        excp
+    )
 
 __license__ = "GNU Affero General Public License v3.0"
 __copyright__ = "PYTEL Copyright (C) 2023-present kastaid"
@@ -97,46 +149,79 @@ start_time = time()
 
 
 if (
-    platform.startswith("linux")
-    and maxsize == 2**63 - 1
+    platform.startswith(
+        "linux"
+    )
+    and maxsize
+    == 2**63 - 1
 ):
     platform = system()
     machine = machine()
-    if machine.startswith("aarch64"):
+    if machine.startswith(
+        "aarch64"
+    ):
         mch = "📱"
     else:
         mch = "💻"
     send_log.info(
         "{} Starting-up on the system {} {}".format(
             mch,
-            str(platform),
+            str(
+                platform
+            ),
             str(machine),
         )
     )
 else:
     platform = system()
-    architecture = "64-bit"
+    architecture = (
+        "64-bit"
+    )
     send_log.warning(
         "You've to use {} {} system first!".format(
-            str(platform), architecture
+            str(
+                platform
+            ),
+            architecture,
         )
     )
     exit(1)
 
 
 if (
-    version_info.major == 3
-    and version_info.minor >= 9
-    and version_info.micro >= 0
+    version_info.major
+    == 3
+    and version_info.minor
+    >= 9
+    and version_info.micro
+    >= 0
 ):
-    major = version_info.major
-    minor = version_info.minor
-    micro = version_info.micro
+    major = (
+        version_info.major
+    )
+    minor = (
+        version_info.minor
+    )
+    micro = (
+        version_info.micro
+    )
     send_log.info(
         "And running PYTEL on the Python {}.{}.{}".format(
-            str(round(major)),
-            str(round(minor)),
-            str(round(micro)),
+            str(
+                round(
+                    major
+                )
+            ),
+            str(
+                round(
+                    minor
+                )
+            ),
+            str(
+                round(
+                    micro
+                )
+            ),
         )
     )
 else:
@@ -144,8 +229,16 @@ else:
     minor = 9
     send_log.warning(
         "You've to use python version of at least >= {}.{}.x ! quitting...".format(
-            str(round(major)),
-            str(round(minor)),
+            str(
+                round(
+                    major
+                )
+            ),
+            str(
+                round(
+                    minor
+                )
+            ),
         )
     )
     exit(1)
@@ -155,30 +248,43 @@ Rooters: Path = Path(
 ).parent.parent
 
 dirs = "cache/"
-if not (Rooters / dirs).exists():
-    (Rooters / dirs).mkdir(
+if not (
+    Rooters / dirs
+).exists():
+    (
+        Rooters / dirs
+    ).mkdir(
         parents=True,
         exist_ok=True,
     )
 else:
-    for f in (Rooters / dirs).rglob(
-        "*"
-    ):
+    for f in (
+        Rooters / dirs
+    ).rglob("*"):
         if f.is_dir():
             rmtree(f)
         else:
-            f.unlink(missing_ok=True)
+            f.unlink(
+                missing_ok=True
+            )
 
-APP_VERSION = f"PYTEL-Premium v.{pyver}"
+APP_VERSION = f"PYTEL-v.{pyver}"
 WORKERS = min(
-    64, (cpu_count() or 1) + 1
+    64,
+    (cpu_count() or 1)
+    + 1,
 )
-SYSTEM_VERSION = f"{uname().system}"
-DEVICE_MODEL = f"{uname().machine}"
+SYSTEM_VERSION = (
+    f"{uname().system}"
+)
+DEVICE_MODEL = (
+    f"{uname().machine}"
+)
 
 try:
     import pyroaddon
-    from pyrogram import Client
+    from pyrogram import (
+        Client,)
 
     pytel_tgb = Client(
         name="pytel_bot",
@@ -194,13 +300,17 @@ except KeyboardInterrupt:
     send_log.warning(
         "Received interrupt while import"
     )
-except Unauthorized as excp:
+except (
+    Unauthorized
+) as excp:
     send_log.warning(
         f"SESSION Unauthorized coz: {excp}"
     )
     exit(1)
 except Exception as excp:
-    send_log.exception(excp)
+    send_log.exception(
+        excp
+    )
     exit(1)
 
 try:
@@ -415,19 +525,24 @@ try:
         else None
     )
     pytel = PytelClient(
-        name="pytel", lang_code="en"
+        name="pytel",
+        lang_code="en",
     )
 except KeyboardInterrupt:
     send_log.warning(
         "Received interrupt while import"
     )
-except Unauthorized as excp:
+except (
+    Unauthorized
+) as excp:
     send_log.warning(
         f"SESSION Unauthorized coz: {excp}"
     )
     exit(1)
 except Exception as excp:
-    send_log.exception(excp)
+    send_log.exception(
+        excp
+    )
     exit(1)
 
 pytl = [

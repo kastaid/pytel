@@ -6,7 +6,9 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 import attrs
-from ._inline import buttons, ikmarkup
+from ._inline import (
+    buttons,
+    ikmarkup,)
 
 
 @attrs.define

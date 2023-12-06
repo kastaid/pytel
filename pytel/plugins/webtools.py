@@ -5,7 +5,9 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from requests import get, Session
+from requests import (
+    get,
+    Session,)
 from . import (
     ParseMode,
     _try_purged,
@@ -35,21 +37,30 @@ _PHISHING_TEXT = """
 
 
 @pytel.instruction(
-    ["dclink", "devclinks"],
+    [
+        "dclink",
+        "devclinks",
+    ],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
-    ["clink", "clinks", "checklinks"],
+    [
+        "clink",
+        "clinks",
+        "checklinks",
+    ],
     outgoing=True,
 )
 async def _check_phishing(
     client, message
 ):
     url = get_text(
-        message, save_link=True
+        message,
+        save_link=True,
     )
     if not url or not (
-        is_url(url) is True
+        is_url(url)
+        is True
     ):
         await eor(
             message,
@@ -61,7 +72,9 @@ async def _check_phishing(
         message,
         text="Checking...",
     )
-    resp = await links_checker(url)
+    resp = await links_checker(
+        url
+    )
     if resp:
         await eor(
             x,
@@ -81,12 +94,16 @@ async def _check_phishing(
         "can_send_media_messages"
     ],
 )
-async def _screenshots(client, message):
+async def _screenshots(
+    client, message
+):
     url = get_text(
-        message, save_link=True
+        message,
+        save_link=True,
     )
     if not url or not (
-        is_url(url) is True
+        is_url(url)
+        is True
     ):
         await eor(
             message,
@@ -103,7 +120,9 @@ async def _screenshots(client, message):
             url=url,
             download=False,
         )
-    except BaseException as excp:
+    except (
+        BaseException
+    ) as excp:
         await eor(
             x,
             text=f"{excp}",
@@ -111,8 +130,12 @@ async def _screenshots(client, message):
         return
 
     if file:
-        with suppress(Exception):
-            u_time = time()
+        with suppress(
+            Exception
+        ):
+            u_time = (
+                time()
+            )
             z = await eor(
                 x,
                 text="Uploading...",
@@ -141,7 +164,9 @@ async def _screenshots(client, message):
                 ),
                 disable_notification=True,
             )
-            await _try_purged(z, 2.5)
+            await _try_purged(
+                z, 2.5
+            )
             return
     else:
         await eor(
@@ -167,12 +192,16 @@ async def _screenshots(client, message):
     ],
     outgoing=True,
 )
-async def _shorten_url(client, message):
+async def _shorten_url(
+    client, message
+):
     url = get_text(
-        message, save_link=True
+        message,
+        save_link=True,
     )
     if not url or not (
-        is_url(url) is True
+        is_url(url)
+        is True
     ):
         await eor(
             message,
@@ -185,7 +214,9 @@ async def _shorten_url(client, message):
         text="Shorten...",
     )
     if (
-        message.command[0]
+        message.command[
+            0
+        ]
         == "short_isgd"
         or "dshort_isgd"
     ):
@@ -197,35 +228,55 @@ async def _shorten_url(client, message):
             },
         )
     elif (
-        message.command[0]
+        message.command[
+            0
+        ]
         == "short_tiny"
         or "dshort_tiny"
     ):
         rsp = get(
             "http://tinyurl.com/api-create.php",
-            params={"url": url},
+            params={
+                "url": url
+            },
         )
     elif (
-        message.command[0]
+        message.command[
+            0
+        ]
         == "short_clck"
         or "dshort_clck"
     ):
         rsp = get(
             "https://clck.ru/--",
-            params={"url": url},
+            params={
+                "url": url
+            },
         )
 
-    with suppress(BaseException):
+    with suppress(
+        BaseException
+    ):
         if not rsp.ok:
-            response = rsp.text.strip()
-            await eor(x, text=response)
+            response = (
+                rsp.text.strip()
+            )
+            await eor(
+                x,
+                text=response,
+            )
             return
         else:
-            response = rsp.text.strip()
+            response = (
+                rsp.text.strip()
+            )
             text = "<b><u>SHORTEN URL</b></u>\n"
             text += f" ├ <b>Before:</b> <code>{url}</code>\n"
             text += f" └ <b>After:</b> <code>{response}</code>"
-            await eor(x, text=text)
+            await eor(
+                x,
+                text=text,
+            )
             return
 
 
@@ -237,12 +288,16 @@ async def _shorten_url(client, message):
     ["unshort"],
     outgoing=True,
 )
-async def _unshortens(client, message):
+async def _unshortens(
+    client, message
+):
     url = get_text(
-        message, save_link=True
+        message,
+        save_link=True,
     )
     if not url or not (
-        is_url(url) is True
+        is_url(url)
+        is True
     ):
         await eor(
             message,
@@ -261,7 +316,8 @@ async def _unshortens(client, message):
         stream=True,
     )
     if (
-        resp.status_code == 200
+        resp.status_code
+        == 200
         and resp.url
     ):
         text = "<b><u>UNSHORTEN URL</b></u>\n"
@@ -287,12 +343,16 @@ async def _unshortens(client, message):
     ["ipinfo"],
     outgoing=True,
 )
-async def _ip_info(client, message):
+async def _ip_info(
+    client, message
+):
     ipv = get_text(
-        message, save_link=False
+        message,
+        save_link=False,
     )
     if not ipv or not (
-        is_ipv4(ipv) is True
+        is_ipv4(ipv)
+        is True
     ):
         await eor(
             message,
@@ -303,25 +363,37 @@ async def _ip_info(client, message):
         message,
         text="Fetches IP Address...",
     )
-    str_ip = await fetch_ipinfo(ipv)
+    str_ip = await fetch_ipinfo(
+        ipv
+    )
     if str_ip:
-        await eor(x, text=str_ip)
+        await eor(
+            x,
+            text=str_ip,
+        )
 
 
 @pytel.instruction(
-    ["ddns", "devdomain"],
+    [
+        "ddns",
+        "devdomain",
+    ],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
     ["dns", "domain"],
     outgoing=True,
 )
-async def _domain_ns(client, message):
+async def _domain_ns(
+    client, message
+):
     url = get_text(
-        message, save_link=True
+        message,
+        save_link=True,
     )
     if not url or not (
-        is_url(url) is True
+        is_url(url)
+        is True
     ):
         await eor(
             message,
@@ -332,17 +404,30 @@ async def _domain_ns(client, message):
         message,
         text="Fetches DNS...",
     )
-    dn_server = await fetch_dns(url)
+    dn_server = (
+        await fetch_dns(
+            url
+        )
+    )
     if dn_server:
-        await eor(x, text=dn_server)
+        await eor(
+            x,
+            text=dn_server,
+        )
 
 
 @pytel.instruction(
-    ["dinb", "devinfonumber"],
+    [
+        "dinb",
+        "devinfonumber",
+    ],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
-    ["inb", "infonumber"],
+    [
+        "inb",
+        "infonumber",
+    ],
     outgoing=True,
 )
 async def _numbers_info(
@@ -364,7 +449,9 @@ async def _numbers_info(
         message,
         text="Processing...",
     )
-    rsp = fetch_phonenumbers(numb)
+    rsp = fetch_phonenumbers(
+        numb
+    )
     if rsp:
         await client.send_message(
             message.chat.id,
@@ -374,14 +461,19 @@ async def _numbers_info(
             ),
             disable_web_page_preview=True,
         )
-        await _try_purged(x)
+        await _try_purged(
+            x
+        )
     else:
         await eor(
-            x, text="Try again later!"
+            x,
+            text="Try again later!",
         )
 
 
-plugins_helper["webtools"] = {
+plugins_helper[
+    "webtools"
+] = {
     f"{random_prefixies(px)}clinks / checklinks [links/reply to message links]": "To check malicious links. ( Phishing )",
     f"{random_prefixies(px)}webss [url]/[reply link]": "To capture the screen on the link.",
     f"{random_prefixies(px)}short_[isgd/tiny/clck] [url]/[reply link]": "To shorten your link/url.",

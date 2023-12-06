@@ -5,8 +5,11 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from datetime import datetime, timedelta
-from typing import Optional
+from datetime import (
+    datetime,
+    timedelta,)
+from typing import (
+    Optional,)
 from ..client.dbase.dbMessaging import (
     add_schedule,
     check_schedule,
@@ -76,10 +79,16 @@ __italic__
     ["del", "delete"],
     outgoing=True,
 )
-async def _delete(client, message):
-    replieds = message.reply_to_message
+async def _delete(
+    client, message
+):
+    replieds = (
+        message.reply_to_message
+    )
     if replieds:
-        await _try_purged(replieds)
+        await _try_purged(
+            replieds
+        )
         await _try_purged(
             message,
             0.9,
@@ -100,12 +109,25 @@ async def _delete(client, message):
     ["purgeme"],
     outgoing=True,
 )
-async def _purge_me(client, message):
-    if len(message.command) != 2:
-        return await message.delete()
+async def _purge_me(
+    client, message
+):
+    if (
+        len(
+            message.command
+        )
+        != 2
+    ):
+        return (
+            await message.delete()
+        )
 
-    user_id = client.me.id
-    n = message.text.split(None, 1)[
+    user_id = (
+        client.me.id
+    )
+    n = message.text.split(
+        None, 1
+    )[
         1
     ].strip()
     if not n.isnumeric():
@@ -118,12 +140,16 @@ async def _purge_me(client, message):
     if n <= 1:
         n: int = 2
 
-    chat_id = message.chat.id
+    chat_id = (
+        message.chat.id
+    )
     message_ids = [
         m.id
         async for m in client.search_messages(
             chat_id,
-            from_user=int(user_id),
+            from_user=int(
+                user_id
+            ),
             limit=n,
         )
     ]
@@ -135,16 +161,18 @@ async def _purge_me(client, message):
         )
 
     to_delete = [
-        message_ids[i : i + 99]
+        message_ids[
+            i : i + 99
+        ]
         for i in range(
             0,
-            len(message_ids),
+            len(
+                message_ids
+            ),
             99,
         )
     ]
-    for (
-        hundred_messages_or_less
-    ) in to_delete:
+    for hundred_messages_or_less in (to_delete):
         await client.delete_messages(
             chat_id=chat_id,
             message_ids=hundred_messages_or_less,
@@ -162,26 +190,41 @@ async def _schedule_msg(
     chat_id: Optional[
         int
     ] = message.chat.id
-    user_id = client.me.id
-    if check_schedule(user_id, chat_id):
+    user_id = (
+        client.me.id
+    )
+    if check_schedule(
+        user_id, chat_id
+    ):
         await eor(
             message,
             text="Please wait until previous --schedule-- msg are finished..",
         )
         return
     else:
-        if message.reply_to_message_id:
+        if (
+            message.reply_to_message_id
+        ):
             try:
-                args = (
-                    message.text.split(
-                        " ", 3
-                    )
+                args = message.text.split(
+                    " ",
+                    3,
                 )
                 schtimes = float(
-                    args[1]
+                    args[
+                        1
+                    ]
                 )
-                count = int(args[2])
-                tms = float(args[3])
+                count = int(
+                    args[
+                        2
+                    ]
+                )
+                tms = float(
+                    args[
+                        3
+                    ]
+                )
                 mesg = (
                     message.reply_to_message
                 )
@@ -194,17 +237,30 @@ async def _schedule_msg(
                 return
         else:
             try:
-                args = (
-                    message.text.split(
-                        " ", 4
-                    )
+                args = message.text.split(
+                    " ",
+                    4,
                 )
                 schtimes = float(
-                    args[1]
+                    args[
+                        1
+                    ]
                 )
-                count = int(args[2])
-                tms = float(args[3])
-                mesg = str(args[4])
+                count = int(
+                    args[
+                        2
+                    ]
+                )
+                tms = float(
+                    args[
+                        3
+                    ]
+                )
+                mesg = str(
+                    args[
+                        4
+                    ]
+                )
             except BaseException:
                 await eor(
                     message,
@@ -214,20 +270,34 @@ async def _schedule_msg(
                 return
         schtimes = (
             60
-            if int(schtimes) < 60
+            if int(
+                schtimes
+            )
+            < 60
             else schtimes
         )
         timesleep = (
-            60 if int(tms) < 60 else tms
+            60
+            if int(tms)
+            < 60
+            else tms
         )
         await message.delete()
         if count:
             add_schedule(
-                int(user_id), chat_id
+                int(
+                    user_id
+                ),
+                chat_id,
             )
-            for _ in range(count):
+            for (
+                _
+            ) in range(
+                count
+            ):
                 if not check_schedule(
-                    user_id, chat_id
+                    user_id,
+                    chat_id,
                 ):
                     break
                 with suppress(
@@ -247,9 +317,13 @@ async def _schedule_msg(
                         ),
                         is_schedule=True,
                     )
-            with suppress(Exception):
+            with suppress(
+                Exception
+            ):
                 cancel_schedule(
-                    int(user_id),
+                    int(
+                        user_id
+                    ),
                     chat_id,
                 )
 
@@ -262,27 +336,42 @@ async def _schedule_msg(
     ["dsp"],
     outgoing=True,
 )
-async def _dspam_msg(client, message):
+async def _dspam_msg(
+    client, message
+):
     chat_id: Optional[
         int
     ] = message.chat.id
-    user_id = client.me.id
-    if check_dspam(user_id, chat_id):
+    user_id = (
+        client.me.id
+    )
+    if check_dspam(
+        user_id, chat_id
+    ):
         await eor(
             message,
             text="Please wait until previous **delay-spam** are finished..",
         )
         return
     else:
-        if message.reply_to_message_id:
+        if (
+            message.reply_to_message_id
+        ):
             try:
-                args = (
-                    message.text.split(
-                        " ", 2
-                    )
+                args = message.text.split(
+                    " ",
+                    2,
                 )
-                count = int(args[2])
-                tms = float(args[1])
+                count = int(
+                    args[
+                        2
+                    ]
+                )
+                tms = float(
+                    args[
+                        1
+                    ]
+                )
                 mesg = (
                     message.reply_to_message
                 )
@@ -296,14 +385,25 @@ async def _dspam_msg(client, message):
                 return
         else:
             try:
-                args = (
-                    message.text.split(
-                        " ", 3
-                    )
+                args = message.text.split(
+                    " ",
+                    3,
                 )
-                count = int(args[2])
-                tms = float(args[1])
-                mesg = str(args[3])
+                count = int(
+                    args[
+                        2
+                    ]
+                )
+                tms = float(
+                    args[
+                        1
+                    ]
+                )
+                mesg = str(
+                    args[
+                        3
+                    ]
+                )
             except BaseException:
                 await eor(
                     message,
@@ -313,16 +413,27 @@ async def _dspam_msg(client, message):
                 )
                 return
         timesleep = (
-            6 if int(tms) < 6 else tms
+            6
+            if int(tms)
+            < 6
+            else tms
         )
         await message.delete()
         if count:
             add_dspam(
-                int(user_id), chat_id
+                int(
+                    user_id
+                ),
+                chat_id,
             )
-            for _ in range(count):
+            for (
+                _
+            ) in range(
+                count
+            ):
                 if not check_dspam(
-                    user_id, chat_id
+                    user_id,
+                    chat_id,
                 ):
                     break
                 with suppress(
@@ -336,22 +447,31 @@ async def _dspam_msg(client, message):
                         is_schedule=False,
                         time=timesleep,
                     )
-            with suppress(Exception):
+            with suppress(
+                Exception
+            ):
                 cancel_dspam(
-                    int(user_id),
+                    int(
+                        user_id
+                    ),
                     chat_id,
                 )
 
 
 @pytel.instruction(
-    ["schcancel", "dspcancel"],
+    [
+        "schcancel",
+        "dspcancel",
+    ],
     outgoing=True,
 )
 async def _cancel_dspsch(
     client, message
 ):
     if (
-        message.command[0]
+        message.command[
+            0
+        ]
         == "schcancel"
     ):
         x = await eor(
@@ -378,7 +498,9 @@ async def _cancel_dspsch(
         return
 
     if (
-        message.command[0]
+        message.command[
+            0
+        ]
         == "dspcancel"
     ):
         x = await eor(
@@ -405,27 +527,46 @@ async def _cancel_dspsch(
 
 
 @pytel.instruction(
-    ["clearsch", "cleardsp"],
+    [
+        "clearsch",
+        "cleardsp",
+    ],
     outgoing=True,
 )
 async def _clear_dspsch(
     client, message
 ):
-    if message.command[0] == "cleardsp":
-        clear_all_dspam(client.me.id)
+    if (
+        message.command[
+            0
+        ]
+        == "cleardsp"
+    ):
+        clear_all_dspam(
+            client.me.id
+        )
         await eor(
             message,
             text="All --**Delay**-- messages has been cleared.",
         )
-    if message.command[0] == "clearsch":
-        clear_all_schedule(client.me.id)
+    if (
+        message.command[
+            0
+        ]
+        == "clearsch"
+    ):
+        clear_all_schedule(
+            client.me.id
+        )
         await eor(
             message,
             text="All --**Schedule**-- messages has been cleared.",
         )
 
 
-plugins_helper["messaging"] = {
+plugins_helper[
+    "messaging"
+] = {
     f"{random_prefixies(px)}del [reply message]": "To deleted ur messages.",
     f"{random_prefixies(px)}purgeme [count]": "To purged ur messages.",
     f"{random_prefixies(px)}schedule [seconds] [count] [seconds] [text]": "To send schedule message. min: 60 seconds.",

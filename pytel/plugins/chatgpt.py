@@ -22,12 +22,19 @@ from . import (
     ],
     outgoing=True,
 )
-async def _openai(client, message):
+async def _openai(
+    client, message
+):
     if (
-        message.command[0] == "aitext"
+        message.command[
+            0
+        ]
+        == "aitext"
         or "ask"
     ):
-        args = get_text(message)
+        args = get_text(
+            message
+        )
         if not args:
             await eor(
                 message,
@@ -39,7 +46,9 @@ async def _openai(client, message):
             message,
             text="currently submitting a request...",
         )
-        resp = await ChatGPT.text(args)
+        resp = await ChatGPT.text(
+            args
+        )
         if resp:
             await eor(
                 x,
@@ -54,6 +63,8 @@ async def _openai(client, message):
             )
 
 
-plugins_helper["chatgpt"] = {
+plugins_helper[
+    "chatgpt"
+] = {
     f"{random_prefixies(px)}aitext / ask [text/reply]": "To get an answer from ChatGPT in the form of an Text.",
 }

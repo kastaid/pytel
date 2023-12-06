@@ -6,7 +6,9 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
-from .dbase import pydb, memorize
+from .dbase import (
+    pydb,
+    memorize,)
 from .leverage import (
     user_and_reason,
     extract_user,

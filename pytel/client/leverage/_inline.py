@@ -5,38 +5,62 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
-from contextlib import suppress
+from contextlib import (
+    suppress,)
 from io import BytesIO
 from math import ceil
 from struct import unpack
-from typing import Callable, Optional
-from cachetools import cached
-from pyrogram.file_id import b64_decode
+from typing import (
+    Callable,
+    Optional,)
+from cachetools import (
+    cached,)
+from pyrogram.file_id import (
+    b64_decode,)
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,)
-from ..utils import SaveDict
+from ..utils import (
+    SaveDict,)
 
 
 class EqInlineKeyboardButton(
     InlineKeyboardButton
 ):
     def __eq__(
-        self, other: Optional[str]
+        self,
+        other: Optional[
+            str
+        ],
     ):
-        return self.text == other.text
+        return (
+            self.text
+            == other.text
+        )
 
-    def __lt__(self, other):
-        return self.text < other.text
+    def __lt__(
+        self, other
+    ):
+        return (
+            self.text
+            < other.text
+        )
 
-    def __gt__(self, other):
-        return self.text > other.text
+    def __gt__(
+        self, other
+    ):
+        return (
+            self.text
+            > other.text
+        )
 
 
 def buttons(
     text,
     **kwargs,
-) -> InlineKeyboardButton:
+) -> (
+    InlineKeyboardButton
+):
     return InlineKeyboardButton(
         text=text,
         **kwargs,
@@ -46,7 +70,9 @@ def buttons(
 def ikmarkup(
     *args,
     **kwargs,
-) -> InlineKeyboardMarkup:
+) -> (
+    InlineKeyboardMarkup
+):
     return InlineKeyboardMarkup(
         *args,
         **kwargs,
@@ -90,35 +116,65 @@ def plugins_button(
     get_plugins = list(
         zip(
             plugins[::2],
-            plugins[1::2],
+            plugins[
+                1::2
+            ],
         )
     )
     total = 0
-    for plgns in get_plugins:
+    for (
+        plgns
+    ) in get_plugins:
         for _ in plgns:
             total += 1
-    if len(plugins) - total == 1:
-        get_plugins.append(
-            (plugins[-1],)
-        )
-    elif len(plugins) - total == 2:
+    if (
+        len(plugins)
+        - total
+        == 1
+    ):
         get_plugins.append(
             (
-                plugins[-2],
-                plugins[-1],
+                plugins[
+                    -1
+                ],
+            )
+        )
+    elif (
+        len(plugins)
+        - total
+        == 2
+    ):
+        get_plugins.append(
+            (
+                plugins[
+                    -2
+                ],
+                plugins[
+                    -1
+                ],
             )
         )
 
     number_page = ceil(
-        len(get_plugins) / linear
+        len(get_plugins)
+        / linear
     )
-    plugins_page = p_name % number_page
+    plugins_page = (
+        p_name
+        % number_page
+    )
 
-    if len(get_plugins) > linear:
+    if (
+        len(get_plugins)
+        > linear
+    ):
         get_plugins = get_plugins[
             plugins_page
             * linear : linear
-            * (plugins_page + 1)
+            * (
+                plugins_page
+                + 1
+            )
         ] + [
             (
                 EqInlineKeyboardButton(
@@ -149,7 +205,9 @@ def plugins_button(
 def unpack_inline(
     inline_message_id: str,
 ) -> Callable:
-    with suppress(Exception):
+    with suppress(
+        Exception
+    ):
         b = BytesIO(
             b64_decode(
                 inline_message_id
@@ -164,14 +222,23 @@ def unpack_inline(
             "=iiiq",
             b.read(),
         )
-        if str(pid).startswith("-"):
+        if str(
+            pid
+        ).startswith(
+            "-"
+        ):
             peer = int(
-                str(pid).replace(
-                    "-", "-100"
+                str(
+                    pid
+                ).replace(
+                    "-",
+                    "-100",
                 )
             )
         else:
-            peer = int(str(pid))
+            peer = int(
+                str(pid)
+            )
 
         _ = {
             "dc_id": dc_id,
@@ -180,4 +247,6 @@ def unpack_inline(
             "query_id": query_id,
             "inline_message_id": inline_message_id,
         }
-        return SaveDict(_)
+        return SaveDict(
+            _
+        )

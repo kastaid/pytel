@@ -5,9 +5,11 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from asyncio import gather
+from asyncio import (
+    gather,)
 from os import remove
-from pyrogram.enums import ChatType
+from pyrogram.enums import (
+    ChatType,)
 from . import (
     ParseMode,
     plugins_helper,
@@ -28,11 +30,20 @@ from . import (
     ["id"],
     outgoing=True,
 )
-async def _ids(client, message):
-    chat_type = message.chat.type
+async def _ids(
+    client, message
+):
+    chat_type = (
+        message.chat.type
+    )
 
-    if chat_type == ChatType.PRIVATE:
-        user_id = message.chat.id
+    if (
+        chat_type
+        == ChatType.PRIVATE
+    ):
+        user_id = (
+            message.chat.id
+        )
         get_u = await mentioned(
             client,
             user_id,
@@ -44,7 +55,9 @@ async def _ids(client, message):
                 if not get_u.dc_id
                 else get_u.dc_id
             )
-        except BaseException:
+        except (
+            BaseException
+        ):
             dc_id = "N/A"
 
         try:
@@ -53,8 +66,12 @@ async def _ids(client, message):
                 if get_u.is_bot
                 else "USER"
             )
-        except BaseException:
-            check_u = "PRIVATE"
+        except (
+            BaseException
+        ):
+            check_u = (
+                "PRIVATE"
+            )
 
         text = """
 <b><u>{}</b></u>
@@ -73,14 +90,19 @@ async def _ids(client, message):
         )
         return
 
-    elif chat_type == ChatType.CHANNEL:
+    elif (
+        chat_type
+        == ChatType.CHANNEL
+    ):
         try:
             dc_id = (
                 message.sender_chat.dc_id
                 if message.sender_chat.dc_id
                 else "N/A"
             )
-        except BaseException:
+        except (
+            BaseException
+        ):
             dc_id = "N/A"
 
         channel_id = (
@@ -116,7 +138,9 @@ async def _ids(client, message):
                 if message.chat.dc_id
                 else "N/A"
             )
-        except BaseException:
+        except (
+            BaseException
+        ):
             dc_id = "N/A"
 
         text = ""
@@ -134,7 +158,9 @@ async def _ids(client, message):
             message.chat.id,
             dc_id,
         )
-        if message.reply_to_message:
+        if (
+            message.reply_to_message
+        ):
             try:
                 dc_id = (
                     message.reply_to_message.from_user.dc_id
@@ -142,7 +168,9 @@ async def _ids(client, message):
                     else "N/A"
                 )
             except BaseException:
-                dc_id = "N/A"
+                dc_id = (
+                    "N/A"
+                )
 
             check_u = (
                 "BOT"
@@ -183,7 +211,9 @@ async def _ids(client, message):
                     else "N/A"
                 )
             except BaseException:
-                dc_id = "N/A"
+                dc_id = (
+                    "N/A"
+                )
 
             check_u = (
                 "BOT"
@@ -227,7 +257,9 @@ async def _ids(client, message):
     outgoing=True,
     supergroups=True,
 )
-async def _user_info(client, message):
+async def _user_info(
+    client, message
+):
     user_id = await extract_user(
         client, message
     )
@@ -276,11 +308,16 @@ async def _user_info(client, message):
             else "-"
         )
         h = f"{user.status}"
-        if h.startswith("UserStatus"):
+        if h.startswith(
+            "UserStatus"
+        ):
             y = h.replace(
-                "UserStatus.", ""
+                "UserStatus.",
+                "",
             )
-            status = y.capitalize()
+            status = (
+                y.capitalize()
+            )
         else:
             status = "-"
         dc_id = (
@@ -291,17 +328,15 @@ async def _user_info(client, message):
         common = await client.get_common_chats(
             user.id
         )
-        is_spamwatch_banned = (
-            await get_spamwatch_banned(
-                user_id
-            )
+        is_spamwatch_banned = await get_spamwatch_banned(
+            user_id
         )
-        is_cas_banned = (
-            await get_cas_banned(
-                user_id
-            )
+        is_cas_banned = await get_cas_banned(
+            user_id
         )
-        if not user.is_bot:
+        if (
+            not user.is_bot
+        ):
             out_str = f"""<b><u>USER INFORMATION</b></u>
 ├ <b>User ID:</b> <code>{user.id}</code>
 ├ <b>First Name:</b> {first_name}
@@ -354,7 +389,9 @@ async def _user_info(client, message):
                 photo_id
             )
             await gather(
-                _try_purged(x),
+                _try_purged(
+                    x
+                ),
                 client.send_photo(
                     message.chat.id,
                     photo,
@@ -371,9 +408,12 @@ async def _user_info(client, message):
                 disable_web_page_preview=True,
                 parse_mode=ParseMode.HTML,
             )
-    except Exception as e:
+    except (
+        Exception
+    ) as e:
         return await eor(
-            x, text=f"INFO: {e}"
+            x,
+            text=f"INFO: {e}",
         )
 
 
@@ -382,30 +422,32 @@ async def _user_info(client, message):
     outgoing=True,
     supergroups=True,
 )
-async def _chat_info(client, message):
+async def _chat_info(
+    client, message
+):
     x = await eor(
         message,
         text="</b>Processing . . .</b>",
     )
     try:
         if (
-            len(message.text.split())
+            len(
+                message.text.split()
+            )
             > 1
         ):
-            chat_u = (
-                message.text.split()[1]
-            )
-            chat = (
-                await client.get_chat(
-                    chat_u
-                )
+            chat_u = message.text.split()[
+                1
+            ]
+            chat = await client.get_chat(
+                chat_u
             )
         else:
-            chatid = message.chat.id
-            chat = (
-                await client.get_chat(
-                    chatid
-                )
+            chatid = (
+                message.chat.id
+            )
+            chat = await client.get_chat(
+                chatid
             )
         username = (
             f"@{chat.username}"
@@ -481,7 +523,9 @@ async def _chat_info(client, message):
                 photo_id
             )
             await gather(
-                _try_purged(x),
+                _try_purged(
+                    x
+                ),
                 client.send_photo(
                     message.chat.id,
                     photo,
@@ -498,13 +542,18 @@ async def _chat_info(client, message):
                 disable_web_page_preview=True,
                 parse_mode=ParseMode.HTML,
             )
-    except Exception as e:
+    except (
+        Exception
+    ) as e:
         return await eor(
-            x, text=f"INFO: `{e}`"
+            x,
+            text=f"INFO: `{e}`",
         )
 
 
-plugins_helper["info"] = {
+plugins_helper[
+    "info"
+] = {
     f"{random_prefixies(px)}id [reply/no need]": "To get data id [user/chanel/group/file] information.",
     f"{random_prefixies(px)}ubinfo [id/username/reply user]": "To get data user/bot in Telegram.",
     f"{random_prefixies(px)}cginfo [id/username/reply channel]": "To get data channel/group in Telegram.",

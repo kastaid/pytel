@@ -5,8 +5,10 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from asyncio import gather
-from threading import RLock
+from asyncio import (
+    gather,)
+from threading import (
+    RLock,)
 from pyrogram.raw.functions.phone import (
     CreateGroupCall,
     DiscardGroupCall,
@@ -34,7 +36,10 @@ _MTVC_TEXT = """
 
 
 @pytel.instruction(
-    ["devstartvc", "dstvc"],
+    [
+        "devstartvc",
+        "dstvc",
+    ],
     supersu=["PYTEL"],
     privileges=[
         "can_manage_video_chats"
@@ -55,17 +60,19 @@ async def _video_chats_start(
         message,
         text="Started video chats...",
     )
-    title = get_text(message)
-    chat_id = message.chat.id
+    title = get_text(
+        message
+    )
+    chat_id = (
+        message.chat.id
+    )
     peer = await client.resolve_peer(
         chat_id
     )
     try:
-        group_call = (
-            await client.get_group_call(
-                message,
-                chat_ids=chat_id,
-            )
+        group_call = await client.get_group_call(
+            message,
+            chat_ids=chat_id,
         )
         if group_call:
             await eor(
@@ -86,7 +93,10 @@ async def _video_chats_start(
                     // 9000000000,
                 )
             )
-            await eor(x, text=text)
+            await eor(
+                x,
+                text=text,
+            )
             return
         else:
             text = f"<b><u>{message.chat.title}</u></b>\n├ <b>Video chats started</b>\n└ <b>Title:</b> {title}"
@@ -101,18 +111,29 @@ async def _video_chats_start(
                     title=title,
                 )
             )
-            await eor(x, text=text)
+            await eor(
+                x,
+                text=text,
+            )
             return
-    except Exception as excp:
-        client.send_log.exception(excp)
+    except (
+        Exception
+    ) as excp:
+        client.send_log.exception(
+            excp
+        )
         await eor(
-            x, text=f"Exception: {excp}"
+            x,
+            text=f"Exception: {excp}",
         )
         return
 
 
 @pytel.instruction(
-    ["devstopvc", "dspvc"],
+    [
+        "devstopvc",
+        "dspvc",
+    ],
     supersu=["PYTEL"],
     privileges=[
         "can_manage_video_chats"
@@ -151,7 +172,9 @@ async def _video_chats_stop(
         )
     )
     text = f"<u><b>{message.chat.title}</b></u>\n└ <b>Video chats has been stopped.</b>"
-    await eor(x, text=text)
+    await eor(
+        x, text=text
+    )
 
 
 @pytel.instruction(
@@ -166,7 +189,8 @@ async def _video_chats_settitle(
     client, message
 ):
     title = get_text(
-        message, normal=True
+        message,
+        normal=True,
     )
     if not title:
         await eor(
@@ -210,11 +234,16 @@ async def _video_chats_settitle(
 ├ <b><u>Video Chat Title</b></u>
 └ <b>Title:</b> {title}
 """
-    await eor(x, text=text)
+    await eor(
+        x, text=text
+    )
 
 
 @pytel.instruction(
-    ["devjoinvc", "djvc"],
+    [
+        "devjoinvc",
+        "djvc",
+    ],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
@@ -228,12 +257,18 @@ async def _video_chats_joined(
     _JOIN_LOCK = RLock()
     gets, gc = None, None
     with _JOIN_LOCK:
-        gets = get_text(message)
+        gets = get_text(
+            message
+        )
         if not gets:
-            gets = message.chat.id
+            gets = (
+                message.chat.id
+            )
 
         if gets:
-            gc = get_chat_ids(str(gets))
+            gc = get_chat_ids(
+                str(gets)
+            )
         if not gc:
             await eor(
                 message,
@@ -246,12 +281,12 @@ async def _video_chats_joined(
             text="Joined video chats...",
         )
         try:
-            chat = (
-                await client.get_chat(
-                    gc
-                )
+            chat = await client.get_chat(
+                gc
             )
-        except Exception as excp:
+        except (
+            Exception
+        ) as excp:
             client.send_log.exception(
                 excp
             )
@@ -261,14 +296,16 @@ async def _video_chats_joined(
             )
             return
 
-        chat_id = int(chat.id)
-        group_call = (
-            await client.get_group_call(
-                message,
-                chat_ids=chat_id,
-            )
+        chat_id = int(
+            chat.id
         )
-        if not group_call:
+        group_call = await client.get_group_call(
+            message,
+            chat_ids=chat_id,
+        )
+        if (
+            not group_call
+        ):
             await eor(
                 x,
                 text="Video chats not available.",
@@ -279,14 +316,23 @@ async def _video_chats_joined(
             group_call
         )
         check = []
-        for i in par.users:
-            check.append(i.id)
-            if client.me.id in check:
+        for (
+            i
+        ) in par.users:
+            check.append(
+                i.id
+            )
+            if (
+                client.me.id
+                in check
+            ):
                 await eor(
                     x,
                     text=f"<u><b>{chat.title}</b></u>\n└ <b>You're in Video Chats.</b>",
                 )
-                check.remove(i.id)
+                check.remove(
+                    i.id
+                )
                 return
             else:
                 with suppress(
@@ -297,12 +343,18 @@ async def _video_chats_joined(
                     )
 
                 text = f"<u><b>{chat.title}</b></u>\n└ <b>Joined video chats.</b>"
-                await eor(x, text=text)
+                await eor(
+                    x,
+                    text=text,
+                )
                 return
 
 
 @pytel.instruction(
-    ["devleftvc", "dlvc"],
+    [
+        "devleftvc",
+        "dlvc",
+    ],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
@@ -316,12 +368,20 @@ async def _video_chats_leaving(
     _LEFT_LOCK = RLock()
     gets, gc = None, None
     with _LEFT_LOCK:
-        gets = get_text(message)
+        gets = get_text(
+            message
+        )
         if not gets:
-            gets = message.chat.id
+            gets = (
+                message.chat.id
+            )
 
-        with suppress(BaseException):
-            gc = get_chat_ids(str(gets))
+        with suppress(
+            BaseException
+        ):
+            gc = get_chat_ids(
+                str(gets)
+            )
             if not gc:
                 await eor(
                     message,
@@ -334,12 +394,12 @@ async def _video_chats_leaving(
             text="Leaving video chats...",
         )
         try:
-            chat = (
-                await client.get_chat(
-                    gc
-                )
+            chat = await client.get_chat(
+                gc
             )
-        except Exception as excp:
+        except (
+            Exception
+        ) as excp:
             client.send_log.exception(
                 excp
             )
@@ -349,14 +409,16 @@ async def _video_chats_leaving(
             )
             return
 
-        chat_id = int(chat.id)
-        group_call = (
-            await client.get_group_call(
-                message,
-                chat_ids=chat_id,
-            )
+        chat_id = int(
+            chat.id
         )
-        if not group_call:
+        group_call = await client.get_group_call(
+            message,
+            chat_ids=chat_id,
+        )
+        if (
+            not group_call
+        ):
             await eor(
                 x,
                 text="Video chats not available.",
@@ -365,10 +427,23 @@ async def _video_chats_leaving(
         par = await client.get_partici(
             group_call
         )
-        if int(par.count) > 0:
-            check: list = []
-            for u in par.users:
-                check.append(u.id)
+        if (
+            int(
+                par.count
+            )
+            > 0
+        ):
+            check: list = (
+                []
+            )
+            for (
+                u
+            ) in (
+                par.users
+            ):
+                check.append(
+                    u.id
+                )
                 if (
                     client.me.id
                     in check
@@ -404,7 +479,10 @@ async def _video_chats_leaving(
 
 
 @pytel.instruction(
-    ["devinfovc", "divc"],
+    [
+        "devinfovc",
+        "divc",
+    ],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
@@ -415,15 +493,25 @@ async def _video_chats_leaving(
 async def _video_chats_information(
     client, message
 ):
-    _VCINFO_LOCK = RLock()
+    _VCINFO_LOCK = (
+        RLock()
+    )
     gets, gc = None, None
     with _VCINFO_LOCK:
-        gets = get_text(message)
+        gets = get_text(
+            message
+        )
         if not gets:
-            gets = message.chat.id
+            gets = (
+                message.chat.id
+            )
 
-        with suppress(BaseException):
-            gc = get_chat_ids(str(gets))
+        with suppress(
+            BaseException
+        ):
+            gc = get_chat_ids(
+                str(gets)
+            )
             if not gc:
                 await eor(
                     message,
@@ -436,12 +524,12 @@ async def _video_chats_information(
             text="Getting information video chats...",
         )
         try:
-            chat = (
-                await client.get_chat(
-                    gc
-                )
+            chat = await client.get_chat(
+                gc
             )
-        except Exception as excp:
+        except (
+            Exception
+        ) as excp:
             client.send_log.exception(
                 excp
             )
@@ -451,29 +539,31 @@ async def _video_chats_information(
             )
             return
 
-        chat_id = int(chat.id)
-        group_call = (
-            await client.get_group_call(
-                message,
-                chat_ids=chat_id,
-            )
+        chat_id = int(
+            chat.id
         )
-        if not group_call:
+        group_call = await client.get_group_call(
+            message,
+            chat_ids=chat_id,
+        )
+        if (
+            not group_call
+        ):
             await eor(
                 x,
                 text="Video chats not available.",
             )
             return
         try:
-            res = (
-                await client.get_resvc(
-                    group_call
-                )
+            res = await client.get_resvc(
+                group_call
             )
             par = await client.get_partici(
                 group_call
             )
-        except Exception as excp:
+        except (
+            Exception
+        ) as excp:
             client.send_log.exception(
                 excp
             )
@@ -486,7 +576,12 @@ async def _video_chats_information(
         join_mt = bool(
             res.call.join_muted
         )
-        if int(par.count) > 0:
+        if (
+            int(
+                par.count
+            )
+            > 0
+        ):
             _ = """
 <b><u>{}</u></b>
 
@@ -504,14 +599,21 @@ async def _video_chats_information(
                 "Video Chats Version",
                 par.version,
                 "Video Chats Title",
-                res.call.title or "N/A",
+                res.call.title
+                or "N/A",
                 "Join Muted",
-                humanboolean(join_mt),
+                humanboolean(
+                    join_mt
+                ),
                 "Participants Count",
                 par.count,
                 "Participants List",
             )
-            for i in par.users:
+            for (
+                i
+            ) in (
+                par.users
+            ):
                 _ += "├ <code>{}</code>  -  <a href=tg://user?id={}>{}</a>\n".format(
                     i.id,
                     i.id,
@@ -535,9 +637,12 @@ async def _video_chats_information(
                 "Video Chats Version",
                 par.version,
                 "Video Chats Title",
-                res.call.title or "N/A",
+                res.call.title
+                or "N/A",
                 "Join Muted",
-                humanboolean(join_mt),
+                humanboolean(
+                    join_mt
+                ),
                 "Participants Count",
                 par.count,
             )
@@ -589,24 +694,29 @@ async def _muting_user_video_chats_(
             text="Unable to find user.",
         )
         return
-    if user_id == client.me.id:
+    if (
+        user_id
+        == client.me.id
+    ):
         await eor(
             x,
             text="Unable to muting ur self.",
         )
         return
-    if user_id in list(_supersu):
+    if user_id in list(
+        _supersu
+    ):
         await eor(
             x,
             text="I can't muting, coz he's My Developer..",
         )
         return
-    chat_id = message.chat.id
-    group_call = (
-        await client.get_group_call(
-            message,
-            chat_ids=chat_id,
-        )
+    chat_id = (
+        message.chat.id
+    )
+    group_call = await client.get_group_call(
+        message,
+        chat_ids=chat_id,
     )
     if not group_call:
         await eor(
@@ -619,11 +729,21 @@ async def _muting_user_video_chats_(
         group_call
     )
     text = ""
-    if int(par.count) > 0:
+    if (
+        int(par.count)
+        > 0
+    ):
         lpar: list = []
-        for u in par.users:
-            lpar.append(u.id)
-            if user_id in lpar:
+        for (
+            u
+        ) in par.users:
+            lpar.append(
+                u.id
+            )
+            if (
+                user_id
+                in lpar
+            ):
                 participant = await client.resolve_peer(
                     user_id
                 )
@@ -636,7 +756,9 @@ async def _muting_user_video_chats_(
                     if (
                         message.command[
                             0
-                        ][0]
+                        ][
+                            0
+                        ]
                         == "u"
                     ):
                         muted = False
@@ -661,9 +783,7 @@ async def _muting_user_video_chats_(
                     )
                     lpar.clear()
                     return
-                except (
-                    Exception
-                ) as excp:
+                except Exception as excp:
                     await eor(
                         x,
                         text=f"Error: {excp}",
@@ -685,7 +805,9 @@ async def _muting_user_video_chats_(
         return
 
 
-plugins_helper["vctools"] = {
+plugins_helper[
+    "vctools"
+] = {
     f"{random_prefixies(px)}startvc / stvc [title or not]": "To started video chats/channel.",
     f"{random_prefixies(px)}stopvc / spvc": "To stopped video chats/channel.",
     f"{random_prefixies(px)}joinvc / jvc [url/link message/username/id or not]": "To joined video chats/channel.",

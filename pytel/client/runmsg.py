@@ -6,19 +6,27 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import Lock
-from contextlib import suppress
+from contextlib import (
+    suppress,)
 from os import getpid
-from pyrogram import __version__
-from pyrogram.enums import ParseMode
+from pyrogram import (
+    __version__,)
+from pyrogram.enums import (
+    ParseMode,)
 from pyrogram.errors.exceptions.bad_request_400 import (
     MessageIdInvalid,)
-from pyrogram.raw.all import layer
-from version import __version__ as versi
-from ..config import PREFIX, LOGCHAT_ID
+from pyrogram.raw.all import (
+    layer,)
+from version import (
+    __version__ as versi,)
+from ..config import (
+    PREFIX,
+    LOGCHAT_ID,)
 from .dbase.dbLogger import (
     already_logger,
     check_logger,)
-from .utils import random_prefixies
+from .utils import (
+    random_prefixies,)
 
 _SEND_LOCK = Lock()
 
@@ -37,31 +45,41 @@ _TEXT = """
 """
 
 
-async def running_message(self) -> None:
+async def running_message(
+    self,
+) -> None:
     async with _SEND_LOCK:
         try:
             if self:
-                user_id = self.me.id
+                user_id = (
+                    self.me.id
+                )
             if (
                 already_logger(
                     user_id=user_id
                 )
                 and not LOGCHAT_ID
             ):
-                log_data = (
-                    check_logger().get(
-                        user_id
-                    )
+                log_data = check_logger().get(
+                    user_id
                 )
-                log_id = log_data[0]
+                log_id = log_data[
+                    0
+                ]
                 await self.send_message(
-                    int(int(log_id)),
+                    int(
+                        int(
+                            log_id
+                        )
+                    ),
                     text=_TEXT.format(
                         getpid(),
                         versi,
                         layer,
                         __version__,
-                        "".join(PREFIX),
+                        "".join(
+                            PREFIX
+                        ),
                         random_prefixies(
                             PREFIX
                         ),
@@ -80,7 +98,9 @@ async def running_message(self) -> None:
             )
         except KeyError:
             pass
-        except Exception as excp:
+        except (
+            Exception
+        ) as excp:
             self.send_log.exception(
                 excp
             )

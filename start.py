@@ -9,10 +9,13 @@ import argparse
 import os
 import shlex
 import sys
-from contextlib import suppress
+from contextlib import (
+    suppress,)
 from pathlib import Path
-from subprocess import run
-from version import __version__
+from subprocess import (
+    run,)
+from version import (
+    __version__,)
 
 RST = "\x1b[0m"
 BOLD = "\x1b[1m"
@@ -30,7 +33,7 @@ app_watch = f"{python} -m scripts.autoreload {app}"
 
 # Pylint
 autoflake = "autoflake --in-place --ignore-init-module-imports --remove-all-unused-imports -i -r ."
-black = "black --line-length 40 --exclude version.py ./pytel"
+black = "black --line-length 25 --exclude version.py ./pytel"
 isort = (
     "isort --settings-file=setup.cfg ."
 )

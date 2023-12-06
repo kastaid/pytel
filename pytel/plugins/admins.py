@@ -75,32 +75,58 @@ async def current_chat_permissions(
 ):
     perms = []
     perm = (
-        await client.get_chat(chat_id)
+        await client.get_chat(
+            chat_id
+        )
     ).permissions
-    if perm.can_send_messages:
+    if (
+        perm.can_send_messages
+    ):
         perms.append(
             "can_send_messages"
         )
-    if perm.can_send_media_messages:
+    if (
+        perm.can_send_media_messages
+    ):
         perms.append(
             "can_send_media_messages"
         )
-    if perm.can_send_other_messages:
+    if (
+        perm.can_send_other_messages
+    ):
         perms.append(
             "can_send_other_messages"
         )
-    if perm.can_add_web_page_previews:
+    if (
+        perm.can_add_web_page_previews
+    ):
         perms.append(
             "can_add_web_page_previews"
         )
-    if perm.can_send_polls:
-        perms.append("can_send_polls")
-    if perm.can_change_info:
-        perms.append("can_change_info")
-    if perm.can_invite_users:
-        perms.append("can_invite_users")
-    if perm.can_pin_messages:
-        perms.append("can_pin_messages")
+    if (
+        perm.can_send_polls
+    ):
+        perms.append(
+            "can_send_polls"
+        )
+    if (
+        perm.can_change_info
+    ):
+        perms.append(
+            "can_change_info"
+        )
+    if (
+        perm.can_invite_users
+    ):
+        perms.append(
+            "can_invite_users"
+        )
+    if (
+        perm.can_pin_messages
+    ):
+        perms.append(
+            "can_pin_messages"
+        )
     return perms
 
 
@@ -113,17 +139,29 @@ async def tgroups_lock(
     lock,
 ):
     if lock:
-        if perm not in permissions:
+        if (
+            perm
+            not in permissions
+        ):
             return
-        permissions.remove(perm)
+        permissions.remove(
+            perm
+        )
     else:
-        if perm in permissions:
+        if (
+            perm
+            in permissions
+        ):
             return
-        permissions.append(perm)
+        permissions.append(
+            perm
+        )
     permissions = {
         perm: True
         for perm in list(
-            set(permissions)
+            set(
+                permissions
+            )
         )
     }
     try:
@@ -133,7 +171,9 @@ async def tgroups_lock(
                 **permissions
             ),
         )
-    except ChatNotModified:
+    except (
+        ChatNotModified
+    ):
         return await message.edit_text(
             (
                 f"🔒 **Locked for non-admin!**\n  **Type:** `{parameter}`\n  **Chat:** {message.chat.title}"
@@ -141,8 +181,12 @@ async def tgroups_lock(
                 else f"🔓 **Unlocked for non-admin!**\n  **Type:** `{parameter}`\n  **Chat:** {message.chat.title}"
             )
         )
-    except Exception as excp:
-        client.send_log.exception(excp)
+    except (
+        Exception
+    ) as excp:
+        client.send_log.exception(
+            excp
+        )
     await message.edit_text(
         (
             f"🔒 **Locked for non-admin!**\n  **Type:** `{parameter}`\n  **Chat:** {message.chat.title}"
@@ -153,14 +197,18 @@ async def tgroups_lock(
 
 
 async def list_admins(
-    client, chat_id: int, user_id: int
+    client,
+    chat_id: int,
+    user_id: int,
 ) -> bool:
     adm = []
     async for m in client.get_chat_members(
         chat_id,
         filter=ChatMembersFilter.ADMINISTRATORS,
     ):
-        adm.append(m.user.id)
+        adm.append(
+            m.user.id
+        )
     if user_id in adm:
         adm.clear()
         return True
@@ -178,24 +226,37 @@ async def list_admins(
 async def _locked_group(
     client, message
 ):
-    if len(message.command) != 2:
-        return
-    chat_id = message.chat.id
-    parameter = (
-        message.text.strip()
-        .split(None, 1)[1]
-        .lower()
-    )
-    state = message.command[0].lower()
     if (
-        parameter not in data
-        and parameter != "all"
+        len(
+            message.command
+        )
+        != 2
     ):
         return
-    permissions = (
-        await current_chat_permissions(
-            client, chat_id
-        )
+    chat_id = (
+        message.chat.id
+    )
+    parameter = (
+        message.text.strip()
+        .split(None, 1)[
+            1
+        ]
+        .lower()
+    )
+    state = (
+        message.command[
+            0
+        ].lower()
+    )
+    if (
+        parameter
+        not in data
+        and parameter
+        != "all"
+    ):
+        return
+    permissions = await current_chat_permissions(
+        client, chat_id
     )
     if parameter in data:
         await tgroups_lock(
@@ -203,12 +264,17 @@ async def _locked_group(
             message,
             parameter,
             permissions,
-            data[parameter],
-            state == "lock",
+            data[
+                parameter
+            ],
+            state
+            == "lock",
         )
     elif (
-        parameter == "all"
-        and state == "lock"
+        parameter
+        == "all"
+        and state
+        == "lock"
     ):
         try:
             await client.set_chat_permissions(
@@ -223,8 +289,10 @@ async def _locked_group(
                 f"🔒 **Success Locked!**\n  **Type:** `{parameter}`\n  **Chat:** {message.chat.title}"
             )
     elif (
-        parameter == "all"
-        and state == "unlock"
+        parameter
+        == "all"
+        and state
+        == "unlock"
     ):
         try:
             await client.set_chat_permissions(
@@ -244,7 +312,9 @@ async def _locked_group(
             return await message.edit_text(
                 f"🔓 **Unlocked for non-admin!**\n  **Type:** `{parameter}`\n  **Chat:** {message.chat.title}"
             )
-        except Exception as excp:
+        except (
+            Exception
+        ) as excp:
             client.send_log.exception(
                 excp
             )
@@ -253,8 +323,10 @@ async def _locked_group(
         )
 
     elif (
-        parameter == "all"
-        and state == "unlock"
+        parameter
+        == "all"
+        and state
+        == "unlock"
     ):
         try:
             await client.set_chat_permissions(
@@ -286,7 +358,9 @@ async def _locked_group(
     admin_only=True,
     supergroups=True,
 )
-async def _locktypes(client, message):
+async def _locktypes(
+    client, message
+):
     text = (
         "<u><b>Locktypes Available</u></b>\n\n"
         + "\n".join(
@@ -300,7 +374,10 @@ async def _locktypes(client, message):
     )
     text += "\n\n<b>Example:</b>\n"
     text += f"<code>{random_prefixies(px)}lock all</code> : To locked everything."
-    await eor(message, text=text)
+    await eor(
+        message,
+        text=text,
+    )
 
 
 @pytel.instruction(
@@ -312,9 +389,13 @@ async def _locktypes(client, message):
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_promote_members"],
+    privileges=[
+        "can_promote_members"
+    ],
 )
-async def _promoted(client, message):
+async def _promoted(
+    client, message
+):
     user_id = await extract_user(
         client, message
     )
@@ -328,7 +409,10 @@ async def _promoted(client, message):
             text="Unable to find user.",
         )
         return
-    if user_id == client.me.id:
+    if (
+        user_id
+        == client.me.id
+    ):
         await eor(
             x,
             text="Unable to promoting urself.",
@@ -338,14 +422,18 @@ async def _promoted(client, message):
         "Promoting Member",
         None,
     )
-    chat_id = message.chat.id
+    chat_id = (
+        message.chat.id
+    )
     ladm = await list_admins(
         client,
         chat_id=chat_id,
         user_id=user_id,
     )
     mention = (
-        await client.get_users(user_id)
+        await client.get_users(
+            user_id
+        )
     ).mention
     if ladm:
         await eor(
@@ -358,7 +446,14 @@ async def _promoted(client, message):
             x,
             text="Promoting...",
         )
-        if message.command[0][0] == "f":
+        if (
+            message.command[
+                0
+            ][
+                0
+            ]
+            == "f"
+        ):
             status = "Administrator"
             try:
                 await client.promote_chat_member(
@@ -375,7 +470,9 @@ async def _promoted(client, message):
                         can_promote_members=True,
                     ),
                 )
-                await sleep(1.5)
+                await sleep(
+                    1.5
+                )
                 await eor(
                     yy,
                     text=_PROMDEM_TEXT.format(
@@ -393,7 +490,9 @@ async def _promoted(client, message):
                 )
                 return
         else:
-            status = "Staff"
+            status = (
+                "Staff"
+            )
             try:
                 await client.promote_chat_member(
                     chat_id=chat_id,
@@ -409,7 +508,9 @@ async def _promoted(client, message):
                         can_promote_members=False,
                     ),
                 )
-                await sleep(1)
+                await sleep(
+                    1
+                )
                 await eor(
                     yy,
                     text=_PROMDEM_TEXT.format(
@@ -429,13 +530,20 @@ async def _promoted(client, message):
 
 
 @pytel.instruction(
-    ["demote", "demoted"],
+    [
+        "demote",
+        "demoted",
+    ],
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_promote_members"],
+    privileges=[
+        "can_promote_members"
+    ],
 )
-async def _demoted(client, message):
+async def _demoted(
+    client, message
+):
     user_id = await extract_user(
         client, message
     )
@@ -449,7 +557,10 @@ async def _demoted(client, message):
             text="Unable to find user.",
         )
         return
-    if user_id == client.me.id:
+    if (
+        user_id
+        == client.me.id
+    ):
         await eor(
             x,
             text="Unable to demoting urself.",
@@ -463,7 +574,9 @@ async def _demoted(client, message):
         "Demoting Admins",
         None,
     )
-    chat_id = message.chat.id
+    chat_id = (
+        message.chat.id
+    )
     if message.command:
         pu = await client.get_chat_member(
             message.chat.id,
@@ -483,7 +596,9 @@ async def _demoted(client, message):
             pu.promoted_by.id
             == client.me.id
         ):
-            status = "Member"
+            status = (
+                "Member"
+            )
             await client.promote_chat_member(
                 chat_id=chat_id,
                 user_id=user_id,
@@ -498,7 +613,9 @@ async def _demoted(client, message):
                     can_promote_members=False,
                 ),
             )
-            await sleep(1.5)
+            await sleep(
+                1.5
+            )
             await eor(
                 yy,
                 text=_PROMDEM_TEXT.format(
@@ -525,13 +642,21 @@ because he was promoted by {}.
 
 
 @pytel.instruction(
-    ["mute", "muted", "dmute"],
+    [
+        "mute",
+        "muted",
+        "dmute",
+    ],
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_restricted"],
+    privileges=[
+        "can_restricted"
+    ],
 )
-async def _muted(client, message):
+async def _muted(
+    client, message
+):
     (
         user_id,
         reason,
@@ -550,19 +675,26 @@ async def _muted(client, message):
             text="Unable to find user.",
         )
         return
-    chat_id = message.chat.id
+    chat_id = (
+        message.chat.id
+    )
     ladm = await list_admins(
         client,
         chat_id=chat_id,
         user_id=user_id,
     )
-    if user_id == client.me.id:
+    if (
+        user_id
+        == client.me.id
+    ):
         await eor(
             x,
             text="Unable to muting urself.",
         )
         return
-    if user_id in list(_supersu):
+    if user_id in list(
+        _supersu
+    ):
         await eor(
             x,
             text="I can't muting, coz he's My Developer..",
@@ -579,11 +711,24 @@ async def _muted(client, message):
         text="Muting...",
     )
     mention = (
-        await client.get_users(user_id)
+        await client.get_users(
+            user_id
+        )
     ).mention
-    rsn = reason if reason else "N/A"
-    status = "Muting User"
-    if message.command[0][0] == "d":
+    rsn = (
+        reason
+        if reason
+        else "N/A"
+    )
+    status = (
+        "Muting User"
+    )
+    if (
+        message.command[
+            0
+        ][0]
+        == "d"
+    ):
         await message.reply_to_message.delete()
     with suppress(
         BaseException,
@@ -604,13 +749,20 @@ async def _muted(client, message):
 
 
 @pytel.instruction(
-    ["unmute", "unmuted"],
+    [
+        "unmute",
+        "unmuted",
+    ],
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_restricted"],
+    privileges=[
+        "can_restricted"
+    ],
 )
-async def _unmuted(client, message):
+async def _unmuted(
+    client, message
+):
     user_id = await extract_user(
         client, message
     )
@@ -624,13 +776,18 @@ async def _unmuted(client, message):
             text="Unable to find user.",
         )
         return
-    chat_id = message.chat.id
+    chat_id = (
+        message.chat.id
+    )
     ladm = await list_admins(
         client,
         chat_id=chat_id,
         user_id=user_id,
     )
-    if user_id == client.me.id:
+    if (
+        user_id
+        == client.me.id
+    ):
         await eor(
             x,
             text="Unable to un-muting urself.",
@@ -672,13 +829,21 @@ async def _unmuted(client, message):
 
 
 @pytel.instruction(
-    ["kick", "kicked", "dkick"],
+    [
+        "kick",
+        "kicked",
+        "dkick",
+    ],
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_restricted"],
+    privileges=[
+        "can_restricted"
+    ],
 )
-async def _kicked(client, message):
+async def _kicked(
+    client, message
+):
     x = await eor(
         message,
         text="Restricting users...",
@@ -697,19 +862,26 @@ async def _kicked(client, message):
             text="I can't find that user.",
         )
         return
-    chat_id = message.chat.id
+    chat_id = (
+        message.chat.id
+    )
     ladm = await list_admins(
         client,
         chat_id=chat_id,
         user_id=user,
     )
-    if user == client.me.id:
+    if (
+        user
+        == client.me.id
+    ):
         await eor(
             x,
             text="I can't restricting myself.",
         )
         return
-    if user == int(OWNER_ID):
+    if user == int(
+        OWNER_ID
+    ):
         await eor(
             x,
             text="I can't restricting my owner.",
@@ -721,7 +893,9 @@ async def _kicked(client, message):
             text="I can't kick an admin, You know the rules ?",
         )
         return
-    if user in list(_supersu):
+    if user in list(
+        _supersu
+    ):
         await eor(
             x,
             text="I can't restricting, coz he's My Developer..",
@@ -730,7 +904,9 @@ async def _kicked(client, message):
 
     try:
         mention = (
-            await client.get_users(user)
+            await client.get_users(
+                user
+            )
         ).mention
     except IndexError:
         mention = (
@@ -740,32 +916,48 @@ async def _kicked(client, message):
         )
 
     msg = f"<b>Kicked User:</b> {mention}\n"
-    if message.command[0] == "dkick":
+    if (
+        message.command[
+            0
+        ]
+        == "dkick"
+    ):
         await message.reply_to_message.delete()
     if reason:
-        msg += (
-            f"<b>Reason:</b> {reason}"
-        )
+        msg += f"<b>Reason:</b> {reason}"
     with suppress(
-        Exception, UserNotParticipant
+        Exception,
+        UserNotParticipant,
     ):
         await client.ban_chat_member(
-            message.chat.id, user
+            message.chat.id,
+            user,
         )
         await client.unban_chat_member(
-            message.chat.id, user
+            message.chat.id,
+            user,
         )
-    await eor(x, text=msg)
+    await eor(
+        x, text=msg
+    )
 
 
 @pytel.instruction(
-    ["ban", "banned", "dban"],
+    [
+        "ban",
+        "banned",
+        "dban",
+    ],
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_restricted"],
+    privileges=[
+        "can_restricted"
+    ],
 )
-async def _banned(client, message):
+async def _banned(
+    client, message
+):
     x = await eor(
         message,
         text="Restricting users...",
@@ -784,19 +976,26 @@ async def _banned(client, message):
             text="I can't find that user.",
         )
         return
-    chat_id = message.chat.id
+    chat_id = (
+        message.chat.id
+    )
     ladm = await list_admins(
         client,
         chat_id=chat_id,
         user_id=user,
     )
-    if user == client.me.id:
+    if (
+        user
+        == client.me.id
+    ):
         await eor(
             x,
             text="I can't restricting myself.",
         )
         return
-    if user == int(OWNER_ID):
+    if user == int(
+        OWNER_ID
+    ):
         await eor(
             x,
             text="I can't restricting my owner.",
@@ -808,7 +1007,9 @@ async def _banned(client, message):
             text="I can't ban an admin, You know the rules ?",
         )
         return
-    if user in list(_supersu):
+    if user in list(
+        _supersu
+    ):
         await eor(
             x,
             text="I can't restricting, coz he's My Developer..",
@@ -817,7 +1018,9 @@ async def _banned(client, message):
 
     try:
         mention = (
-            await client.get_users(user)
+            await client.get_users(
+                user
+            )
         ).mention
     except IndexError:
         mention = (
@@ -827,30 +1030,46 @@ async def _banned(client, message):
         )
 
     msg = f"<b>Banned User:</b> {mention}\n"
-    if message.command[0][0] == "d":
+    if (
+        message.command[
+            0
+        ][0]
+        == "d"
+    ):
         await message.reply_to_message.delete()
     if reason:
-        msg += (
-            f"<b>Reason:</b> {reason}"
-        )
+        msg += f"<b>Reason:</b> {reason}"
     with suppress(
-        Exception, UserNotParticipant
+        Exception,
+        UserNotParticipant,
     ):
         await client.ban_chat_member(
-            message.chat.id, user
+            message.chat.id,
+            user,
         )
-    await eor(x, text=msg)
+    await eor(
+        x, text=msg
+    )
 
 
 @pytel.instruction(
-    ["unban", "unbanned"],
+    [
+        "unban",
+        "unbanned",
+    ],
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_restricted"],
+    privileges=[
+        "can_restricted"
+    ],
 )
-async def _unbanned(client, message):
-    reply = message.reply_to_message
+async def _unbanned(
+    client, message
+):
+    reply = (
+        message.reply_to_message
+    )
     x = await eor(
         message,
         text="Checking...",
@@ -867,12 +1086,22 @@ async def _unbanned(client, message):
         )
         return
 
-    if len(message.command) == 2:
+    if (
+        len(
+            message.command
+        )
+        == 2
+    ):
         user = message.text.split(
             None, 1
-        )[1]
+        )[
+            1
+        ]
     elif (
-        len(message.command) == 1
+        len(
+            message.command
+        )
+        == 1
         and reply
     ):
         user = (
@@ -884,7 +1113,9 @@ async def _unbanned(client, message):
             text="Provide a username or reply to a user's message to unban.",
         )
         return
-    chat_id = message.chat.id
+    chat_id = (
+        message.chat.id
+    )
     ladm = await list_admins(
         client,
         chat_id=chat_id,
@@ -902,15 +1133,19 @@ async def _unbanned(client, message):
     )
     try:
         mention = (
-            await client.get_users(user)
+            await client.get_users(
+                user
+            )
         ).mention
     except Exception:
         mention = user
     with suppress(
-        Exception, UserNotParticipant
+        Exception,
+        UserNotParticipant,
     ):
         await client.unban_chat_member(
-            message.chat.id, user
+            message.chat.id,
+            user,
         )
     await eor(
         yy,
@@ -923,23 +1158,43 @@ async def _unbanned(client, message):
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_pinned"],
+    privileges=[
+        "can_pinned"
+    ],
 )
-async def _pinned(client, message):
-    if not message.reply_to_message:
+async def _pinned(
+    client, message
+):
+    if (
+        not message.reply_to_message
+    ):
         await eor(
             message,
             text="reply to message.",
         )
         return
 
-    mid = message.reply_to_message.id
-    if message.command[0] == "pin-s":
+    mid = (
+        message.reply_to_message.id
+    )
+    if (
+        message.command[
+            0
+        ]
+        == "pin-s"
+    ):
         is_silent = True
-    if message.command[0] == "pin":
+    if (
+        message.command[
+            0
+        ]
+        == "pin"
+    ):
         is_silent = False
 
-    with suppress(Exception):
+    with suppress(
+        Exception
+    ):
         x = await client.pin_chat_message(
             chat_id=message.chat.id,
             message_id=mid,
@@ -947,38 +1202,68 @@ async def _pinned(client, message):
         )
         if is_silent:
             await client.delete_messages(
-                message.chat.id, x.id
+                message.chat.id,
+                x.id,
             )
 
-    await _try_purged(message, 1)
+    await _try_purged(
+        message, 1
+    )
     return
 
 
 @pytel.instruction(
-    ["unpin", "unpinall"],
+    [
+        "unpin",
+        "unpinall",
+    ],
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_pinned"],
+    privileges=[
+        "can_pinned"
+    ],
 )
-async def _unpinned(client, message):
-    chat = message.chat.id
-    if message.command[0] == "unpinall":
+async def _unpinned(
+    client, message
+):
+    chat = (
+        message.chat.id
+    )
+    if (
+        message.command[
+            0
+        ]
+        == "unpinall"
+    ):
         await client.unpin_all_chat_messages(
             chat
         )
-        await _try_purged(message, 1)
+        await _try_purged(
+            message, 1
+        )
         return
-    if message.command[0] == "unpin":
-        if not message.reply_to_message:
+    if (
+        message.command[
+            0
+        ]
+        == "unpin"
+    ):
+        if (
+            not message.reply_to_message
+        ):
             gc = await client.get_chat(
                 chat
             )
-            if not isinstance(gc, Chat):
+            if not isinstance(
+                gc, Chat
+            ):
                 raise ValueError(
                     "Invalid Chat"
                 )
-            if not gc.pinned_message:
+            if (
+                not gc.pinned_message
+            ):
                 return await eor(
                     message,
                     "no-pinned-message",
@@ -987,7 +1272,8 @@ async def _unpinned(client, message):
                 gc.pinned_message.id
             )
             await client.unpin_chat_message(
-                gc.id, pinned
+                gc.id,
+                pinned,
             )
         else:
             mid = (
@@ -997,18 +1283,27 @@ async def _unpinned(client, message):
                 chat_id=message.chat.id,
                 message_id=mid,
             )
-        await _try_purged(message, 1)
+        await _try_purged(
+            message, 1
+        )
         return
 
 
 @pytel.instruction(
-    ["zombies", "zombie"],
+    [
+        "zombies",
+        "zombie",
+    ],
     outgoing=True,
     admin_only=True,
     supergroups=True,
-    privileges=["can_restricted"],
+    privileges=[
+        "can_restricted"
+    ],
 )
-async def _zombies(client, message):
+async def _zombies(
+    client, message
+):
     zombie, chat = (
         [],
         message.chat,
@@ -1034,24 +1329,36 @@ async def _zombies(client, message):
                     chat.id,
                     member.user.id,
                 )
-                zombie = zombie + [
-                    member.user.id
-                ]
-                await sleep(1)
+                zombie = (
+                    zombie
+                    + [
+                        member.user.id
+                    ]
+                )
+                await sleep(
+                    1
+                )
 
         except UserAdminInvalid:
-            zombie = set(zombie) - set(
+            zombie = set(
+                zombie
+            ) - set(
                 member.user.id
             )
-        except FloodWait as flood:
+        except (
+            FloodWait
+        ) as flood:
             await sleep(flood.value)  # type: ignore
             await client.ban_chat_member(
                 chat.id,
                 member.user.id,
             )
-            zombie = zombie + [
-                member.user.id
-            ]
+            zombie = (
+                zombie
+                + [
+                    member.user.id
+                ]
+            )
 
     if len(zombie) == 0:
         await eor(
@@ -1067,7 +1374,9 @@ async def _zombies(client, message):
     zombie.clear()
 
 
-plugins_helper["admins"] = {
+plugins_helper[
+    "admins"
+] = {
     f"{random_prefixies(px)}[f/full]promote [id/username/reply]": "To promoting member to be admins.",
     f"{random_prefixies(px)}demote [username/id/reply]": "To demoting admins to be member.",
     f"{random_prefixies(px)}lock [types]": "To locked permissions the group depending on the type.",

@@ -6,5 +6,7 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
-from ._BaseClient import pydb
-from ._func import memorize
+from ._BaseClient import (
+    pydb,)
+from ._func import (
+    memorize,)

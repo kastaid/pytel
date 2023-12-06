@@ -6,8 +6,10 @@
 # PLease read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 """
-from .apichatgpt import ChatGPT
-from .apicrypto import fetch_crypto
+from .apichatgpt import (
+    ChatGPT,)
+from .apicrypto import (
+    fetch_crypto,)
 from .apilyrics import (
     LyricsEngine as LE,)
 from .apisocialmedia import (
@@ -50,4 +52,5 @@ from .misc import (
     making_code,
     scanner_code,
     tz,)
-from .quotlymaker import quotlymaker
+from .quotlymaker import (
+    quotlymaker,)

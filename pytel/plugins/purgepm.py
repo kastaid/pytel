@@ -6,7 +6,8 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
-from pyrogram import enums
+from pyrogram import (
+    enums,)
 from pyrogram.raw.functions.messages import (
     DeleteHistory,)
 from . import (
@@ -24,7 +25,10 @@ from . import (
 async def _clear_all_pm_bot(
     client, message
 ):
-    success, failed = 0, 0
+    success, failed = (
+        0,
+        0,
+    )
     x = await eor(
         message,
         text="Processing...\nClear all private messages for category **--BOT--**",
@@ -34,7 +38,9 @@ async def _clear_all_pm_bot(
             dialog.chat.type
             == enums.ChatType.BOT
         ):
-            chat_id = dialog.chat.id
+            chat_id = (
+                dialog.chat.id
+            )
             history = await client.resolve_peer(
                 chat_id
             )
@@ -46,15 +52,21 @@ async def _clear_all_pm_bot(
                         revoke=True,
                     )
                 )
-                success = success + 1
-                await sleep(2)
-            except (
-                BaseException
-            ) as excp:
+                success = (
+                    success
+                    + 1
+                )
+                await sleep(
+                    2
+                )
+            except BaseException as excp:
                 client.send_log.exception(
                     excp
                 )
-                failed = failed + 1
+                failed = (
+                    failed
+                    + 1
+                )
 
     if success >= 0:
         text = f"""
@@ -63,11 +75,14 @@ async def _clear_all_pm_bot(
 ├ <b>Success:</b> {success} chats.
 └ <b>Failed:</b> {failed} chats.
 """
-        await eor(x, text=text)
+        await eor(
+            x, text=text
+        )
         return
     else:
         await eor(
-            x, text="history is clean"
+            x,
+            text="history is clean",
         )
         return
 
@@ -79,7 +94,10 @@ async def _clear_all_pm_bot(
 async def _clear_all_pm_user(
     client, message
 ):
-    success, failed = 0, 0
+    success, failed = (
+        0,
+        0,
+    )
     x = await eor(
         message,
         text="Processing...\nClear all private messages for category **--USER--**",
@@ -89,7 +107,9 @@ async def _clear_all_pm_user(
             dialog.chat.type
             == enums.ChatType.PRIVATE
         ):
-            chat_id = dialog.chat.id
+            chat_id = (
+                dialog.chat.id
+            )
             history = await client.resolve_peer(
                 chat_id
             )
@@ -101,15 +121,21 @@ async def _clear_all_pm_user(
                         revoke=True,
                     )
                 )
-                success = success + 1
-                await sleep(2)
-            except (
-                BaseException
-            ) as excp:
+                success = (
+                    success
+                    + 1
+                )
+                await sleep(
+                    2
+                )
+            except BaseException as excp:
                 client.send_log.exception(
                     excp
                 )
-                failed = failed + 1
+                failed = (
+                    failed
+                    + 1
+                )
 
     if success >= 0:
         text = f"""
@@ -118,16 +144,21 @@ async def _clear_all_pm_user(
 ├ <b>Success:</b> {success} chats.
 └ <b>Failed:</b> {failed} chats.
 """
-        await eor(x, text=text)
+        await eor(
+            x, text=text
+        )
         return
     else:
         await eor(
-            x, text="history is clean"
+            x,
+            text="history is clean",
         )
         return
 
 
-plugins_helper["purgepm"] = {
+plugins_helper[
+    "purgepm"
+] = {
     f"{random_prefixies(px)}purpmbot": "To purged private messages for category bot.",
     f"{random_prefixies(px)}purpmuser": "To purged private messages for category user.",
 }

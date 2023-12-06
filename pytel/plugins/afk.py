@@ -55,8 +55,11 @@ Since {} ago
 async def _set_client_afk(
     client, message
 ):
-    return await ClientAFK(
-        client, message
+    return (
+        await ClientAFK(
+            client,
+            message,
+        )
     )
 
 
@@ -70,20 +73,35 @@ async def _set_client_afk(
     & ~filters.bot
     & filters.incoming
 )
-async def _afk_ongoing(client, message):
-    if not (pydb.get_key("AFK")):
+async def _afk_ongoing(
+    client, message
+):
+    if not (
+        pydb.get_key(
+            "AFK"
+        )
+    ):
         return
     if not message:
         return
-    for x in client._client:
+    for (
+        x
+    ) in client._client:
         try:
-            user: int = x.me.id
-        except BaseException:
+            user: int = (
+                x.me.id
+            )
+        except (
+            BaseException
+        ):
             return
-        if not user_afk(int(user)):
+        if not user_afk(
+            int(user)
+        ):
             return
         return await OngoingAFK(
-            client, message
+            client,
+            message,
         )
 
 
@@ -96,7 +114,11 @@ async def _afk_ongoing(client, message):
 async def _afk_outgoing(
     client, message
 ):
-    if not (pydb.get_key("AFK")):
+    if not (
+        pydb.get_key(
+            "AFK"
+        )
+    ):
         return
     if not message:
         return
@@ -107,45 +129,75 @@ async def _afk_outgoing(
             or message.caption
             or ""
         ).lower()
-        for _ in ["afk", "brb"]
+        for _ in [
+            "afk",
+            "brb",
+        ]
     ):
         return
-    for x in client._client:
+    for (
+        x
+    ) in client._client:
         try:
-            user: int = x.me.id
-        except BaseException:
+            user: int = (
+                x.me.id
+            )
+        except (
+            BaseException
+        ):
             return
-        if not user_afk(int(user)):
+        if not user_afk(
+            int(user)
+        ):
             return
         return await OutgoingAFK(
-            client, message
+            client,
+            message,
         )
 
 
-async def OngoingAFK(client, message):
-    for x in client._client:
+async def OngoingAFK(
+    client, message
+):
+    for (
+        x
+    ) in client._client:
         try:
-            user = x.me.id
-        except BaseException:
+            user = (
+                x.me.id
+            )
+        except (
+            BaseException
+        ):
             return
-        if message.sender_chat:
+        if (
+            message.sender_chat
+        ):
             return
-        if not message.from_user:
+        if (
+            not message.from_user
+        ):
             return
-        if message.from_user.id == user:
+        if (
+            message.from_user.id
+            == user
+        ):
             return
 
         (
             get_reason,
             afk_since,
-        ) = user_afk(int(user))
-
-        name = (
-            await client.user_fullname(
-                user
-            )
+        ) = user_afk(
+            int(user)
         )
-        if get_reason == "N/A":
+
+        name = await client.user_fullname(
+            user
+        )
+        if (
+            get_reason
+            == "N/A"
+        ):
             await message.reply_text(
                 _AFK_ON_NO_REASON.format(
                     name,
@@ -164,26 +216,35 @@ async def OngoingAFK(client, message):
             return
 
 
-async def OutgoingAFK(client, message):
+async def OutgoingAFK(
+    client, message
+):
     try:
-        user: int = client.me.id
+        user: int = (
+            client.me.id
+        )
     except BaseException:
         return
     else:
         (
             get_reason,
             afk_since,
-        ) = user_afk(int(user))
-        name = (
-            await client.user_fullname(
-                user
-            )
+        ) = user_afk(
+            int(user)
         )
-        if get_reason == "N/A":
+        name = await client.user_fullname(
+            user
+        )
+        if (
+            get_reason
+            == "N/A"
+        ):
             x = await message.reply_text(
                 _AFK_OUT_NO_REASON.format(
                     name,
-                    choice(OUT_AFK),
+                    choice(
+                        OUT_AFK
+                    ),
                     afk_since,
                 ),
             )
@@ -191,23 +252,37 @@ async def OutgoingAFK(client, message):
             x = await message.reply_text(
                 _AFK_OUT_REASON.format(
                     name,
-                    choice(OUT_AFK),
+                    choice(
+                        OUT_AFK
+                    ),
                     afk_since,
                     get_reason,
                 ),
             )
 
-        rem_afk(int(user))
-        return await _try_purged(x, 8)
+        rem_afk(
+            int(user)
+        )
+        return await _try_purged(
+            x, 8
+        )
 
 
-async def ClientAFK(client, message):
-    user: int = client.me.id
+async def ClientAFK(
+    client, message
+):
+    user: int = (
+        client.me.id
+    )
     name = await client.user_fullname(
         user
     )
     get_reason = (
-        message.text.split(None, 1)[1]
+        message.text.split(
+            None, 1
+        )[
+            1
+        ]
         if len(
             message.command,
         )
@@ -220,7 +295,9 @@ async def ClientAFK(client, message):
 {} stepped <b><u>AFK</u> !!</b>
 """
     else:
-        reason = get_reason
+        reason = (
+            get_reason
+        )
         go_afk = """
 {} stepped <b><u>AFK</u> !!</b>
 <b><u>Reason</u>:</b> {}
@@ -232,8 +309,13 @@ async def ClientAFK(client, message):
             reason,
         ),
     )
-    await _try_purged(message, 4.5)
-    add_afk(int(user), str(reason))
+    await _try_purged(
+        message, 4.5
+    )
+    add_afk(
+        int(user),
+        str(reason),
+    )
 
 
 plugins_helper["afk"] = {

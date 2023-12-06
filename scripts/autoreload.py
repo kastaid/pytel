@@ -9,12 +9,14 @@ import os
 import signal
 import sys
 import time
-from contextlib import suppress
+from contextlib import (
+    suppress,)
 from subprocess import (
     CalledProcessError,
     Popen,
     check_call,)
-from typing import Generator
+from typing import (
+    Generator,)
 from . import (
     BOLD,
     EXTS,

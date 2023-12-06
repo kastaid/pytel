@@ -5,7 +5,8 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from pyrogram.raw import types
+from pyrogram.raw import (
+    types,)
 from . import (
     OWNER_ID,
     replied,
@@ -20,20 +21,32 @@ from . import (
     random_prefixies,)
 
 
-def get_report_reason(text: str):
+def get_report_reason(
+    text: str,
+):
     if text == "abuse":
         return (
             types.InputReportReasonChildAbuse()
         )
-    elif text == "fake" or "faker":
+    elif (
+        text == "fake"
+        or "faker"
+    ):
         return (
             types.InputReportReasonFake()
         )
-    elif text == "copyright":
+    elif (
+        text
+        == "copyright"
+    ):
         return (
             types.InputReportReasonCopyright()
         )
-    elif text == "geogroup" or "geo":
+    elif (
+        text
+        == "geogroup"
+        or "geo"
+    ):
         return (
             types.InputReportReasonGeoIrrelevant()
         )
@@ -55,7 +68,8 @@ def get_report_reason(text: str):
             types.InputReportReasonPornography()
         )
     elif (
-        text == "violence"
+        text
+        == "violence"
         or "scam"
         or "scammer"
         or "phising"
@@ -78,10 +92,15 @@ def get_report_reason(text: str):
     supersu=["PYTEL"],
 )
 @pytel.instruction(
-    ["report", "reported"],
+    [
+        "report",
+        "reported",
+    ],
     outgoing=True,
 )
-async def _reported(client, message):
+async def _reported(
+    client, message
+):
     (
         user,
         reason,
@@ -96,8 +115,12 @@ async def _reported(client, message):
             text="I can't find that user/channel.",
         )
         return
-    if (user in list(_supersu)) or (
-        user == int(OWNER_ID)
+    if (
+        user
+        in list(_supersu)
+    ) or (
+        user
+        == int(OWNER_ID)
     ):
         await eor(
             message,
@@ -112,17 +135,17 @@ async def _reported(client, message):
         text="</b>Reporting . . .</b>",
     )
     try:
-        user_info = (
-            await client.resolve_peer(
-                int(user)
-            )
+        user_info = await client.resolve_peer(
+            int(user)
         )
     except BaseException:
         try:
             user_info = await client.resolve_peer(
                 int(user)
             )
-        except BaseException:
+        except (
+            BaseException
+        ):
             await eor(
                 message,
                 text="I can't find that user/channel.",
@@ -144,7 +167,9 @@ async def _reported(client, message):
         ):
             await client.invoke(
                 functions.messages.Report(
-                    id=replied(message),
+                    id=replied(
+                        message
+                    ),
                     peer=user_info,
                     reason=msg_rep,
                     message=rsn,
@@ -187,13 +212,18 @@ async def _reported(client, message):
         )
         return
 
-    except Exception as excp:
+    except (
+        Exception
+    ) as excp:
         await eor(
-            x, text=f"Exception {excp}"
+            x,
+            text=f"Exception {excp}",
         )
         return
 
 
-plugins_helper["reports"] = {
+plugins_helper[
+    "reports"
+] = {
     f"{random_prefixies(px)}report [id/username/reply to user/channel] [reason: abuse/copyright/fake/spam/porn/geogroup/violence/other]": "To reports user/channel & give the reason.",
 }

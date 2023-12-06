@@ -12,10 +12,13 @@ from os import (
     getpid,
     execvp,
     system,)
-from subprocess import run
-from pytelibs import __version__
+from subprocess import (
+    run,)
+from pytelibs import (
+    __version__,)
 from requests import get
-from .logger import pylog as send_log
+from .logger import (
+    pylog as send_log,)
 
 
 def commands(
@@ -23,17 +26,24 @@ def commands(
 ):
     try:
         proc = run(
-            shlex.split(cmd),
+            shlex.split(
+                cmd
+            ),
             shell=False,
             check=True,
         )
-        if proc.returncode != 0:
+        if (
+            proc.returncode
+            != 0
+        ):
             send_log.error(
                 f"Exit code {proc.returncode}"
             )
             sys.exit(1)
         else:
-            return proc.stdout
+            return (
+                proc.stdout
+            )
     except BaseException:
         sys.exit(1)
 
@@ -42,7 +52,9 @@ def _restart():
     try:
         import psutil
 
-        proc = psutil.Process(getpid())
+        proc = psutil.Process(
+            getpid()
+        )
         for _ in (
             proc.open_files()
             + proc.connections()
@@ -68,7 +80,9 @@ def check_pypi_version():
         ).json()
         latest_version = response[
             "info"
-        ]["version"]
+        ][
+            "version"
+        ]
 
         if (
             __version__
@@ -77,8 +91,12 @@ def check_pypi_version():
             send_log.info(
                 f"New pytelibs pypi version: {latest_version} (current: {__version__})"
             )
-            send_log.info("Pulling...")
-            commands(cmd="git pull")
+            send_log.info(
+                "Pulling..."
+            )
+            commands(
+                cmd="git pull"
+            )
             send_log.info(
                 "Installing..."
             )
@@ -88,13 +106,17 @@ def check_pypi_version():
             send_log.success(
                 f"pytelibs v{latest_version} has been installed."
             )
-            system("clear")
+            system(
+                "clear"
+            )
             send_log.info(
                 "Restarting..."
             )
             _restart()
 
-    except Exception as e:
+    except (
+        Exception
+    ) as e:
         send_log.error(
             f"Failed to check pytelibs pypi version: {e}"
         )

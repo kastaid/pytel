@@ -32,7 +32,9 @@ from . import (
     ],
     outgoing=True,
 )
-async def _sangmata(client, message):
+async def _sangmata(
+    client, message
+):
     user_id = await extract_user(
         client, message
     )
@@ -46,8 +48,12 @@ async def _sangmata(client, message):
         message,
         text="Processing...",
     )
-    sang = "@sangmata_bot"
-    await client.unblock_user(sang)
+    sang = (
+        "@sangmata_bot"
+    )
+    await client.unblock_user(
+        sang
+    )
     await client.send_message(
         sang, user_id
     )
@@ -59,7 +65,9 @@ async def _sangmata(client, message):
     async for s in client.get_chat_history(
         sang
     ):
-        if not s.outgoing:
+        if (
+            not s.outgoing
+        ):
             res = s.text
             if res.lower().startswith(
                 "no data"
@@ -70,13 +78,11 @@ async def _sangmata(client, message):
                 await client.read_chat_history(
                     s.chat.id
                 )
-                return (
-                    await client.invoke(
-                        DeleteHistory(
-                            peer=info,
-                            max_id=0,
-                            revoke=True,
-                        )
+                return await client.invoke(
+                    DeleteHistory(
+                        peer=info,
+                        max_id=0,
+                        revoke=True,
                     )
                 )
             if (
@@ -89,17 +95,22 @@ async def _sangmata(client, message):
                 await client.read_chat_history(
                     s.chat.id
                 )
-                return (
-                    await client.invoke(
-                        DeleteHistory(
-                            peer=info,
-                            max_id=0,
-                            revoke=True,
-                        )
+                return await client.invoke(
+                    DeleteHistory(
+                        peer=info,
+                        max_id=0,
+                        revoke=True,
                     )
                 )
-            texts.append(escape(res))
-            if "history" in res.lower():
+            texts.append(
+                escape(
+                    res
+                )
+            )
+            if (
+                "history"
+                in res.lower()
+            ):
                 await client.read_chat_history(
                     s.chat.id
                 )
@@ -121,7 +132,9 @@ async def _sangmata(client, message):
         )
         await sleep(1)
 
-    await _try_purged(x, 1.5)
+    await _try_purged(
+        x, 1.5
+    )
 
     return await client.invoke(
         DeleteHistory(
@@ -132,6 +145,8 @@ async def _sangmata(client, message):
     )
 
 
-plugins_helper["sangmata"] = {
+plugins_helper[
+    "sangmata"
+] = {
     f"{random_prefixies(px)}sg / sang [id/username/reply]": "To check the previous username. ( If there are )",
 }

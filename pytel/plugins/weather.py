@@ -25,8 +25,12 @@ from . import (
     ],
     outgoing=True,
 )
-async def _weather(client, message):
-    region = get_text(message)
+async def _weather(
+    client, message
+):
+    region = get_text(
+        message
+    )
     if not region:
         await eor(
             message,
@@ -49,9 +53,13 @@ async def _weather(client, message):
             message
         ),
     )
-    return await _try_purged(x)
+    return await _try_purged(
+        x
+    )
 
 
-plugins_helper["weather"] = {
+plugins_helper[
+    "weather"
+] = {
     f"{random_prefixies(px)}weather / {random_prefixies(px)}cuaca [region/city]/[reply]": "To get weather information.",
 }

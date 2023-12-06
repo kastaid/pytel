@@ -11,12 +11,17 @@ from asyncio import (
     sleep,
     Lock,
     AbstractEventLoop,)
-from contextlib import suppress
-from datetime import datetime
+from contextlib import (
+    suppress,)
+from datetime import (
+    datetime,)
 from html import escape
-from sys import exc_info, exit
+from sys import (
+    exc_info,
+    exit,)
 from time import time
-from traceback import format_exc as fmex
+from traceback import (
+    format_exc as fmex,)
 from typing import (
     Any,
     Callable,
@@ -46,11 +51,13 @@ from pyrogram.errors.exceptions.forbidden_403 import (
     ChatWriteForbidden,)
 from pyrogram.errors.exceptions.internal_server_error_500 import (
     PersistentTimestampOutdated,)
-from pyrogram.filters import Filter
+from pyrogram.filters import (
+    Filter,)
 from pyrogram.handlers import (
     MessageHandler,
     EditedMessageHandler,)
-from pyrogram.raw.all import layer
+from pyrogram.raw.all import (
+    layer,)
 from pyrogram.raw.functions.channels import (
     GetFullChannel,)
 from pyrogram.raw.functions.messages import (
@@ -63,7 +70,8 @@ from pyrogram.raw.types import (
     InputGroupCall,
     InputPeerChannel,
     InputPeerChat,)
-from pyrogram.types import Message
+from pyrogram.types import (
+    Message,)
 from pytelibs import (
     _c,
     _d,
@@ -82,12 +90,15 @@ from ..config import (
     LOGCHAT_ID,
     PREFIX,
     OWNER_ID,)
-from ..logger import pylog
-from .dbase import memorize
+from ..logger import (
+    pylog,)
+from .dbase import (
+    memorize,)
 from .dbase.dbLogger import (
     already_logger,
     check_logger,)
-from .leverage import legally_required
+from .leverage import (
+    legally_required,)
 from .utils import (
     RunningCommand,
     get_blacklisted,
@@ -105,22 +116,32 @@ class PytelClient(Raw):
     client: Any
     _client: list
     lock: Any
-    loop: Optional[AbstractEventLoop]
+    loop: Optional[
+        AbstractEventLoop
+    ]
     send_log: Any
     group_call: Any
 
     def __init__(
         self,
-        api_id: Union[int, str] = None,
-        api_hash: Optional[str] = None,
+        api_id: Union[
+            int, str
+        ] = None,
+        api_hash: Optional[
+            str
+        ] = None,
         session_string: Optional[
             str
         ] = None,
-        lang_code: Optional[str] = None,
+        lang_code: Optional[
+            str
+        ] = None,
         in_memory: Optional[
             bool
         ] = None,
-        ipv6: Optional[bool] = None,
+        ipv6: Optional[
+            bool
+        ] = None,
         app_version: Optional[
             str
         ] = None,
@@ -136,15 +157,21 @@ class PytelClient(Raw):
         *args,
         **kwargs: Any,
     ):
-        kwargs["api_id"] = api_id
-        kwargs["api_hash"] = api_hash
+        kwargs[
+            "api_id"
+        ] = api_id
+        kwargs[
+            "api_hash"
+        ] = api_hash
         kwargs[
             "session_string"
         ] = session_string
         kwargs[
             "app_version"
         ] = app_version
-        kwargs["workers"] = workers
+        kwargs[
+            "workers"
+        ] = workers
         kwargs[
             "system_version"
         ] = system_version
@@ -153,9 +180,15 @@ class PytelClient(Raw):
         ] = device_model
         kwargs[
             "lang_code"
-        ] = lang_code.lower()
-        kwargs["in_memory"] = in_memory
-        kwargs["ipv6"] = ipv6
+        ] = (
+            lang_code.lower()
+        )
+        kwargs[
+            "in_memory"
+        ] = in_memory
+        kwargs[
+            "ipv6"
+        ] = ipv6
         kwargs[
             "no_updates"
         ] = no_updates
@@ -165,12 +198,16 @@ class PytelClient(Raw):
 
         self.client = Raw
         self._client = []
-        self.send_log = pylog
+        self.send_log = (
+            pylog
+        )
         self.lock = Lock
         self.loop = set_event_loop(
             loopers
         )
-        self.listening = {}
+        self.listening = (
+            {}
+        )
         self.group_call = GroupCallFactory(
             self,
             MTProtoClientType.PYROGRAM,
@@ -181,7 +218,8 @@ class PytelClient(Raw):
             play_on_repeat=False,
         )
         super().__init__(
-            *args, **kwargs
+            *args,
+            **kwargs,
         )
 
     def instruction(
@@ -222,7 +260,9 @@ class PytelClient(Raw):
         sensitive: Optional[
             bool
         ] = True,
-        group: Optional[int] = None,
+        group: Optional[
+            int
+        ] = None,
         *args,
         **kwargs,
     ) -> Callable:
@@ -234,17 +274,31 @@ class PytelClient(Raw):
                 else x.lower()
                 for x in command
             ]
-        if handler is None:
+        if (
+            handler
+            is None
+        ):
             handler = (
                 PREFIX
                 if PREFIX
                 else "."
             )
-        if privileges is None:
-            privileges = []
-        if supersu is None:
+        if (
+            privileges
+            is None
+        ):
+            privileges = (
+                []
+            )
+        if (
+            supersu
+            is None
+        ):
             supersu = []
-        if "PYTEL" in supersu:
+        if (
+            "PYTEL"
+            in supersu
+        ):
             filt = (
                 legally_required
                 & filters.command(
@@ -269,7 +323,9 @@ class PytelClient(Raw):
                 client: PytelClient,
                 message: Message,
             ) -> Callable:
-                user_id = client.me.id
+                user_id = (
+                    client.me.id
+                )
                 if (
                     already_logger(
                         user_id=user_id
@@ -279,7 +335,9 @@ class PytelClient(Raw):
                     log_data = check_logger().get(
                         user_id
                     )
-                    log_id = log_data[0]
+                    log_id = log_data[
+                        0
+                    ]
                     send_to = int(
                         log_id
                     )
@@ -526,25 +584,21 @@ class PytelClient(Raw):
                             client,
                             message,
                         )
-                    except (
-                        BaseException
-                    ):
+                    except BaseException:
                         pass
-                except (
-                    SlowmodeWait
-                ) as flood:
+                except SlowmodeWait as flood:
                     await sleep(
-                        flood.value + 5
+                        flood.value
+                        + 5
                     )
                     await func(
                         client,
                         message,
                     )
-                except (
-                    FloodWait
-                ) as flood:
+                except FloodWait as flood:
                     await sleep(
-                        flood.value + 5
+                        flood.value
+                        + 5
                     )
                     await func(
                         client,
@@ -566,15 +620,11 @@ class PytelClient(Raw):
                     pass
                 except StopPropagation:
                     raise StopPropagation
-                except (
-                    ContinuePropagation
-                ):
+                except ContinuePropagation:
                     raise ContinuePropagation
                 except ConnectionError:
                     await client.connect()
-                except (
-                    Exception
-                ) as excp:
+                except Exception as excp:
                     if (
                         not disable_errors
                     ):
@@ -631,7 +681,9 @@ class PytelClient(Raw):
                         )
                         result = str(
                             stdout
-                        ) + str(stderr)
+                        ) + str(
+                            stderr
+                        )
                         format_text += (
                             "<code>"
                             + str(
@@ -672,7 +724,11 @@ class PytelClient(Raw):
 
                 message.continue_propagation()
 
-            for _ in self._client:
+            for (
+                _
+            ) in (
+                self._client
+            ):
                 try:
                     if force_edit:
                         _.add_handler(
@@ -690,30 +746,35 @@ class PytelClient(Raw):
                         ),
                         group=group,
                     )
-                except (
-                    BaseException
-                ) as excp:
+                except BaseException as excp:
                     pylog.exception(
                         f"Error: {excp}"
                     )
 
-            return wrapper
+            return (
+                wrapper
+            )
 
         decorator.cache_reset()
         return decorator
 
     async def user_fullname(
         self,
-        user_id: Optional[int],
+        user_id: Optional[
+            int
+        ],
     ) -> Optional[str]:
-        separator: str = ""
+        separator: str = (
+            ""
+        )
         try:
             user = await self.get_users(
                 user_id
             )
             fname = (
                 hasattr(
-                    user, "last_name"
+                    user,
+                    "last_name",
                 )
                 and user.last_name
                 and f"{separator}{user.first_name} {user.last_name}"
@@ -721,29 +782,45 @@ class PytelClient(Raw):
             )
             fullname = " ".join(
                 replace_all(
-                    escape(fname),
+                    escape(
+                        fname
+                    ),
                     _CHARACTER_NAMES,
                 ).split()
             )
-            return fullname
-        except BaseException:
-            fullname = "User"
-            return fullname
+            return (
+                fullname
+            )
+        except (
+            BaseException
+        ):
+            fullname = (
+                "User"
+            )
+            return (
+                fullname
+            )
 
     async def username(
         self,
-        user_id: Optional[int],
+        user_id: Optional[
+            int
+        ],
     ) -> Optional[str]:
         user = await self.get_users(
             user_id
         )
         if user.username:
-            return str(user.username)
+            return str(
+                user.username
+            )
 
     async def notify_login(
         self,
     ):
-        with suppress(Exception):
+        with suppress(
+            Exception
+        ):
             x = await self.user_fullname(
                 user_id=self.me.id
             )
@@ -759,7 +836,9 @@ class PytelClient(Raw):
         _copyright: Optional[
             str
         ] = None,
-        _license: Optional[str] = None,
+        _license: Optional[
+            str
+        ] = None,
     ) -> None:
         """
         Copyright, All Rights Reserved.
@@ -781,25 +860,50 @@ class PytelClient(Raw):
     async def flash(
         self,
     ):
-        if self not in self._client:
-            self._client.append(self)
+        if (
+            self
+            not in self._client
+        ):
+            self._client.append(
+                self
+            )
         try:
-            await self.join_chat(_c)
-            await sleep(5)
-            await self.join_chat(_g)
-            await sleep(5)
-            await self.join_chat(_l)
-            await sleep(5)
-            await self.join_chat(_d)
-            await sleep(5)
-            await self.join_chat(cpytl)
+            await self.join_chat(
+                _c
+            )
+            await sleep(
+                5
+            )
+            await self.join_chat(
+                _g
+            )
+            await sleep(
+                5
+            )
+            await self.join_chat(
+                _l
+            )
+            await sleep(
+                5
+            )
+            await self.join_chat(
+                _d
+            )
+            await sleep(
+                5
+            )
+            await self.join_chat(
+                cpytl
+            )
         except BotMethodInvalid:
             pass
         except KeyError:
             pass
         except ConnectionError:
             await self.connect()
-        except Exception as excp:
+        except (
+            Exception
+        ) as excp:
             self.send_log.exception(
                 f"Exception : {excp}"
             )
@@ -807,15 +911,23 @@ class PytelClient(Raw):
     async def client_started(
         self,
     ):
-        if self not in self._client:
-            self._client.append(self)
+        if (
+            self
+            not in self._client
+        ):
+            self._client.append(
+                self
+            )
         try:
             self.send_log.info(
                 "🚀 Starting-up Client."
             )
             await super().start()
-            if self.me.id not in list(
-                _supersu
+            if (
+                self.me.id
+                not in list(
+                    _supersu
+                )
             ):
                 KASTA_BLACKLIST = await get_blacklisted(
                     url="https://raw.githubusercontent.com/kastaid/resources/main/kastablacklist.py",
@@ -833,14 +945,23 @@ class PytelClient(Raw):
                         )
                     )
                     await self.stop()
-                    exit(1)
+                    exit(
+                        1
+                    )
             self.send_log.success(
                 f"☑️ Successfuly, ur has been login."
             )
-        except FloodWait as excp:
-            await sleep(excp.value + 5)
+        except (
+            FloodWait
+        ) as excp:
+            await sleep(
+                excp.value
+                + 5
+            )
             await super().start()
-        except Exception as excp:
+        except (
+            Exception
+        ) as excp:
             self.send_log.exception(
                 excp
             )
@@ -851,13 +972,18 @@ class PytelClient(Raw):
             Message, str
         ] = None,
         chat_id: int = None,
-        time: Union[int, float] = None,
+        time: Union[
+            int, float
+        ] = None,
         is_schedule: bool = False,
         schedule_date: Any = None,
         *args,
     ):
         try:
-            if isinstance(message, str):
+            if isinstance(
+                message,
+                str,
+            ):
                 await self.send_message(
                     chat_id,
                     message,
@@ -878,18 +1004,34 @@ class PytelClient(Raw):
                     if is_schedule
                     else None,
                 )
-            await sleep(time)
-        except SlowmodeWait as flood:
-            await sleep(flood.value)
-            await self.timer_message(
-                message, chat_id, time
+            await sleep(
+                time
             )
-        except FloodWait as flood:
-            await sleep(flood.value)
-            await self.timer_message(
-                message, chat_id, time
+        except (
+            SlowmodeWait
+        ) as flood:
+            await sleep(
+                flood.value
             )
-        except TimeoutError:
+            await self.timer_message(
+                message,
+                chat_id,
+                time,
+            )
+        except (
+            FloodWait
+        ) as flood:
+            await sleep(
+                flood.value
+            )
+            await self.timer_message(
+                message,
+                chat_id,
+                time,
+            )
+        except (
+            TimeoutError
+        ):
             try:
                 await self.timer_message(
                     message,
@@ -898,7 +1040,9 @@ class PytelClient(Raw):
                 )
             except BaseException:
                 raise
-        except BaseException:
+        except (
+            BaseException
+        ):
             raise
 
     async def downloads_media(
@@ -907,20 +1051,29 @@ class PytelClient(Raw):
         m: Any,
         x: Any,
     ):
-        from pytel import Rooters
+        from pytel import (
+            Rooters,)
 
         caption = (
             m.caption
             or m.caption_entities
             or None
         )
-        with suppress(Exception):
-            if (m.text) or (m.sticker):
+        with suppress(
+            Exception
+        ):
+            if (
+                m.text
+            ) or (
+                m.sticker
+            ):
                 await m.copy(
                     message.chat.id,
                     reply_to_message_id=message.id,
                 )
-            s_time = time()
+            s_time = (
+                time()
+            )
             if m.photo:
                 photo = await self.download_media(
                     m.photo,
@@ -933,7 +1086,9 @@ class PytelClient(Raw):
                         "Telegram Photo",
                     ),
                 )
-                u_time = time()
+                u_time = (
+                    time()
+                )
                 await self.send_photo(
                     message.chat.id,
                     photo=photo,
@@ -948,7 +1103,8 @@ class PytelClient(Raw):
                     ),
                 )
                 (
-                    Rooters / photo
+                    Rooters
+                    / photo
                 ).unlink(
                     missing_ok=True
                 )
@@ -964,7 +1120,9 @@ class PytelClient(Raw):
                         "Telegram Video",
                     ),
                 )
-                u_time = time()
+                u_time = (
+                    time()
+                )
                 await self.send_video(
                     message.chat.id,
                     video=video,
@@ -980,11 +1138,14 @@ class PytelClient(Raw):
                     ),
                 )
                 (
-                    Rooters / video
+                    Rooters
+                    / video
                 ).unlink(
                     missing_ok=True
                 )
-            if m.document:
+            if (
+                m.document
+            ):
                 file = await self.download_media(
                     m.document,
                     "/cache",
@@ -996,7 +1157,9 @@ class PytelClient(Raw):
                         "Telegram Document",
                     ),
                 )
-                u_time = time()
+                u_time = (
+                    time()
+                )
                 await self.send_document(
                     message.chat.id,
                     document=file,
@@ -1011,7 +1174,10 @@ class PytelClient(Raw):
                         "Telegram Document",
                     ),
                 )
-                (Rooters / file).unlink(
+                (
+                    Rooters
+                    / file
+                ).unlink(
                     missing_ok=True
                 )
             if m.audio:
@@ -1026,7 +1192,9 @@ class PytelClient(Raw):
                         "Telegram Audio",
                     ),
                 )
-                u_time = time()
+                u_time = (
+                    time()
+                )
                 await self.send_audio(
                     message.chat.id,
                     audio,
@@ -1041,7 +1209,8 @@ class PytelClient(Raw):
                     ),
                 )
                 (
-                    Rooters / audio
+                    Rooters
+                    / audio
                 ).unlink(
                     missing_ok=True
                 )
@@ -1057,7 +1226,9 @@ class PytelClient(Raw):
                         "Telegram Voice",
                     ),
                 )
-                u_time = time()
+                u_time = (
+                    time()
+                )
                 await self.send_voice(
                     message.chat.id,
                     voice,
@@ -1071,11 +1242,14 @@ class PytelClient(Raw):
                     ),
                 )
                 (
-                    Rooters / voice
+                    Rooters
+                    / voice
                 ).unlink(
                     missing_ok=True
                 )
-            if m.animation:
+            if (
+                m.animation
+            ):
                 animation = await self.download_media(
                     m.animation,
                     "/cache",
@@ -1087,7 +1261,9 @@ class PytelClient(Raw):
                         "Telegram Animation",
                     ),
                 )
-                u_time = time()
+                u_time = (
+                    time()
+                )
                 await self.send_animation(
                     message.chat.id,
                     animation,
@@ -1102,7 +1278,8 @@ class PytelClient(Raw):
                     ),
                 )
                 (
-                    Rooters / animation
+                    Rooters
+                    / animation
                 ).unlink(
                     missing_ok=True
                 )
@@ -1111,15 +1288,19 @@ class PytelClient(Raw):
         self,
         message,
         chat_ids: Any = None,
-    ) -> Optional[InputGroupCall]:
+    ) -> Optional[
+        InputGroupCall
+    ]:
         if chat_ids:
-            chat_id = chat_ids
-        else:
-            chat_id = message.chat.id
-        chat_peer = (
-            await self.resolve_peer(
-                chat_id
+            chat_id = (
+                chat_ids
             )
+        else:
+            chat_id = (
+                message.chat.id
+            )
+        chat_peer = await self.resolve_peer(
+            chat_id
         )
         if isinstance(
             chat_peer,
@@ -1140,7 +1321,8 @@ class PytelClient(Raw):
                     )
                 ).full_chat
             elif isinstance(
-                chat_peer, InputPeerChat
+                chat_peer,
+                InputPeerChat,
             ):
                 full_chat = (
                     await self.invoke(
@@ -1149,8 +1331,13 @@ class PytelClient(Raw):
                         )
                     )
                 ).full_chat
-            if full_chat is not None:
-                return full_chat.call
+            if (
+                full_chat
+                is not None
+            ):
+                return (
+                    full_chat.call
+                )
         return False
 
     async def muting_user_vc(
@@ -1169,7 +1356,8 @@ class PytelClient(Raw):
         return mtd
 
     async def get_partici(
-        self, group_call: Any
+        self,
+        group_call: Any,
     ) -> GetGroupParticipants:
         par = await self.invoke(
             GetGroupParticipants(
@@ -1183,7 +1371,8 @@ class PytelClient(Raw):
         return par
 
     async def get_resvc(
-        self, group_call: Any
+        self,
+        group_call: Any,
     ) -> GetGroupCall:
         res = await self.invoke(
             GetGroupCall(
@@ -1193,12 +1382,21 @@ class PytelClient(Raw):
         )
         return res
 
-    async def stop(self, *args):
-        if self not in self._client:
-            self._client.append(self)
+    async def stop(
+        self, *args
+    ):
+        if (
+            self
+            not in self._client
+        ):
+            self._client.append(
+                self
+            )
         try:
             await super().stop()
-        except Exception as excp:
+        except (
+            Exception
+        ) as excp:
             self.send_log.exception(
                 excp
             )

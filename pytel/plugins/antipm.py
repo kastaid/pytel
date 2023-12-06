@@ -6,7 +6,8 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 from asyncio import sleep
-from random import randrange
+from random import (
+    randrange,)
 from ..client.dbase.dbAntipm import (
     get_antipm_status,
     set_antipm,
@@ -52,12 +53,20 @@ async def _anti_pm_status(
     client, message
 ):
     if (
-        not (pydb.get_key("ANTIPM"))
-        or (not message.from_user)
+        not (
+            pydb.get_key(
+                "ANTIPM"
+            )
+        )
+        or (
+            not message.from_user
+        )
         or (not message)
     ):
         return
-    for cl in client._client:
+    for (
+        cl
+    ) in client._client:
         _ = cl.me.id
     (
         is_blocked,
@@ -82,46 +91,68 @@ async def _anti_pm_status(
     )
 
     if (
-        get_antipm_status(user_id=_)
+        get_antipm_status(
+            user_id=_
+        )
         == "On"
     ):
-        user_info = (
-            await client.resolve_peer(
-                message.from_user.id
-            )
+        user_info = await client.resolve_peer(
+            message.from_user.id
         )
         if LOGCHAT_ID:
-            chat_id = int(LOGCHAT_ID)
-        else:
-            log_data = (
-                check_logger().get(_)
+            chat_id = int(
+                LOGCHAT_ID
             )
-            chat_id = int(log_data[0])
+        else:
+            log_data = check_logger().get(
+                _
+            )
+            chat_id = int(
+                log_data[
+                    0
+                ]
+            )
 
         if (
             message.from_user.is_self
             or message.from_user.is_contact
             or message.from_user.is_support
             or user_info.user_id
-            in list(_supersu)
+            in list(
+                _supersu
+            )
         ) or (
             message.from_user.id
-            == int(OWNER_ID)
+            == int(
+                OWNER_ID
+            )
         ):
             return
 
-        if message.from_user.is_scam:
-            is_scam = True
-        elif message.from_user.is_fake:
-            is_fake = True
+        if (
+            message.from_user.is_scam
+        ):
+            is_scam = (
+                True
+            )
+        elif (
+            message.from_user.is_fake
+        ):
+            is_fake = (
+                True
+            )
         elif (
             message.from_user.is_verified
         ):
-            is_verified = True
+            is_verified = (
+                True
+            )
         elif (
             message.from_user.is_premium
         ):
-            is_premium = True
+            is_premium = (
+                True
+            )
 
         if (
             message.from_user
@@ -138,7 +169,9 @@ async def _anti_pm_status(
             )
 
         if (
-            get_pmlog_media(user_id=_)
+            get_pmlog_media(
+                user_id=_
+            )
             == "On"
         ):
             caption = (
@@ -168,7 +201,10 @@ async def _anti_pm_status(
                     caption=caption,
                     force_document=True,
                 )
-                (Rooters / file).unlink(
+                (
+                    Rooters
+                    / file
+                ).unlink(
                     missing_ok=True
                 )
             elif (
@@ -190,7 +226,10 @@ async def _anti_pm_status(
                     caption=caption,
                     force_document=True,
                 )
-                (Rooters / file).unlink(
+                (
+                    Rooters
+                    / file
+                ).unlink(
                     missing_ok=True
                 )
             elif (
@@ -212,7 +251,10 @@ async def _anti_pm_status(
                     caption,
                     force_document=True,
                 )
-                (Rooters / file).unlink(
+                (
+                    Rooters
+                    / file
+                ).unlink(
                     missing_ok=True
                 )
             elif (
@@ -234,7 +276,8 @@ async def _anti_pm_status(
                     caption,
                 )
                 (
-                    Rooters / audio
+                    Rooters
+                    / audio
                 ).unlink(
                     missing_ok=True
                 )
@@ -257,7 +300,8 @@ async def _anti_pm_status(
                     caption,
                 )
                 (
-                    Rooters / voice
+                    Rooters
+                    / voice
                 ).unlink(
                     missing_ok=True
                 )
@@ -273,7 +317,9 @@ async def _anti_pm_status(
                     peer=user_info
                 )
             )
-            is_reported = True
+            is_reported = (
+                True
+            )
 
         if (
             get_pmblock_status(
@@ -286,13 +332,20 @@ async def _anti_pm_status(
                     id=user_info
                 )
             )
-            is_blocked = True
+            is_blocked = (
+                True
+            )
 
         if (
-            get_antipm_purged(user_id=_)
+            get_antipm_purged(
+                user_id=_
+            )
             == "On"
         ):
-            just_clear, revoke = (
+            (
+                just_clear,
+                revoke,
+            ) = (
                 True,
                 True,
             )
@@ -304,7 +357,9 @@ async def _anti_pm_status(
                     just_clear=just_clear,
                 )
             )
-            is_purged = True
+            is_purged = (
+                True
+            )
 
         links_msg = f"tg://openmessage?user_id={user_info.user_id}&message_id={message.id}"
         usrnm = await client.username(
@@ -358,12 +413,18 @@ async def _anti_pm_status(
 
 (c) @kastaid #pytel
 """
-        with suppress(Exception):
+        with suppress(
+            Exception
+        ):
             replied = (
-                x.id if x.id else None
+                x.id
+                if x.id
+                else None
             )
             await pytel_tgb.send_message(
-                int(chat_id),
+                int(
+                    chat_id
+                ),
                 text=text.format(
                     full_name,
                     user_info.user_id,
@@ -405,8 +466,15 @@ async def _anti_pm_status(
     outgoing=True,
     supergroups=True,
 )
-async def _anti_pm(client, message):
-    if len(message.command) == 1:
+async def _anti_pm(
+    client, message
+):
+    if (
+        len(
+            message.command
+        )
+        == 1
+    ):
         if (
             get_antipm_status(
                 user_id=client.me.id
@@ -417,7 +485,9 @@ async def _anti_pm(client, message):
 <b>Anti-PM status: enabled
 Disable with: </b><code>{}antipm disable</code>
 """.format(
-                random_prefixies(px),
+                random_prefixies(
+                    px
+                ),
             )
             await eor(
                 message,
@@ -429,14 +499,18 @@ Disable with: </b><code>{}antipm disable</code>
 <b>Anti-PM status: disabled
 Enable with: </b><code>{}antipm enable</code>
 """.format(
-                random_prefixies(px),
+                random_prefixies(
+                    px
+                ),
             )
             await eor(
                 message,
                 text=text,
             )
             return
-    elif message.command[1] in [
+    elif message.command[
+        1
+    ] in [
         "enable",
         "on",
         "1",
@@ -452,7 +526,9 @@ Enable with: </b><code>{}antipm enable</code>
             text="<b>Anti-PM Plugins enabled!</b>",
         )
         return
-    elif message.command[1] in [
+    elif message.command[
+        1
+    ] in [
         "disable",
         "off",
         "0",
@@ -472,7 +548,9 @@ Enable with: </b><code>{}antipm enable</code>
         text = """
 <b>Usage:</b> <code>{}antipm [enable|disable|on|off]</code>
 """.format(
-            random_prefixies(px),
+            random_prefixies(
+                px
+            ),
         )
         await eor(
             message,
@@ -489,7 +567,12 @@ Enable with: </b><code>{}antipm enable</code>
 async def _antipm_report(
     client, message
 ):
-    if len(message.command) == 1:
+    if (
+        len(
+            message.command
+        )
+        == 1
+    ):
         if (
             get_pmreport_status(
                 user_id=client.me.id
@@ -500,7 +583,9 @@ async def _antipm_report(
 <b>Spam-reporting enabled.
 Disable with: </b><code>{}pmreport disable</code>
 """.format(
-                random_prefixies(px),
+                random_prefixies(
+                    px
+                ),
             )
             await eor(
                 message,
@@ -512,14 +597,18 @@ Disable with: </b><code>{}pmreport disable</code>
 <b>Spam-reporting disabled.
 Enable with: </b><code>{}pmreport enable</code>
 """.format(
-                random_prefixies(px),
+                random_prefixies(
+                    px
+                ),
             )
             await eor(
                 message,
                 text=text,
             )
             return
-    elif message.command[1] in [
+    elif message.command[
+        1
+    ] in [
         "enable",
         "on",
         "1",
@@ -535,7 +624,9 @@ Enable with: </b><code>{}pmreport enable</code>
             text="<b>Spam-reporting enabled!</b>",
         )
         return
-    elif message.command[1] in [
+    elif message.command[
+        1
+    ] in [
         "disable",
         "off",
         "0",
@@ -567,7 +658,12 @@ Enable with: </b><code>{}pmreport enable</code>
 async def _antipm_block(
     client, message
 ):
-    if len(message.command) == 1:
+    if (
+        len(
+            message.command
+        )
+        == 1
+    ):
         if (
             get_pmblock_status(
                 user_id=client.me.id
@@ -578,7 +674,9 @@ async def _antipm_block(
 <b>Blocking users enabled.
 Disable with: </b><code>{}pmblock disable</code>
 """.format(
-                random_prefixies(px),
+                random_prefixies(
+                    px
+                ),
             )
             await eor(
                 message,
@@ -590,14 +688,18 @@ Disable with: </b><code>{}pmblock disable</code>
 <b>Blocking users disabled.
 Enable with: </b><code>{}pmblock enable</code>
 """.format(
-                random_prefixies(px),
+                random_prefixies(
+                    px
+                ),
             )
             await eor(
                 message,
                 text=text,
             )
             return
-    elif message.command[1] in [
+    elif message.command[
+        1
+    ] in [
         "enable",
         "on",
         "1",
@@ -613,7 +715,9 @@ Enable with: </b><code>{}pmblock enable</code>
             text="<b>Blocking users enabled!</b>",
         )
         return
-    elif message.command[1] in [
+    elif message.command[
+        1
+    ] in [
         "disable",
         "off",
         "0",
@@ -645,7 +749,12 @@ Enable with: </b><code>{}pmblock enable</code>
 async def _antipm_purged(
     client, message
 ):
-    if len(message.command) == 1:
+    if (
+        len(
+            message.command
+        )
+        == 1
+    ):
         if (
             get_antipm_purged(
                 user_id=client.me.id
@@ -656,7 +765,9 @@ async def _antipm_purged(
 <b>Purging messages enabled.
 Disable with: </b><code>{}pmpurged disable</code>
 """.format(
-                random_prefixies(px),
+                random_prefixies(
+                    px
+                ),
             )
             await eor(
                 message,
@@ -668,14 +779,18 @@ Disable with: </b><code>{}pmpurged disable</code>
 <b>Purging messages disabled.
 Enable with: </b><code>{}pmpurged enable</code>
 """.format(
-                random_prefixies(px),
+                random_prefixies(
+                    px
+                ),
             )
             await eor(
                 message,
                 text=text,
             )
             return
-    elif message.command[1] in [
+    elif message.command[
+        1
+    ] in [
         "enable",
         "on",
         "1",
@@ -691,7 +806,9 @@ Enable with: </b><code>{}pmpurged enable</code>
             text="<b>Purging messages enabled!</b>",
         )
         return
-    elif message.command[1] in [
+    elif message.command[
+        1
+    ] in [
         "disable",
         "off",
         "0",
@@ -720,8 +837,15 @@ Enable with: </b><code>{}pmpurged enable</code>
     outgoing=True,
     supergroups=True,
 )
-async def _pmlog_media(client, message):
-    if len(message.command) == 1:
+async def _pmlog_media(
+    client, message
+):
+    if (
+        len(
+            message.command
+        )
+        == 1
+    ):
         if (
             get_pmlog_media(
                 user_id=client.me.id
@@ -732,7 +856,9 @@ async def _pmlog_media(client, message):
 <b>PMLog media enabled.
 Disable with: </b><code>{}pmlogmedia disable</code>
 """.format(
-                random_prefixies(px),
+                random_prefixies(
+                    px
+                ),
             )
             await eor(
                 message,
@@ -744,14 +870,18 @@ Disable with: </b><code>{}pmlogmedia disable</code>
 <b>PMLog media disabled.
 Enable with: </b><code>{}pmlogmedia enable</code>
 """.format(
-                random_prefixies(px),
+                random_prefixies(
+                    px
+                ),
             )
             await eor(
                 message,
                 text=text,
             )
             return
-    elif message.command[1] in [
+    elif message.command[
+        1
+    ] in [
         "enable",
         "on",
         "1",
@@ -767,7 +897,9 @@ Enable with: </b><code>{}pmlogmedia enable</code>
             text="<b>PMLog media enabled!</b>",
         )
         return
-    elif message.command[1] in [
+    elif message.command[
+        1
+    ] in [
         "disable",
         "off",
         "0",
@@ -791,7 +923,9 @@ Enable with: </b><code>{}pmlogmedia enable</code>
         return
 
 
-plugins_helper["antipm"] = {
+plugins_helper[
+    "antipm"
+] = {
     f"{random_prefixies(px)}antipm [on|off|enable|disable]": "To enable anti-pm plugins and anti-pm log.",
     f"{random_prefixies(px)}pmreport [on|off|enable|disable]": "To spam reporting",
     f"{random_prefixies(px)}pmblock [on|off|enable|disable]": "To user blocking",

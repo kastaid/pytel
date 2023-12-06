@@ -5,7 +5,8 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from typing import Optional
+from typing import (
+    Optional,)
 import g4f
 
 
@@ -16,7 +17,9 @@ class PytelAI:
 
     async def text(
         self,
-        query: Optional[str],
+        query: Optional[
+            str
+        ],
     ) -> Optional[str]:
         try:
             response = await g4f.ChatCompletion.create_async(
@@ -31,8 +34,12 @@ class PytelAI:
             )
             if response:
                 return response
-        except BaseException as excp:
-            return str(excp)
+        except (
+            BaseException
+        ) as excp:
+            return str(
+                excp
+            )
 
 
 ChatGPT = PytelAI()

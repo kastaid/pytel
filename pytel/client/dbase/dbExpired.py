@@ -5,14 +5,23 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from datetime import datetime, timedelta
-from functools import lru_cache
-from time import perf_counter
-from typing import Optional, Any
-from asyncache import cached
-from cachetools import TTLCache
+from datetime import (
+    datetime,
+    timedelta,)
+from functools import (
+    lru_cache,)
+from time import (
+    perf_counter,)
+from typing import (
+    Optional,
+    Any,)
+from asyncache import (
+    cached,)
+from cachetools import (
+    TTLCache,)
 from ..utils import tz
-from ._BaseClient import pydb
+from ._BaseClient import (
+    pydb,)
 
 
 @cached(
@@ -26,10 +35,19 @@ async def countdown_to_datetime(
     expired: Any,
 ) -> Optional[str]:
     days = expired.days
-    seconds = expired.seconds
-    hours = int(seconds / 3600)
+    seconds = (
+        expired.seconds
+    )
+    hours = int(
+        seconds / 3600
+    )
     minutes = int(
-        (seconds - hours * 3600) / 60
+        (
+            seconds
+            - hours
+            * 3600
+        )
+        / 60
     )
     seconds = (
         seconds
@@ -37,22 +55,30 @@ async def countdown_to_datetime(
         - minutes * 60
     )
 
-    result = str(days) + (
+    result = str(
+        days
+    ) + (
         " Day, "
         if days == 1
         else " Days, "
     )
-    result += str(hours) + (
+    result += str(
+        hours
+    ) + (
         " Hour, "
         if hours == 1
         else " Hours, "
     )
-    result += str(minutes) + (
+    result += str(
+        minutes
+    ) + (
         " Minute, "
         if minutes == 1
         else " Minutes, "
     )
-    result += str(seconds) + (
+    result += str(
+        seconds
+    ) + (
         " Second."
         if seconds == 1
         else " Seconds."
@@ -63,27 +89,42 @@ async def countdown_to_datetime(
 
 @lru_cache
 def user_expired():
-    return pydb.get_key("EXP_DT") or {}
+    return (
+        pydb.get_key(
+            "EXP_DT"
+        )
+        or {}
+    )
 
 
 def set_expired_days(
-    user_id: Optional[int],
+    user_id: Optional[
+        int
+    ],
     duration,
 ):
     days_in_month = 1
     if duration <= 12:
-        days_in_month = 30 * duration
+        days_in_month = (
+            30 * duration
+        )
 
     expire_date = datetime.now(
         tz
-    ).replace(microsecond=0).replace(
+    ).replace(
+        microsecond=0
+    ).replace(
         tzinfo=None
     ) + timedelta(
         days=days_in_month
     )
     exp = user_expired()
     exp.update(
-        {user_id: str(expire_date)}
+        {
+            user_id: str(
+                expire_date
+            )
+        }
     )
     return pydb.set_key(
         "EXP_DT",
@@ -101,7 +142,9 @@ def set_expired_days(
 async def get_expired_date(
     user_id,
 ) -> str:
-    exp = pydb.get_key("EXP_DT")
+    exp = pydb.get_key(
+        "EXP_DT"
+    )
     if exp:
         xx = user_expired().get(
             int(user_id)
@@ -118,7 +161,9 @@ async def get_expired_date(
         )
         expired = yy - datetime.now(
             tz
-        ).replace(tzinfo=None)
+        ).replace(
+            tzinfo=None
+        )
         return (
             yy,
             await countdown_to_datetime(
@@ -133,8 +178,12 @@ def rem_expired(
 ):
     exp = user_expired()
     if exp.get(user_id):
-        del exp[int(user_id)]
-        return pydb.set_key(
-            "EXP_DT",
-            exp,
+        del exp[
+            int(user_id)
+        ]
+        return (
+            pydb.set_key(
+                "EXP_DT",
+                exp,
+            )
         )

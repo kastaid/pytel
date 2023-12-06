@@ -6,19 +6,27 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 import textwrap
-from datetime import datetime
-from os import getpid, close, execvp
+from datetime import (
+    datetime,)
+from os import (
+    getpid,
+    close,
+    execvp,)
 from platform import (
     python_version,
     freedesktop_os_release,
     uname,)
-from sys import executable
-from textwrap import indent
+from sys import (
+    executable,)
+from textwrap import (
+    indent,)
 from time import time
-from typing import Optional
+from typing import (
+    Optional,)
 import packaging
 import psutil
-from cpuinfo import get_cpu_info
+from cpuinfo import (
+    get_cpu_info,)
 from git import (
     __version__ as git_ver,
     Repo,)
@@ -28,13 +36,16 @@ from git.exc import (
     NoSuchPathError,)
 from pkg_resources import (
     get_distribution,)
-from pyrogram import __version__
+from pyrogram import (
+    __version__,)
 from pyrogram.types import (
     InlineQueryResultArticle,
     InputTextMessageContent,
     CallbackQuery,)
-from speedtest import Speedtest
-from version import __version__ as b_ver
+from speedtest import (
+    Speedtest,)
+from version import (
+    __version__ as b_ver,)
 from . import (
     ChatSendMediaForbidden,
     ChatSendInlineForbidden,
@@ -79,7 +90,9 @@ async def _er_iping(
     #    await lock.acquire()
     start_pyro = time()
     await client.invoke(
-        Ping(ping_id=client.rnd_id())
+        Ping(
+            ping_id=client.rnd_id()
+        )
     )
     #    lock.release()
     p1 = time()
@@ -97,10 +110,16 @@ async def _er_iping(
     d1 = time()
     delay_ping = f"{str(round((start_delay - d1) * -50, 2))}"
     # OS
-    lsb = freedesktop_os_release()
-    my_cpuinfo = get_cpu_info()
+    lsb = (
+        freedesktop_os_release()
+    )
+    my_cpuinfo = (
+        get_cpu_info()
+    )
     cpuin = textwrap.shorten(
-        my_cpuinfo["brand_raw"],
+        my_cpuinfo[
+            "brand_raw"
+        ],
         width=100,
     )
     text = f"""
@@ -117,15 +136,23 @@ async def _er_iping(
     return str(text)
 
 
-def _ialive() -> Optional[str]:
+def _ialive() -> (
+    Optional[str]
+):
     LAYER = layer
     my_uptime = time_formatter(
-        (time() - start_time) * 1000
+        (
+            time()
+            - start_time
+        )
+        * 1000
     )
     unam = uname()
     time_stamp = datetime.now(
         tz
-    ).strftime("%A, %I:%M:%S %p UTC%z")
+    ).strftime(
+        "%A, %I:%M:%S %p UTC%z"
+    )
     text_active = "<i>“We are connected on the inside.”</i>\n"
     text_active += "----------------------------------------\n"
     text_active += (
@@ -142,17 +169,23 @@ def _ialive() -> Optional[str]:
     )
     text_active += (
         "› <code>Python:</code> <code>"
-        + str(python_version())
+        + str(
+            python_version()
+        )
         + "</code> \n"
     )
     text_active += (
         "› <code>Packaging:</code> <code>"
-        + str(packaging.__version__)
+        + str(
+            packaging.__version__
+        )
         + "</code> \n"
     )
     text_active += (
         "› <code>Pyrogram:</code> <code>"
-        + str(__version__)
+        + str(
+            __version__
+        )
         + "</code> \n"
     )
     text_active += (
@@ -192,7 +225,9 @@ def _ialive() -> Optional[str]:
     text_active += (
         "<b>Licensed under</b>\n"
         + "<b><a href='https://opensource.org/license/agpl-v3/>'>"
-        + str(__license__)
+        + str(
+            __license__
+        )
         + "</a></b>\n"
     )
     wrp = indent(
@@ -204,7 +239,10 @@ def _ialive() -> Optional[str]:
 
 
 @pytel.instruction(
-    ["speedtest", "speed"],
+    [
+        "speedtest",
+        "speed",
+    ],
     outgoing=True,
 )
 async def _speedtest_net(
@@ -219,8 +257,12 @@ async def _speedtest_net(
     test.download()
     test.upload()
     test.results.share()
-    result = test.results.dict()
-    path = result["share"]
+    result = (
+        test.results.dict()
+    )
+    path = result[
+        "share"
+    ]
     string_speed = f"""
 ➲ <b><i>SPEEDTEST INFO</i></b>
 ┠ <b>Upload:</b> <code>{size_bytes(result['upload'] / 8)}/s</code>
@@ -252,13 +294,17 @@ async def _speedtest_net(
             photo=path,
             caption=string_speed,
         )
-        return await _try_purged(x, 1.5)
+        return await _try_purged(
+            x, 1.5
+        )
     except ChatSendMediaForbidden:
         await client.send_message(
             message.chat.id,
             text=string_speed,
         )
-        return await _try_purged(x, 1.5)
+        return await _try_purged(
+            x, 1.5
+        )
 
 
 @pytel.instruction(
@@ -275,24 +321,46 @@ async def _speedtest_net(
     supergroups=False,
     disable_errors=True,
 )
-async def _iping(client, message):
+async def _iping(
+    client, message
+):
     if client:
-        users = client.me.id
-    if client not in pytel._client:
-        client.append(client)
-        pytel.append(client)
-        pytl.append(client)
+        users = (
+            client.me.id
+        )
     if (
-        message.command[0] == "ping"
+        client
+        not in pytel._client
+    ):
+        client.append(
+            client
+        )
+        pytel.append(
+            client
+        )
+        pytl.append(
+            client
+        )
+    if (
+        message.command[
+            0
+        ]
+        == "ping"
         or "pong"
     ):
-        plugins_n = "ping"
+        plugins_n = (
+            "ping"
+        )
         try:
             _ = await client.get_inline_bot_results(
                 pytel_tgb.me.username,
                 plugins_n,
             )
-            for name in _.results:
+            for (
+                name
+            ) in (
+                _.results
+            ):
                 try:
                     await message.reply_inline_bot_result(
                         _.query_id,
@@ -302,10 +370,8 @@ async def _iping(client, message):
                         users
                     )
                 except ChatSendInlineForbidden:
-                    txt = (
-                        await _er_iping(
-                            client
-                        )
+                    txt = await _er_iping(
+                        client
                     )
                     await client.send_message(
                         message.chat.id,
@@ -325,7 +391,9 @@ async def _iping(client, message):
                 text=txt,
                 disable_web_page_preview=True,
             )
-            await _try_purged(message)
+            await _try_purged(
+                message
+            )
             return
         return await _try_purged(
             message
@@ -346,24 +414,46 @@ async def _iping(client, message):
     supergroups=False,
     disable_errors=True,
 )
-async def _ialv(client, message):
+async def _ialv(
+    client, message
+):
     if client:
-        users = client.me.id
-    if client not in pytel._client:
-        client.append(client)
-        pytel.append(client)
-        pytl.append(client)
+        users = (
+            client.me.id
+        )
     if (
-        message.command[0] == "alive"
+        client
+        not in pytel._client
+    ):
+        client.append(
+            client
+        )
+        pytel.append(
+            client
+        )
+        pytl.append(
+            client
+        )
+    if (
+        message.command[
+            0
+        ]
+        == "alive"
         or "on"
     ):
-        plugins_n = "alive"
+        plugins_n = (
+            "alive"
+        )
         try:
             _ = await client.get_inline_bot_results(
                 pytel_tgb.me.username,
                 plugins_n,
             )
-            for name in _.results:
+            for (
+                name
+            ) in (
+                _.results
+            ):
                 try:
                     await message.reply_inline_bot_result(
                         _.query_id,
@@ -373,7 +463,9 @@ async def _ialv(client, message):
                         users
                     )
                 except ChatSendInlineForbidden:
-                    text = _ialive()
+                    text = (
+                        _ialive()
+                    )
                     await client.send_message(
                         message.chat.id,
                         text=text,
@@ -385,13 +477,17 @@ async def _ialv(client, message):
             )
             return
         except ChatSendInlineForbidden:
-            text = _ialive()
+            text = (
+                _ialive()
+            )
             await client.send_message(
                 message.chat.id,
                 text=text,
                 disable_web_page_preview=True,
             )
-            await _try_purged(message)
+            await _try_purged(
+                message
+            )
             return
         return await _try_purged(
             message
@@ -399,25 +495,33 @@ async def _ialv(client, message):
 
 
 @pytel_tgb.on_callback_query(
-    filters.regex(r"stat\((.+)\)")
+    filters.regex(
+        r"stat\((.+)\)"
+    )
 )
 async def _systats_callback(
     client,
     cq: CallbackQuery,
 ):
-    stat = cq.matches[0].group(1)
+    stat = cq.matches[
+        0
+    ].group(1)
     if stat == "usage":
         try:
             UPLOAD = size_bytes(
                 psutil.net_io_counters().bytes_sent
             )
-        except BaseException:
+        except (
+            BaseException
+        ):
             UPLOAD = 0
         try:
             DOWN = size_bytes(
                 psutil.net_io_counters().bytes_recv
             )
-        except BaseException:
+        except (
+            BaseException
+        ):
             DOWN = 0
         try:
             workdir = psutil.disk_usage(
@@ -432,7 +536,9 @@ async def _systats_callback(
             FREE = size_bytes(
                 workdir.free
             )
-        except BaseException:
+        except (
+            BaseException
+        ):
             TOTAL = 0
             USED = 0
             FREE = 0
@@ -440,22 +546,22 @@ async def _systats_callback(
             cpu_freq = (
                 psutil.cpu_freq().current
             )
-            if cpu_freq >= 1000:
-                cpu_freq = (
-                    "{}GHz".format(
-                        round(
-                            cpu_freq
-                            / 1000,
-                            2,
-                        )
+            if (
+                cpu_freq
+                >= 1000
+            ):
+                cpu_freq = "{}GHz".format(
+                    round(
+                        cpu_freq
+                        / 1000,
+                        2,
                     )
                 )
             else:
-                cpu_freq = (
-                    "{}MHz".format(
-                        round(
-                            cpu_freq, 2
-                        )
+                cpu_freq = "{}MHz".format(
+                    round(
+                        cpu_freq,
+                        2,
                     )
                 )
             CPU = "{}% ({}) {}".format(
@@ -463,31 +569,51 @@ async def _systats_callback(
                 psutil.cpu_count(),
                 cpu_freq,
             )
-        except BaseException:
+        except (
+            BaseException
+        ):
             try:
                 CPU = "{}%".format(
                     psutil.cpu_percent()
                 )
             except BaseException:
-                CPU = "0%"
+                CPU = (
+                    "0%"
+                )
         try:
             ram = (
                 psutil.virtual_memory()
             )
             RAM = "{} | {}%".format(
-                size_bytes(ram.total),
-                ram.percent or 0,
+                size_bytes(
+                    ram.total
+                ),
+                ram.percent
+                or 0,
             )
-        except BaseException:
-            RAM = "0 | 0%"
+        except (
+            BaseException
+        ):
+            RAM = (
+                "0 | 0%"
+            )
         try:
-            swap = psutil.swap_memory()
-            SWAP = "{} | {}%".format(
-                size_bytes(swap.total),
-                swap.percent or 0,
+            swap = (
+                psutil.swap_memory()
             )
-        except BaseException:
-            SWAP = "0 | 0%"
+            SWAP = "{} | {}%".format(
+                size_bytes(
+                    swap.total
+                ),
+                swap.percent
+                or 0,
+            )
+        except (
+            BaseException
+        ):
+            SWAP = (
+                "0 | 0%"
+            )
 
         stts = STATISTIC_PYTEL.format(
             UPLOAD,
@@ -507,18 +633,36 @@ async def _systats_callback(
 
     elif stat == "db":
         try:
-            used: int = pydb.sizes
-        except BaseException:
+            used: int = (
+                pydb.sizes
+            )
+        except (
+            BaseException
+        ):
             used = 0
         try:
-            c_keys = len(pydb.keys())
-        except BaseException:
+            c_keys = len(
+                pydb.keys()
+            )
+        except (
+            BaseException
+        ):
             c_keys = "0"
         try:
-            for x in pydb.keys():
-                contents = len(x)
-        except BaseException:
-            contents = "0"
+            for (
+                x
+            ) in (
+                pydb.keys()
+            ):
+                contents = len(
+                    x
+                )
+        except (
+            BaseException
+        ):
+            contents = (
+                "0"
+            )
 
         sz = f"{size_bytes(used)}"
         d_b = STATISTIC_DB.format(
@@ -535,13 +679,19 @@ async def _systats_callback(
 
 
 @pytel_tgb.on_inline_query(
-    filters.regex("^ping")
+    filters.regex(
+        "^ping"
+    )
 )
 async def _ping_inline(
     client,
     cq: CallbackQuery,
 ):
-    txt = await _er_iping(client)
+    txt = (
+        await _er_iping(
+            client
+        )
+    )
     rpm = [
         [
             buttons(
@@ -560,7 +710,9 @@ async def _ping_inline(
             ),
         ],
     ]
-    with suppress(QueryIdInvalid):
+    with suppress(
+        QueryIdInvalid
+    ):
         await client.answer_inline_query(
             cq.id,
             is_personal=True,
@@ -583,7 +735,9 @@ async def _ping_inline(
 
 
 @pytel_tgb.on_inline_query(
-    filters.regex("^alive")
+    filters.regex(
+        "^alive"
+    )
 )
 async def _alive_inline(
     client,
@@ -614,7 +768,9 @@ async def _alive_inline(
             ),
         ],
     ]
-    with suppress(QueryIdInvalid):
+    with suppress(
+        QueryIdInvalid
+    ):
         await client.answer_inline_query(
             cq.id,
             is_personal=True,
@@ -652,7 +808,9 @@ async def restarting(
     try:
         import psutil
 
-        proc = psutil.Process(getpid())
+        proc = psutil.Process(
+            getpid()
+        )
         for _ in (
             proc.open_files()
             + proc.connections()
@@ -690,9 +848,15 @@ async def push_heroku(
         )
         return
     try:
-        conn = herogay.heroku()
-        app = conn.app(herogay.name)
-    except Exception as err:
+        conn = (
+            herogay.heroku()
+        )
+        app = conn.app(
+            herogay.name
+        )
+    except (
+        Exception
+    ) as err:
         if (
             str(err)
             .lower()
@@ -704,26 +868,42 @@ async def push_heroku(
         else:
             msg = err
         nn = rf"""<b>Heroku Error:</b> <pre>{msg}</pre>"""
-        await eor(message, text=nn)
+        await eor(
+            message,
+            text=nn,
+        )
         return
     force_pull()
     nn = """Update Successfully !!
 Pushing to heroku container...
 """
-    xy = await eor(message, text=nn)
+    xy = await eor(
+        message, text=nn
+    )
 
     url = app.git_url.replace(
         "https://",
         f"https://api:{herogay.api}@",
     )
-    if "heroku" in repo.remotes:
-        remote = repo.remote("heroku")
-        remote.set_url(url)
+    if (
+        "heroku"
+        in repo.remotes
+    ):
+        remote = (
+            repo.remote(
+                "heroku"
+            )
+        )
+        remote.set_url(
+            url
+        )
     else:
         remote = repo.create_remote(
             "heroku", url
         )
-    with suppress(Exception):
+    with suppress(
+        Exception
+    ):
         remote.push(
             refspec="HEAD:refs/heads/main",
             force=True,
@@ -733,25 +913,41 @@ Pushing to heroku container...
         order_by="created_at",
         sort="desc",
     )[0]
-    if build.status != "succeeded":
+    if (
+        build.status
+        != "succeeded"
+    ):
         pp = """`Pushing Failed...`
 Try again later or view logs for more info."""
-        await eor(xy, text=pp)
+        await eor(
+            xy, text=pp
+        )
 
 
 @pytel.instruction(
-    ["dupdate", "dherokup"],
+    [
+        "dupdate",
+        "dherokup",
+    ],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
-    ["update", "herokup"],
+    [
+        "update",
+        "herokup",
+    ],
     outgoing=True,
 )
-async def _updates(client, message):
-    if message.sender_chat:
+async def _updates(
+    client, message
+):
+    if (
+        message.sender_chat
+    ):
         return
     if (
-        client.me.id in list(_supersu)
+        client.me.id
+        in list(_supersu)
         or OWNER_ID
     ):
         y = await message.reply(
@@ -760,7 +956,9 @@ async def _updates(client, message):
     else:
         return
 
-    if _PYTEL_UPDATE.locked():
+    if (
+        _PYTEL_UPDATE.locked()
+    ):
         await message.reply(
             "Please wait until --**updating**-- done."
         )
@@ -784,9 +982,7 @@ async def _updates(client, message):
                 text=f"Early failure : <pre>{err}</pre>",
             )
             return
-        except (
-            InvalidGitRepositoryError
-        ):
+        except InvalidGitRepositoryError:
             await eor(
                 x,
                 text="`Invalid git repository.`",
@@ -795,10 +991,14 @@ async def _updates(client, message):
         (
             stdout,
             stderr,
-        ) = RunningCommand("git pull")
+        ) = RunningCommand(
+            "git pull"
+        )
         if (
             "Already up to date."
-            in str(stdout)
+            in str(
+                stdout
+            )
         ):
             text = "It's already up-to date!"
             await eor(
@@ -809,7 +1009,9 @@ async def _updates(client, message):
 
         elif (
             "From https://github.com/kastaid/pytel"
-            in str(stderr)
+            in str(
+                stderr
+            )
         ):
             yy = await eor(
                 x,
@@ -823,18 +1025,26 @@ async def _updates(client, message):
             return
 
         if (
-            message.command[0]
+            message.command[
+                0
+            ]
             == "update"
             or "dupdate"
         ):
-            await restarting(yy)
+            await restarting(
+                yy
+            )
             return
         elif (
-            message.command[0]
+            message.command[
+                0
+            ]
             == "herokup"
             or "dherokup"
         ):
-            await push_heroku(yy, repo)
+            await push_heroku(
+                yy, repo
+            )
             return
 
 
@@ -846,15 +1056,20 @@ async def _updates(client, message):
     ["restart"],
     outgoing=True,
 )
-async def _restart(client, message):
+async def _restart(
+    client, message
+):
     if (
-        client.me.id in list(_supersu)
+        client.me.id
+        in list(_supersu)
         or OWNER_ID
     ):
         x = await message.reply(
             "Restarting client, wait for 1 minutes.."
         )
-        await restarting(x)
+        await restarting(
+            x
+        )
         return
     else:
         await message.reply(
@@ -870,7 +1085,9 @@ async def _restart(client, message):
     ],
     outgoing=True,
 )
-async def _repo(client, message):
+async def _repo(
+    client, message
+):
     text = "[{}](https://github.com/kastaid/pytel) : source code.".format(
         "Click Here",
     )
@@ -878,7 +1095,9 @@ async def _repo(client, message):
         text=text,
         parse_mode=ParseMode.MARKDOWN,
     )
-    await _try_purged(message, 1.5)
+    await _try_purged(
+        message, 1.5
+    )
 
 
 plugins_helper["bot"] = {

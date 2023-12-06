@@ -6,10 +6,14 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
 import asyncio
-from os import remove, cpu_count
-from platform import uname
+from os import (
+    remove,
+    cpu_count,)
+from platform import (
+    uname,)
 from re import match
-from pyrogram import Client
+from pyrogram import (
+    Client,)
 from pyrogram.enums.chat_member_status import (
     ChatMemberStatus,)
 from pyrogram.errors import (
@@ -44,10 +48,16 @@ from . import (
 
 APP_VERSION = f"PYTEL-Premium v.{pyver}"
 WORKERS = min(
-    64, (cpu_count() or 0) + 8
+    64,
+    (cpu_count() or 0)
+    + 8,
 )
-SYSTEM_VERSION = f"{uname().system}"
-DEVICE_MODEL = f"{uname().machine}"
+SYSTEM_VERSION = (
+    f"{uname().system}"
+)
+DEVICE_MODEL = (
+    f"{uname().machine}"
+)
 _MEMBERS = [
     ChatMemberStatus.OWNER,
     ChatMemberStatus.ADMINISTRATOR,
@@ -82,32 +92,51 @@ _STRING_TEXT = """
     & filters.private
     & ~filters.forwarded
 )
-async def _asst_home(client, message):
-    user_id = message.from_user.id
+async def _asst_home(
+    client, message
+):
+    user_id = (
+        message.from_user.id
+    )
     try:
         mem = await client.get_chat_member(
             _chpytel[0],
             user_id=user_id,
         )
-        is_join = mem.status in _MEMBERS
+        is_join = (
+            mem.status
+            in _MEMBERS
+        )
     except UserNotParticipant:
         is_join = False
-    except Exception as excp:
+    except (
+        Exception
+    ) as excp:
         is_join = False
-        send_log.exception(excp)
+        send_log.exception(
+            excp
+        )
 
     fullname = await mentioned(
-        client, user_id, use_html=True
+        client,
+        user_id,
+        use_html=True,
     )
     username = (
         f"@{message.from_user.username}"
         if message.from_user.username
         else "None"
     )
-    if not checks_users(user_id):
-        added_users(user_id)
+    if not checks_users(
+        user_id
+    ):
+        added_users(
+            user_id
+        )
         await client.send_message(
-            int(OWNER_ID),
+            int(
+                OWNER_ID
+            ),
             Assistant.start_text_from_user.format(
                 fullname,
                 user_id,
@@ -136,29 +165,46 @@ async def _asst_home(client, message):
 
 
 @pytel_tgb.on_callback_query(
-    filters.regex(r"subs_(.*?)")
+    filters.regex(
+        r"subs_(.*?)"
+    )
 )
 async def _cb_asst_subs(
-    client, cq: CallbackQuery
+    client,
+    cq: CallbackQuery,
 ):
     subs_done = match(
-        r"subs_done", cq.data
+        r"subs_done",
+        cq.data,
     )
     if subs_done:
-        user_id = cq.from_user.id
+        user_id = (
+            cq.from_user.id
+        )
         try:
             mem = await client.get_chat_member(
-                _chpytel[0],
+                _chpytel[
+                    0
+                ],
                 user_id=user_id,
             )
             is_join = (
-                mem.status in _MEMBERS
+                mem.status
+                in _MEMBERS
             )
         except UserNotParticipant:
-            is_join = False
-        except Exception as excp:
-            is_join = False
-            send_log.exception(excp)
+            is_join = (
+                False
+            )
+        except (
+            Exception
+        ) as excp:
+            is_join = (
+                False
+            )
+            send_log.exception(
+                excp
+            )
         if not is_join:
             text = """
 Anda masih belum bergabung di Channel PYTEL-Premium 🇮🇩
@@ -185,28 +231,39 @@ Harap bergabung terlebih dahulu.
 
 
 @pytel_tgb.on_callback_query(
-    filters.regex(r"start_(.*?)")
+    filters.regex(
+        r"start_(.*?)"
+    )
 )
 async def _cb_asst(
-    client, cq: CallbackQuery
+    client,
+    cq: CallbackQuery,
 ):
     start_data = match(
-        r"start_cls", cq.data
+        r"start_cls",
+        cq.data,
     )
     start_hm = match(
-        r"start_home", cq.data
+        r"start_home",
+        cq.data,
     )
     start_prvc = match(
-        r"start_privacy", cq.data
+        r"start_privacy",
+        cq.data,
     )
     start_buy = match(
-        r"start_buy", cq.data
+        r"start_buy",
+        cq.data,
     )
     if start_data:
-        with suppress(BaseException):
+        with suppress(
+            BaseException
+        ):
             await cq.message.delete()
     elif start_hm:
-        with suppress(BaseException):
+        with suppress(
+            BaseException
+        ):
             await cq.message.edit(
                 Assistant.START.format(
                     await mentioned(
@@ -219,14 +276,18 @@ async def _cb_asst(
                 reply_markup=Assistant.home_buttons,
             )
     elif start_prvc:
-        with suppress(BaseException):
+        with suppress(
+            BaseException
+        ):
             await cq.message.edit(
                 Assistant.PRIVACY,
                 disable_web_page_preview=True,
                 reply_markup=Assistant.privacy_buttons,
             )
     elif start_buy:
-        with suppress(BaseException):
+        with suppress(
+            BaseException
+        ):
             await cq.message.edit(
                 Assistant.BUY,
                 disable_web_page_preview=True,
@@ -235,30 +296,40 @@ async def _cb_asst(
 
 
 @pytel_tgb.on_callback_query(
-    filters.regex(r"payment_(.*?)")
+    filters.regex(
+        r"payment_(.*?)"
+    )
 )
 async def _cb_asst_payment(
-    client, cq: CallbackQuery
+    client,
+    cq: CallbackQuery,
 ):
     payment_cancel = (
         payment_dana
     ) = match(
-        r"payment_cancel", cq.data
+        r"payment_cancel",
+        cq.data,
     )
     payment_dana = match(
-        r"payment_dana", cq.data
+        r"payment_dana",
+        cq.data,
     )
     payment_confirm_dana = match(
-        r"payment_confirm_dana", cq.data
+        r"payment_confirm_dana",
+        cq.data,
     )
     payment_ovo = match(
-        r"payment_ovo", cq.data
+        r"payment_ovo",
+        cq.data,
     )
     payment_confirm_ovo = match(
-        r"payment_confirm_ovo", cq.data
+        r"payment_confirm_ovo",
+        cq.data,
     )
     if payment_cancel:
-        with suppress(BaseException):
+        with suppress(
+            BaseException
+        ):
             await cq.message.delete()
             await cq.message.reply(
                 Assistant.START.format(
@@ -274,10 +345,14 @@ async def _cb_asst_payment(
             )
             return
     elif payment_dana:
-        with suppress(BaseException):
+        with suppress(
+            BaseException
+        ):
             await cq.message.delete()
             await client.send_photo(
-                int(cq.from_user.id),
+                int(
+                    cq.from_user.id
+                ),
                 photo="resources/payments/DANA.jpg",
                 caption=Assistant.PAYMENT_DANA.format(
                     await mentioned(
@@ -290,7 +365,9 @@ async def _cb_asst_payment(
                 protect_content=False,
             )
     elif payment_ovo:
-        with suppress(BaseException):
+        with suppress(
+            BaseException
+        ):
             await cq.message.delete()
             await cq.message.reply(
                 Assistant.PAYMENT_OVO.format(
@@ -304,7 +381,9 @@ async def _cb_asst_payment(
                 reply_markup=Assistant.payment_ovo_buttons,
             )
     elif payment_confirm_dana:
-        with suppress(BaseException):
+        with suppress(
+            BaseException
+        ):
             if (
                 not cq.from_user.username
             ):
@@ -317,7 +396,9 @@ async def _cb_asst_payment(
                 )
                 return
             else:
-                if cq.from_user.id:
+                if (
+                    cq.from_user.id
+                ):
                     await cq.message.delete()
                     await payment_listener(
                         client,
@@ -327,7 +408,9 @@ async def _cb_asst_payment(
                     )
 
     elif payment_confirm_ovo:
-        with suppress(BaseException):
+        with suppress(
+            BaseException
+        ):
             if (
                 not cq.from_user.username
             ):
@@ -339,7 +422,9 @@ async def _cb_asst_payment(
                 )
                 return
             else:
-                if cq.from_user.id:
+                if (
+                    cq.from_user.id
+                ):
                     await cq.message.delete()
                     await payment_listener(
                         client,
@@ -350,7 +435,10 @@ async def _cb_asst_payment(
 
 
 async def payment_listener(
-    client, m: Message, cq, via: str
+    client,
+    m: Message,
+    cq,
+    via: str,
 ):
     if via == "DANA":
         r = await cq.message.reply(
@@ -372,7 +460,9 @@ async def payment_listener(
                 & filters.private,
                 timeout=600,
             )
-        except asyncio.TimeoutError:
+        except (
+            asyncio.TimeoutError
+        ):
             await cq.message.reply(
                 Assistant.TEXT_PAYMENT_NOTIFY.format(
                     await mentioned(
@@ -398,15 +488,19 @@ dari sini.
             f_dana = await client.download_media(
                 msg.photo
             )
-            bkt_dana = (
-                await client.send_photo(
-                    int(OWNER_ID),
-                    photo=f_dana,
-                )
+            bkt_dana = await client.send_photo(
+                int(
+                    OWNER_ID
+                ),
+                photo=f_dana,
             )
-            remove(f_dana)
+            remove(
+                f_dana
+            )
             await client.send_message(
-                int(OWNER_ID),
+                int(
+                    OWNER_ID
+                ),
                 Assistant.NOTIFY_BUYER.format(
                     cq.from_user.id,
                     cq.from_user.username,
@@ -458,7 +552,9 @@ Tekan Confirm, lalu kirim bukti pembayaran Anda.
                 & filters.private,
                 timeout=300,
             )
-        except asyncio.TimeoutError:
+        except (
+            asyncio.TimeoutError
+        ):
             await cq.message.reply(
                 Assistant.TEXT_PAYMENT_NOTIFY.format(
                     await mentioned(
@@ -484,15 +580,17 @@ dari sini.
             f_ovo = await client.download_media(
                 msg.photo
             )
-            bkt_ovo = (
-                await client.send_photo(
-                    int(OWNER_ID),
-                    photo=f_ovo,
-                )
+            bkt_ovo = await client.send_photo(
+                int(
+                    OWNER_ID
+                ),
+                photo=f_ovo,
             )
             remove(f_ovo)
             await client.send_message(
-                int(OWNER_ID),
+                int(
+                    OWNER_ID
+                ),
                 Assistant.NOTIFY_BUYER.format(
                     cq.from_user.id,
                     cq.from_user.username,
@@ -525,25 +623,34 @@ Tekan Confirm, lalu kirim bukti pembayaran Anda.
 
 
 @pytel_tgb.on_callback_query(
-    filters.regex(r"generate_(.*?)")
+    filters.regex(
+        r"generate_(.*?)"
+    )
 )
 async def _cb_asst_generate(
-    client, cq: CallbackQuery
+    client,
+    cq: CallbackQuery,
 ):
     gen_back = match(
-        r"generate_back", cq.data
+        r"generate_back",
+        cq.data,
     )
     generate_session = match(
-        r"generate_session", cq.data
+        r"generate_session",
+        cq.data,
     )
     generate_tutorial = match(
-        r"generate_tutorial", cq.data
+        r"generate_tutorial",
+        cq.data,
     )
     generate_continue = match(
-        r"generate_continue", cq.data
+        r"generate_continue",
+        cq.data,
     )
     if gen_back:
-        with suppress(Exception):
+        with suppress(
+            Exception
+        ):
             await cq.message.delete()
             await cq.message.reply(
                 Assistant.START.format(
@@ -558,11 +665,19 @@ async def _cb_asst_generate(
                 reply_markup=Assistant.home_buttons,
             )
             return
-    elif generate_session:
-        with suppress(Exception):
-            user_id = cq.from_user.id
+    elif (
+        generate_session
+    ):
+        with suppress(
+            Exception
+        ):
+            user_id = (
+                cq.from_user.id
+            )
             if not user_expired().get(
-                int(user_id)
+                int(
+                    user_id
+                )
             ):
                 text = """
 Mohon maaf, Anda bukan bagian dari PYTEL-Premium.
@@ -589,8 +704,12 @@ Silahkan lakukan Transaksi jika ingin membuat String Session.
                 )
                 return
 
-    elif generate_tutorial:
-        with suppress(Exception):
+    elif (
+        generate_tutorial
+    ):
+        with suppress(
+            Exception
+        ):
             await cq.message.delete()
             await cq.message.reply(
                 AstGenerate.GEN_TUTORIAL,
@@ -598,15 +717,24 @@ Silahkan lakukan Transaksi jika ingin membuat String Session.
                 reply_markup=AstGenerate.gen_tu_buttons,
             )
 
-    elif generate_continue:
-        with suppress(Exception):
+    elif (
+        generate_continue
+    ):
+        with suppress(
+            Exception
+        ):
             await cq.message.delete()
         try:
             await _generate_pytel_session(
-                client, cq.message
+                client,
+                cq.message,
             )
-        except Exception as excp:
-            send_log.exception(excp)
+        except (
+            Exception
+        ) as excp:
+            send_log.exception(
+                excp
+            )
 
 
 async def _generate_pytel_session(
@@ -618,10 +746,14 @@ async def _generate_pytel_session(
         "Kirimkan <u><b>API_ID</b></u> Anda.\n\nTekan /cancel untuk membatalkan proses.",
         filters=filters.text,
     )
-    if await cancelled(api_id_msg):
+    if await cancelled(
+        api_id_msg
+    ):
         return
     try:
-        api_id = int(api_id_msg.text)
+        api_id = int(
+            api_id_msg.text
+        )
     except ValueError:
         await api_id_msg.reply(
             "<u><b>API_ID</b></u> tidak valid (harus angka semua).\nSilahkan ulang kembali!",
@@ -634,9 +766,13 @@ async def _generate_pytel_session(
         "Kirimkan <u><b>API_HASH</b></u> Anda.\n\nTekan /cancel untuk membatalkan proses.",
         filters=filters.text,
     )
-    if await cancelled(api_hash_msg):
+    if await cancelled(
+        api_hash_msg
+    ):
         return
-    api_hash = api_hash_msg.text
+    api_hash = (
+        api_hash_msg.text
+    )
     phone_number_msg = await bot.ask(
         user_id,
         "Kirimkan <u><b>No. Handphone</b></u> (Telegram) Anda.\n<b>Jangan Lupa Pakai Code Negara.\n<b>Contoh:</b> <code>+62</code>\n\nTekan /cancel untuk membatalkan proses.",
@@ -646,8 +782,12 @@ async def _generate_pytel_session(
         phone_number_msg
     ):
         return
-    phone_number = phone_number_msg.text
-    if not phone_number.startswith("+"):
+    phone_number = (
+        phone_number_msg.text
+    )
+    if not phone_number.startswith(
+        "+"
+    ):
         await api_id_msg.reply(
             "<u><b>No. Handphone</b></u> tidak valid (harus menggunakan code negara).\nSilahkan ulang kembali!",
             quote=True,
@@ -706,16 +846,16 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
             phone_code_msg
         ):
             return
-    except asyncio.TimeoutError:
+    except (
+        asyncio.TimeoutError
+    ):
         await msg.reply(
             "Limit waktu telah habis dalam 5 menit.\nSilahkan ulang kembali!",
             reply_markup=AstGenerate.try_buttons,
         )
         return
-    phone_code = (
-        phone_code_msg.text.replace(
-            " ", ""
-        )
+    phone_code = phone_code_msg.text.replace(
+        " ", ""
     )
     is_pw = False
     try:
@@ -724,13 +864,17 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
             code.phone_code_hash,
             phone_code,
         )
-    except PhoneCodeInvalid:
+    except (
+        PhoneCodeInvalid
+    ):
         await msg.reply(
             "Kode OTP tidak valid.\nSilahkan ulang kembali!",
             reply_markup=AstGenerate.try_buttons,
         )
         return
-    except PhoneCodeExpired:
+    except (
+        PhoneCodeExpired
+    ):
         await msg.reply(
             "Kode OTP telah kadaluarsa.\nSilahkan ulang kembali!",
             reply_markup=AstGenerate.try_buttons,
@@ -745,14 +889,18 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
                 filters=filters.text,
                 timeout=300,
             )
-        except asyncio.TimeoutError:
+        except (
+            asyncio.TimeoutError
+        ):
             await msg.reply(
                 "Limit waktu telah habis dalam 5 menit.\nSilahkan ulang kembali!",
                 reply_markup=AstGenerate.try_buttons,
             )
             return
         try:
-            password = two_step_msg.text
+            password = (
+                two_step_msg.text
+            )
             await client.check_password(
                 password=password
             )
@@ -776,9 +924,13 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
     if is_pw:
         psw = pw
     else:
-        psw = "Tidak ada."
+        psw = (
+            "Tidak ada."
+        )
 
-    with suppress(KeyError):
+    with suppress(
+        KeyError
+    ):
         await client.send_message(
             "me",
             text=_STRING_TEXT.format(
@@ -799,7 +951,10 @@ kamu harus kirim dengan spasi <code>1 2 3 4 5</code>
 
 
 async def cancelled(msg):
-    if "/cancel" in msg.text:
+    if (
+        "/cancel"
+        in msg.text
+    ):
         await msg.reply(
             "Pembuatan String Telah Dibatalkan!\n\nTekan /start untuk memulai."
         )

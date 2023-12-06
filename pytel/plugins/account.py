@@ -5,10 +5,18 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from asyncio import sleep, gather
+from asyncio import (
+    sleep,
+    gather,)
+from datetime import (
+    datetime,)
+from html import escape
 from io import BytesIO
 from PIL import Image
-from pyrogram import enums
+from pyrogram import (
+    enums,)
+from pyrogram.raw.functions.account import (
+    GetAuthorizations,)
 from pyrogram.raw.functions.messages import (
     DeleteHistory,
     StartBot,)
@@ -36,13 +44,23 @@ from . import (
 async def _online_offline(
     client, message
 ):
-    mode = message.text.split(None, 1)
+    mode = message.text.split(
+        None, 1
+    )
     if not mode:
         return
 
-    if mode[1] in ["online", "on"]:
-        user_lock = client.me.id
-        if user_lock in SETMODE_OFFLINE:
+    if mode[1] in [
+        "online",
+        "on",
+    ]:
+        user_lock = (
+            client.me.id
+        )
+        if (
+            user_lock
+            in SETMODE_OFFLINE
+        ):
             SETMODE_OFFLINE.discard(
                 user_lock
             )
@@ -68,7 +86,9 @@ async def _online_offline(
                         offline=False
                     ),
                 )
-            except Exception:
+            except (
+                Exception
+            ):
                 SETMODE_ONLINE.discard(
                     user_lock
                 )
@@ -78,8 +98,13 @@ async def _online_offline(
         "offline",
         "off",
     ]:
-        user_lock = client.me.id
-        if user_lock in SETMODE_ONLINE:
+        user_lock = (
+            client.me.id
+        )
+        if (
+            user_lock
+            in SETMODE_ONLINE
+        ):
             SETMODE_ONLINE.discard(
                 user_lock
             )
@@ -87,7 +112,9 @@ async def _online_offline(
             SETMODE_OFFLINE.add(
                 user_lock
             )
-        status = "Offline"
+        status = (
+            "Offline"
+        )
         await eor(
             message,
             text=f"✅ Success, ur status is <u>{status}</u>",
@@ -105,7 +132,9 @@ async def _online_offline(
                         offline=True
                     ),
                 )
-            except Exception:
+            except (
+                Exception
+            ):
                 SETMODE_OFFLINE.discard(
                     user_lock
                 )
@@ -113,17 +142,29 @@ async def _online_offline(
 
 
 @pytel.instruction(
-    ["setname", "setbio"],
+    [
+        "setname",
+        "setbio",
+    ],
     outgoing=True,
 )
 async def _set_name_bio(
     client, message
 ):
     args = get_text(
-        message, normal=True
+        message,
+        normal=True,
     )
-    if message.command[0] == "setbio":
-        if len(args) >= 70:
+    if (
+        message.command[
+            0
+        ]
+        == "setbio"
+    ):
+        if (
+            len(args)
+            >= 70
+        ):
             await eor(
                 message,
                 text="Max 70 Characters.",
@@ -138,15 +179,27 @@ async def _set_name_bio(
             text=text,
         )
         return
-    if message.command[0] == "setname":
+    if (
+        message.command[
+            0
+        ]
+        == "setname"
+    ):
         try:
-            name = args.split(None, 1)
-            first_name = name[0]
-            last_name = name[1]
+            name = args.split(
+                None, 1
+            )
+            first_name = name[
+                0
+            ]
+            last_name = (
+                name[1]
+            )
         except Exception:
             example = f"<b><u>Example:</b></u>\n<code>{random_prefixies(px)}setname first_name last_name</code>"
             await eor(
-                message, text=example
+                message,
+                text=example,
             )
             return
 
@@ -171,11 +224,21 @@ async def _set_name_bio(
     ["mydialogs"],
     outgoing=True,
 )
-async def _my_dialogs(client, message):
+async def _my_dialogs(
+    client, message
+):
     x = await eor(
-        message, text="Please wait..."
+        message,
+        text="Please wait...",
     )
-    u, g, sg, c, b, admin_chat = (
+    (
+        u,
+        g,
+        sg,
+        c,
+        b,
+        admin_chat,
+    ) = (
         0,
         0,
         0,
@@ -183,7 +246,9 @@ async def _my_dialogs(client, message):
         0,
         0,
     )
-    adm = await client.get_me()
+    adm = (
+        await client.get_me()
+    )
     async for dialog in client.get_dialogs():
         if (
             dialog.chat.type
@@ -206,14 +271,20 @@ async def _my_dialogs(client, message):
         ):
             sg = sg + 1
             user_s = await dialog.chat.get_member(
-                int(adm.id)
+                int(
+                    adm.id
+                )
             )
-            if user_s.status in (
-                enums.ChatMemberStatus.OWNER,
-                enums.ChatMemberStatus.ADMINISTRATOR,
+            if (
+                user_s.status
+                in (
+                    enums.ChatMemberStatus.OWNER,
+                    enums.ChatMemberStatus.ADMINISTRATOR,
+                )
             ):
                 admin_chat = (
-                    admin_chat + 1
+                    admin_chat
+                    + 1
                 )
         elif (
             dialog.chat.type
@@ -229,7 +300,9 @@ async def _my_dialogs(client, message):
  ├ <b>Are in:</b> {} Channels.
  └ <b>Admin in:</b> {} Chats.
 """
-    with suppress(Exception):
+    with suppress(
+        Exception
+    ):
         await eor(
             x,
             text=text.format(
@@ -244,7 +317,10 @@ async def _my_dialogs(client, message):
 
 
 @pytel.instruction(
-    ["dlimit", "devlimit"],
+    [
+        "dlimit",
+        "devlimit",
+    ],
     supersu=["PYTEL"],
 )
 @pytel.instruction(
@@ -254,9 +330,13 @@ async def _my_dialogs(client, message):
     ],
     outgoing=True,
 )
-async def _limited(client, message):
+async def _limited(
+    client, message
+):
     spambot = "@SpamBot"
-    await client.unblock_user(spambot)
+    await client.unblock_user(
+        spambot
+    )
     x = await eor(
         message,
         text="Getting information...",
@@ -275,7 +355,10 @@ async def _limited(client, message):
     await sleep(1.6)
     status = await client.get_messages(
         spambot,
-        resp.updates[1].message.id + 1,
+        resp.updates[
+            1
+        ].message.id
+        + 1,
     )
     await eor(
         x,
@@ -294,8 +377,12 @@ async def _limited(client, message):
     ["setpp", "setpfp"],
     outgoing=True,
 )
-async def _set_pfp(client, message):
-    rp = message.reply_to_message
+async def _set_pfp(
+    client, message
+):
+    rp = (
+        message.reply_to_message
+    )
     text = "Successfuly updates ur profile photo."
     if not rp:
         await eor(
@@ -308,25 +395,34 @@ async def _set_pfp(client, message):
         text="Processing...",
     )
     if rp.photo:
-        file = (
-            await client.download_media(
-                rp.photo,
-                file_name="cache/",
-            )
+        file = await client.download_media(
+            rp.photo,
+            file_name="cache/",
         )
         try:
             await gather(
                 client.set_profile_photo(
                     photo=file
                 ),
-                eor(x, text=text),
+                eor(
+                    x,
+                    text=text,
+                ),
             )
-            (Rooters / file).unlink(
+            (
+                Rooters
+                / file
+            ).unlink(
                 missing_ok=True
             )
             return
-        except BaseException as excp:
-            (Rooters / file).unlink(
+        except (
+            BaseException
+        ) as excp:
+            (
+                Rooters
+                / file
+            ).unlink(
                 missing_ok=True
             )
             client.send_log.exception(
@@ -339,25 +435,34 @@ async def _set_pfp(client, message):
             return
 
     elif rp.video:
-        file = (
-            await client.download_media(
-                rp.video,
-                file_name="cache/",
-            )
+        file = await client.download_media(
+            rp.video,
+            file_name="cache/",
         )
         try:
             await gather(
                 client.set_profile_photo(
                     photo=file
                 ),
-                eor(x, text=text),
+                eor(
+                    x,
+                    text=text,
+                ),
             )
-            (Rooters / file).unlink(
+            (
+                Rooters
+                / file
+            ).unlink(
                 missing_ok=True
             )
             return
-        except BaseException as excp:
-            (Rooters / file).unlink(
+        except (
+            BaseException
+        ) as excp:
+            (
+                Rooters
+                / file
+            ).unlink(
                 missing_ok=True
             )
             client.send_log.exception(
@@ -373,37 +478,57 @@ async def _set_pfp(client, message):
         rp.sticker
         and rp.sticker.file_id
     ):
-        file = (
-            await client.download_media(
-                rp.sticker.file_id,
-                file_name="cache/",
-            )
+        file = await client.download_media(
+            rp.sticker.file_id,
+            file_name="cache/",
         )
         if file.endswith(
             ".webp"
-        ) or file.endswith(".png"):
+        ) or file.endswith(
+            ".png"
+        ):
             img = Image.open(
                 file
-            ).convert("RGBA")
+            ).convert(
+                "RGBA"
+            )
             img.save(
                 "sticker.png",
                 format="PNG",
                 optimize=True,
             )
             conv = "sticker.png"
-            with open(conv, "rb") as f:
-                pp = f.read()
-            file_io = BytesIO(pp)
+            with open(
+                conv,
+                "rb",
+            ) as f:
+                pp = (
+                    f.read()
+                )
+            file_io = (
+                BytesIO(
+                    pp
+                )
+            )
             await gather(
                 client.set_profile_photo(
                     photo=file_io
                 ),
-                eor(x, text=text),
+                eor(
+                    x,
+                    text=text,
+                ),
             )
-            (Rooters / file).unlink(
+            (
+                Rooters
+                / file
+            ).unlink(
                 missing_ok=True
             )
-            (Rooters / conv).unlink(
+            (
+                Rooters
+                / conv
+            ).unlink(
                 missing_ok=True
             )
             return
@@ -422,28 +547,41 @@ async def _set_pfp(client, message):
         or "video"
         in rp.document.mime_type
     ):
-        file = (
-            await client.download_media(
-                rp.document.file_id,
-                file_name="cache/",
-            )
+        file = await client.download_media(
+            rp.document.file_id,
+            file_name="cache/",
         )
-        with open(file, "rb") as f:
+        with open(
+            file, "rb"
+        ) as f:
             pp = f.read()
-        file_io = BytesIO(pp)
+        file_io = (
+            BytesIO(pp)
+        )
         try:
             await gather(
                 client.set_profile_photo(
                     photo=file_io
                 ),
-                eor(x, text=text),
+                eor(
+                    x,
+                    text=text,
+                ),
             )
-            (Rooters / file).unlink(
+            (
+                Rooters
+                / file
+            ).unlink(
                 missing_ok=True
             )
             return
-        except BaseException as excp:
-            (Rooters / file).unlink(
+        except (
+            BaseException
+        ) as excp:
+            (
+                Rooters
+                / file
+            ).unlink(
                 missing_ok=True
             )
             client.send_log.exception(
@@ -470,8 +608,12 @@ async def _set_pfp(client, message):
     ],
     outgoing=True,
 )
-async def _rempfp(client, message):
-    msg = get_args(message)
+async def _rempfp(
+    client, message
+):
+    msg = get_args(
+        message
+    )
     if msg == "all":
         limit = 0
     elif msg.isdigit():
@@ -491,8 +633,12 @@ async def _rempfp(client, message):
             await client.delete_profile_photos(
                 photos.file_id
             )
-            count = count + 1
-        except Exception as excp:
+            count = (
+                count + 1
+            )
+        except (
+            Exception
+        ) as excp:
             client.send_log.exception(
                 excp
             )
@@ -520,15 +666,19 @@ async def _rempfp(client, message):
     [
         "block",
         "blocked",
-        "unblocked",
-        "unblock",
     ],
     outgoing=True,
 )
-async def _blocked(client, message):
+async def _blocked(
+    client, message
+):
     user_id = await extract_user(
         client, message
     )
+    _blk = [
+        "block",
+        "blocked",
+    ]
     x = await eor(
         message,
         text="Checking...",
@@ -539,13 +689,18 @@ async def _blocked(client, message):
             text="Unable to find user.",
         )
         return
-    if user_id == client.me.id:
+    if (
+        user_id
+        == client.me.id
+    ):
         await eor(
             x,
             text="It's urself.",
         )
         return
-    elif user_id in list(_supersu):
+    elif user_id in list(
+        _supersu
+    ):
         await eor(
             x,
             text="That's My Developer.",
@@ -553,12 +708,12 @@ async def _blocked(client, message):
         return
 
     mention = (
-        await client.get_users(user_id)
-    ).mention
-    user_info = (
-        await client.resolve_peer(
+        await client.get_users(
             user_id
         )
+    ).mention
+    user_info = await client.resolve_peer(
+        user_id
     )
     x = await eor(
         x,
@@ -566,9 +721,10 @@ async def _blocked(client, message):
     )
     try:
         if (
-            message.command[0]
-            == "block"
-            or "blocked"
+            message.command[
+                0
+            ]
+            in _blk
             or "dblock"
         ):
             await client.invoke(
@@ -581,8 +737,80 @@ async def _blocked(client, message):
                 text=f"{mention} has been blocked.",
             )
             return
-        elif (
-            message.command[0][0] == "u"
+    except (
+        BaseException
+    ) as excp:
+        await eor(
+            x,
+            text=f"Exception: {excp}",
+        )
+        return
+
+
+@pytel.instruction(
+    ["dunblock"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
+    [
+        "unblock",
+        "unblocked",
+    ],
+    outgoing=True,
+)
+async def _unblocked(
+    client, message
+):
+    user_id = await extract_user(
+        client, message
+    )
+    _ublk = [
+        "unblock",
+        "unblocked",
+    ]
+    x = await eor(
+        message,
+        text="Checking...",
+    )
+    if not user_id:
+        await eor(
+            x,
+            text="Unable to find user.",
+        )
+        return
+    if (
+        user_id
+        == client.me.id
+    ):
+        await eor(
+            x,
+            text="It's urself.",
+        )
+        return
+    elif user_id in list(
+        _supersu
+    ):
+        await eor(
+            x,
+            text="That's My Developer.",
+        )
+        return
+
+    mention = (
+        await client.get_users(
+            user_id
+        )
+    ).mention
+    x = await eor(
+        x,
+        text="Unlocking user...",
+    )
+    try:
+        if (
+            message.command[
+                0
+            ]
+            in _ublk
         ):
             await client.unblock_user(
                 user_id
@@ -592,14 +820,124 @@ async def _blocked(client, message):
                 text=f"{mention} has been unblocked.",
             )
             return
-    except BaseException as excp:
+    except (
+        BaseException
+    ) as excp:
         await eor(
-            x, text=f"Exception: {excp}"
+            x,
+            text=f"Exception: {excp}",
         )
         return
 
 
-plugins_helper["account"] = {
+@pytel.instruction(
+    ["dsessions"],
+    supersu=["PYTEL"],
+)
+@pytel.instruction(
+    ["sessions"],
+    outgoing=True,
+)
+async def _sessions_list(
+    client, message
+):
+    formatted_sessions = (
+        []
+    )
+    sessions = (
+        await client.invoke(
+            GetAuthorizations()
+        )
+    ).authorizations
+    for (
+        num,
+        session,
+    ) in enumerate(
+        sessions, 1
+    ):
+        formatted_sessions.append(
+            (
+                "<b>{num}</b>. <b>{model}</b> on <code>{platform}</code>\n"
+                "<b>Hash:</b> {hash}\n"
+                "<b>App name:</b> <code>{app_name}</code> v.{version}\n"
+                "<b>Created (last activity):</b> {created} ({last_activity})\n"
+                "<b>IP and location: </b>: <code>{ip}</code> (<i>{location}</i>)\n"
+                "<b>Official status:</b> <code>{official}</code>\n"
+                "<b>2FA accepted:</b> <code>{password_pending}</code>\n"
+                "<b>Can accept calls / secret chats:</b> {calls} / {secret_chats}"
+            ).format(
+                num=num,
+                model=escape(
+                    session.device_model
+                ),
+                platform=escape(
+                    session.platform
+                    if session.platform
+                    != ""
+                    else "unknown platform"
+                ),
+                hash=session.hash,
+                app_name=escape(
+                    session.app_name
+                ),
+                version=escape(
+                    session.app_version
+                    if session.app_version
+                    != ""
+                    else "unknown"
+                ),
+                created=datetime.fromtimestamp(
+                    session.date_created
+                ).isoformat(),
+                last_activity=datetime.fromtimestamp(
+                    session.date_active
+                ).isoformat(),
+                ip=session.ip,
+                location=session.country,
+                official="✅"
+                if session.official_app
+                else "❌️",
+                password_pending="❌️️"
+                if session.password_pending
+                else "✅",
+                calls="❌️️"
+                if session.call_requests_disabled
+                else "✅",
+                secret_chats="❌️️"
+                if session.encrypted_requests_disabled
+                else "✅",
+            )
+        )
+    answer = "<b>Active sessions at your account:</b>\n\n"
+    chunk = []
+    for (
+        s
+    ) in formatted_sessions:
+        chunk.append(s)
+        if (
+            len(chunk)
+            == 5
+        ):
+            answer += "\n\n".join(
+                chunk
+            )
+            await message.reply(
+                answer
+            )
+            answer = ""
+            chunk.clear()
+    if len(chunk):
+        await message.reply(
+            "\n\n".join(
+                chunk
+            )
+        )
+    await message.delete()
+
+
+plugins_helper[
+    "account"
+] = {
     f"{random_prefixies(px)}block / blocked [id/username/reply to user]": "To blocked users.",
     f"{random_prefixies(px)}unblock / unblocked [id/username/reply to user]": "To unblocked users.",
     f"{random_prefixies(px)}limit / limited": "To check ur account is limited or not.",
@@ -608,5 +946,6 @@ plugins_helper["account"] = {
     f"{random_prefixies(px)}setbio [text/reply]": "To updates ur bio. ( Max 70 characters )",
     f"{random_prefixies(px)}setname [first name] [last name]": "To updates ur name.",
     f"{random_prefixies(px)}setpfp / setpp [reply photo/video/sticker]": "To updates ur profile photo.",
+    f"{random_prefixies(px)}sessions": "List all sessions on your account.",
     f"{random_prefixies(px)}rempfp [count: integer/all]": "To removing profile photo.",
 }

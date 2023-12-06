@@ -21,13 +21,22 @@ from . import (
     ["lyrics"],
     outgoing=True,
 )
-async def _lyrics(client, message):
-    search_text = get_text(message)
+async def _lyrics(
+    client, message
+):
+    search_text = (
+        get_text(message)
+    )
 
     if not search_text:
         return False
 
-    if len(message.command) <= 0:
+    if (
+        len(
+            message.command
+        )
+        <= 0
+    ):
         return False
 
     else:
@@ -41,18 +50,26 @@ async def _lyrics(client, message):
                 search_text
             )
             songs = _.getting_my_lyrics(
-                "{}".format(cx)
+                "{}".format(
+                    cx
+                )
             )
             rxv = (
-                songs.pop("title")
+                songs.pop(
+                    "title"
+                )
                 + "\n\n"
-                + songs.pop("lyrics")
+                + songs.pop(
+                    "lyrics"
+                )
             )
             cxz = rxv.replace(
                 "\n",
                 "\n",
             )
-            MyLyrics = "{}".format(cxz)
+            MyLyrics = "{}".format(
+                cxz
+            )
             await client.send_message(
                 message.chat.id,
                 text=MyLyrics,
@@ -61,9 +78,13 @@ async def _lyrics(client, message):
                     message
                 ),
             )
-            await _try_purged(kz, 2.5)
+            await _try_purged(
+                kz, 2.5
+            )
             return
-        except BaseException:
+        except (
+            BaseException
+        ):
             await eor(
                 kz,
                 text="No results found.",
@@ -71,6 +92,8 @@ async def _lyrics(client, message):
             return
 
 
-plugins_helper["lyrics"] = {
+plugins_helper[
+    "lyrics"
+] = {
     f"{random_prefixies(px)}lyrics [artist - song]": "Get song lyrics.",
 }

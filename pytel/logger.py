@@ -6,21 +6,32 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 try:
-    from datetime import date
+    from datetime import (
+        date,)
     from logging import (
-        CRITICAL, DEBUG, ERROR, WARNING,
-        Handler, LogRecord, __file__,
-        basicConfig, currentframe,
-        disable, getLogger,)
-    from sys import stderr
-    from typing import Union
-    from loguru import logger as pylog
+        CRITICAL, DEBUG,
+        ERROR, WARNING,
+        Handler,
+        LogRecord,
+        __file__,
+        basicConfig,
+        currentframe,
+        disable,
+        getLogger,)
+    from sys import (
+        stderr,)
+    from typing import (
+        Union,)
+    from loguru import (
+        logger as pylog,)
 except KeyboardInterrupt:
     print(
         "Fie Logger Received interrupt while import"
     )
 except Exception as excp:
-    print(f"ERROR: {excp}")
+    print(
+        f"ERROR: {excp}"
+    )
 
 pylog.remove(0)
 pylog.add(
@@ -46,7 +57,9 @@ pylog.opt(
 )
 
 
-class InterceptHandler(Handler):
+class InterceptHandler(
+    Handler
+):
     """
     param record: record to logs.
     """
@@ -62,8 +75,12 @@ class InterceptHandler(Handler):
             ] = pylog.level(
                 record.levelname
             ).name
-        except ValueError:
-            level = record.levelno
+        except (
+            ValueError
+        ):
+            level = (
+                record.levelno
+            )
         (
             frame,
             depth,
@@ -88,35 +105,59 @@ class InterceptHandler(Handler):
 
 
 disable(DEBUG)
-getLogger("asyncio").setLevel(ERROR)
-getLogger("pyrogram").setLevel(ERROR)
-getLogger("pyrogram.client").setLevel(
-    WARNING
-)
-getLogger("instagrapi").setLevel(ERROR)
+getLogger(
+    "asyncio"
+).setLevel(ERROR)
+getLogger(
+    "pyrogram"
+).setLevel(ERROR)
+getLogger(
+    "pyrogram.client"
+).setLevel(WARNING)
+getLogger(
+    "instagrapi"
+).setLevel(ERROR)
 getLogger(
     "pyrogram.session.auth"
 ).setLevel(CRITICAL)
 getLogger(
     "pyrogram.session.session"
 ).setLevel(CRITICAL)
-getLogger("urllib3").disabled = True
-getLogger("pytgcalls").disabled = True
+getLogger(
+    "urllib3"
+).disabled = True
+getLogger(
+    "pytgcalls"
+).disabled = True
 getLogger(
     "urllib3.connectionpool"
 ).disabled = True
-getLogger("io").disabled = True
-pylog.disable("instagrapi")
-pylog.disable("pytgcalls")
-pylog.disable("pyrogram.dispatcher")
-pylog.disable("pyrogram.connection")
+getLogger(
+    "io"
+).disabled = True
+pylog.disable(
+    "instagrapi"
+)
+pylog.disable(
+    "pytgcalls"
+)
+pylog.disable(
+    "pyrogram.dispatcher"
+)
+pylog.disable(
+    "pyrogram.connection"
+)
 pylog.disable(
     "pyrogram.raw.types.BadMsgNotification"
 )
-pylog.disable("asyncio.base_events")
+pylog.disable(
+    "asyncio.base_events"
+)
 
 basicConfig(
-    handlers=[InterceptHandler()],
+    handlers=[
+        InterceptHandler()
+    ],
     level=0,
     force=True,
 )

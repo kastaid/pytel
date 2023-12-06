@@ -6,13 +6,15 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 import os
-from platform import uname
+from platform import (
+    uname,)
 from sys import exit
 from time import sleep
-from version import __version__
+from version import (
+    __version__,)
 
 APP_VERSION = (
-    f"PYTEL-Premium {__version__}"
+    f"PYTEL-v.{__version__}"
 )
 DEVICE_MODEL = f"{uname().machine}"
 SYSTEM_VERSION = f"{uname().system}"
@@ -98,7 +100,8 @@ def get_api_id_and_hash():
 def session():
     try:
         loading()
-        from pyrogram import Client
+        from pyrogram import (
+            Client,)
 
         x = "\bFound an existing installation of Pyrogram...\nSuccessfully Imported.\n\n"
     except BaseException:
@@ -109,7 +112,8 @@ def session():
             "pip install pyrogram tgcrypto"
         )
         x = "\bDone. Installed and imported Pyrogram."
-        from pyrogram import Client
+        from pyrogram import (
+            Client,)
 
     clear_screen()
     print(PYTEL)

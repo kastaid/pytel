@@ -15,10 +15,16 @@ Checker: Path = Path(
     __file__
 ).parent.parent
 
-directory = ["config.env"]
+directory = [
+    "config.env"
+]
 for b in directory:
-    for a in (Checker / b).rglob("*.*"):
-        if not a.exists():
+    for a in (
+        Checker / b
+    ).rglob("*.*"):
+        if (
+            not a.exists()
+        ):
             send_log.warning(
                 "File config.env not found !!"
             )
@@ -46,6 +52,10 @@ try:
             "Please fill in the Instagram variables correctly."
         )
         exit(1)
-except ImportError as excp:
-    send_log.exception(excp)
+except (
+    ImportError
+) as excp:
+    send_log.exception(
+        excp
+    )
     exit(1)

@@ -6,9 +6,15 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 from asyncio import sleep
-from contextlib import suppress
-from re import findall, search
-from typing import Optional, Union, Any
+from contextlib import (
+    suppress,)
+from re import (
+    findall,
+    search,)
+from typing import (
+    Optional,
+    Union,
+    Any,)
 from pyrogram.enums import (
     MessageEntityType,)
 from pyrogram.errors.exceptions.bad_request_400 import (
@@ -16,19 +22,28 @@ from pyrogram.errors.exceptions.bad_request_400 import (
 from pyrogram.raw.types import (
     InputPeerChat,
     InputPeerChannel,)
-from pyrogram.types import Message
-from pytelibs import _supersu
-from ...config import OWNER_ID
+from pyrogram.types import (
+    Message,)
+from pytelibs import (
+    _supersu,)
+from ...config import (
+    OWNER_ID,)
 
 
 async def _try_purged(
     message: Message,
-    timer: Union[int, float] = None,
+    timer: Union[
+        int, float
+    ] = None,
     revoke: bool = True,
 ):
-    with suppress(BaseException):
+    with suppress(
+        BaseException
+    ):
         if timer:
-            await sleep(timer)
+            await sleep(
+                timer
+            )
             await message.delete(
                 revoke=revoke
             )
@@ -46,10 +61,18 @@ async def eor(
     *args,
     **kwargs,
 ) -> Message:
-    chunks, chunks1 = [], []
-    chunk, chunk1 = "", ""
+    chunks, chunks1 = (
+        [],
+        [],
+    )
+    chunk, chunk1 = (
+        "",
+        "",
+    )
     try:
-        if message.sender_chat:
+        if (
+            message.sender_chat
+        ):
             try:
                 return await message.edit_text(
                     text=text,
@@ -70,7 +93,9 @@ async def eor(
                     )
                 return
 
-        reply = message.reply_to_message
+        reply = (
+            message.reply_to_message
+        )
         if reply:
             try:
                 if (
@@ -82,12 +107,10 @@ async def eor(
                         **kwargs,
                     )
             except BaseException:
-                return (
-                    await message.reply(
-                        text=text,
-                        *args,
-                        **kwargs,
-                    )
+                return await message.reply(
+                    text=text,
+                    *args,
+                    **kwargs,
                 )
                 with suppress(
                     Exception
@@ -100,7 +123,9 @@ async def eor(
             try:
                 if (
                     message.from_user.id
-                    in list(_supersu)
+                    in list(
+                        _supersu
+                    )
                     or OWNER_ID
                 ):
                     return await message.reply(
@@ -122,12 +147,10 @@ async def eor(
                         **kwargs,
                     )
             except BaseException:
-                return (
-                    await message.reply(
-                        text=text,
-                        *args,
-                        **kwargs,
-                    )
+                return await message.reply(
+                    text=text,
+                    *args,
+                    **kwargs,
                 )
                 with suppress(
                     Exception
@@ -137,13 +160,13 @@ async def eor(
                     )
                 return
 
-            if message.from_user:
-                return (
-                    await message.reply(
-                        text=text,
-                        *args,
-                        **kwargs,
-                    )
+            if (
+                message.from_user
+            ):
+                return await message.reply(
+                    text=text,
+                    *args,
+                    **kwargs,
                 )
             else:
                 return await message.edit_text(
@@ -164,7 +187,9 @@ async def eor(
             try:
                 if (
                     message.from_user.id
-                    in list(_supersu)
+                    in list(
+                        _supersu
+                    )
                     or OWNER_ID
                 ):
                     return await message.reply(
@@ -198,21 +223,38 @@ async def eor(
                     )
                 return
 
-    except MessageTooLong:
+    except (
+        MessageTooLong
+    ):
         for line in text:
             if (
-                len(chunk) + len(line)
+                len(
+                    chunk
+                )
+                + len(
+                    line
+                )
                 > 4096
             ):
-                chunks.append(chunk)
-                chunk = ""
+                chunks.append(
+                    chunk
+                )
+                chunk = (
+                    ""
+                )
             chunk += line
-        chunks.append(chunk)
+        chunks.append(
+            chunk
+        )
         try:
-            for chunk in chunks:
+            for (
+                chunk
+            ) in chunks:
                 try:
                     a = await message.reply(
-                        text=str(chunk),
+                        text=str(
+                            chunk
+                        ),
                         reply_to_message_id=replied(
                             message
                         ),
@@ -222,8 +264,12 @@ async def eor(
                 except MessageTooLong:
                     for line1 in chunk1:
                         if (
-                            len(chunk1)
-                            + len(line1)
+                            len(
+                                chunk1
+                            )
+                            + len(
+                                line1
+                            )
                             > 4096
                         ):
                             chunks1.append(
@@ -235,9 +281,7 @@ async def eor(
                         chunk1
                     )
                     try:
-                        for (
-                            chunk1
-                        ) in chunks1:
+                        for chunk1 in chunks1:
                             b = await message.reply(
                                 text=str(
                                     chunk1
@@ -248,9 +292,7 @@ async def eor(
                                 *args,
                                 **kwargs,
                             )
-                    except (
-                        BaseException
-                    ) as excp:
+                    except BaseException as excp:
                         return await message.edit_text(
                             text=f"Error: {excp}",
                             *args,
@@ -264,7 +306,9 @@ async def eor(
                                 message
                             )
                         return b
-        except BaseException as excp:
+        except (
+            BaseException
+        ) as excp:
             return await message.edit_text(
                 text=f"Error: {excp}",
                 *args,
@@ -272,7 +316,9 @@ async def eor(
             )
 
         else:
-            with suppress(Exception):
+            with suppress(
+                Exception
+            ):
                 await _try_purged(
                     message
                 )
@@ -281,11 +327,19 @@ async def eor(
 
 def get_text(
     message: Message,
-    save_link: Optional[bool] = None,
-    get_phone: Optional[bool] = None,
-    normal: Optional[bool] = None,
+    save_link: Optional[
+        bool
+    ] = None,
+    get_phone: Optional[
+        bool
+    ] = None,
+    normal: Optional[
+        bool
+    ] = None,
 ) -> Optional[str]:
-    if message.reply_to_message:
+    if (
+        message.reply_to_message
+    ):
         text_ = (
             message.reply_to_message.text
             or message.reply_to_message.caption
@@ -293,7 +347,9 @@ def get_text(
         )
     else:
         text_ = (
-            message.text.split(None, 1)[
+            message.text.split(
+                None, 1
+            )[
                 1
             ]
             if len(
@@ -310,9 +366,13 @@ def get_text(
             # find phone number
             numb = findall(
                 "\\+?[1-9][0-9]{7,14}",
-                str(text_),
+                str(
+                    text_
+                ),
             )
-            for n in numb:
+            for (
+                n
+            ) in numb:
                 if not n:
                     return False
                 if not n.startswith(
@@ -320,7 +380,9 @@ def get_text(
                 ):
                     return f"+{int(n)}"
                 else:
-                    return str(n)
+                    return str(
+                        n
+                    )
 
         elif save_link:
             # find link
@@ -328,15 +390,23 @@ def get_text(
                 "http[s]?://(?:[ a-zA-Z]|[0-9]|[$-_@.&+]|(?: %[0-9a-fA-F][0-9a-fA-F]))+",
                 text_,
             )
-            for x in link:
+            for (
+                x
+            ) in link:
                 if x:
-                    return str(x)
+                    return str(
+                        x
+                    )
                 else:
                     return False
         else:
             if normal:
-                return text_
-            return str(text_.lower())
+                return (
+                    text_
+                )
+            return str(
+                text_.lower()
+            )
 
 
 def replied(
@@ -344,13 +414,19 @@ def replied(
 ):
     reply_id = None
 
-    if message.reply_to_message:
+    if (
+        message.reply_to_message
+    ):
         reply_id = (
             message.reply_to_message.id
         )
 
-    elif message.sender_chat:
-        reply_id = message.id
+    elif (
+        message.sender_chat
+    ):
+        reply_id = (
+            message.id
+        )
 
     return reply_id
 
@@ -359,7 +435,9 @@ def attr_file(
     message: Message,
 ):
     if message.media:
-        for message_type in (
+        for (
+            message_type
+        ) in (
             "photo",
             "animation",
             "audio",
@@ -384,16 +462,24 @@ def attr_file(
                     "message_type",
                     message_type,
                 )
-                return obj
+                return (
+                    obj
+                )
 
 
 async def extract_userid(
-    client, message, text: str
+    client,
+    message,
+    text: str,
 ):
-    def is_int(text: str):
+    def is_int(
+        text: str,
+    ):
         try:
             int(text)
-        except ValueError:
+        except (
+            ValueError
+        ):
             return False
         return True
 
@@ -402,7 +488,9 @@ async def extract_userid(
     if is_int(text):
         return int(text)
 
-    entities = message.entities
+    entities = (
+        message.entities
+    )
     if len(entities) < 2:
         try:
             users = (
@@ -411,27 +499,48 @@ async def extract_userid(
                 )
             ).id
             return users
-        except BaseException:
-            text = "-100" + text
+        except (
+            BaseException
+        ):
+            text = (
+                "-100"
+                + text
+            )
             try:
                 peer = await client.resolve_peer(
-                    int(text)
+                    int(
+                        text
+                    )
                 )
             except BaseException:
-                return False
+                return (
+                    False
+                )
 
             if isinstance(
                 peer,
-                (InputPeerChat,),
+                (
+                    InputPeerChat,
+                ),
             ):
-                users = peer.chat_id
-                return users
+                users = (
+                    peer.chat_id
+                )
+                return (
+                    users
+                )
             if isinstance(
                 peer,
-                (InputPeerChannel,),
+                (
+                    InputPeerChannel,
+                ),
             ):
-                users = peer.channel_id
-                return users
+                users = (
+                    peer.channel_id
+                )
+                return (
+                    users
+                )
 
     entity = entities[1]
     if (
@@ -439,28 +548,43 @@ async def extract_userid(
         == MessageEntityType.MENTION
     ):
         return (
-            await client.get_users(text)
+            await client.get_users(
+                text
+            )
         ).id
     if (
         entity.type
         == MessageEntityType.TEXT_MENTION
     ):
-        return entity.user.id
+        return (
+            entity.user.id
+        )
     return False
 
 
 async def user_and_reason(
-    client, message, sender_chat=False
+    client,
+    message,
+    sender_chat=False,
 ) -> Any:
     args, text = (
         message.text.strip().split(),
         message.text,
     )
-    user, reason = None, None
-    if message.reply_to_message:
-        reply = message.reply_to_message
+    user, reason = (
+        None,
+        None,
+    )
+    if (
+        message.reply_to_message
+    ):
+        reply = (
+            message.reply_to_message
+        )
         # reply to a message and no reason
-        if not reply.from_user:
+        if (
+            not reply.from_user
+        ):
             if (
                 reply.sender_chat
                 and reply.sender_chat
@@ -471,36 +595,62 @@ async def user_and_reason(
                     reply.sender_chat.id
                 )
             else:
-                return False, False
+                return (
+                    False,
+                    False,
+                )
         else:
-            id_ = reply.from_user.id
+            id_ = (
+                reply.from_user.id
+            )
 
-        if len(args) != 2:
+        if (
+            len(args)
+            != 2
+        ):
             reason = None
         else:
             reason = text.split(
                 None, 1
-            )[1]
-        return id_, reason
+            )[
+                1
+            ]
+        return (
+            id_,
+            reason,
+        )
 
     # not reply and not reason
     if len(args) == 2:
-        user = text.split(None, 1)[1]
+        user = (
+            text.split(
+                None, 1
+            )[1]
+        )
         return (
             await extract_userid(
-                client, message, user
+                client,
+                message,
+                user,
             ),
             None,
         )
 
     # not reply and reason
     if len(args) > 2:
-        user, reason = text.split(
+        (
+            user,
+            reason,
+        ) = text.split(
             None, 2
-        )[1:]
+        )[
+            1:
+        ]
         return (
             await extract_userid(
-                client, message, user
+                client,
+                message,
+                user,
             ),
             reason,
         )
@@ -513,35 +663,66 @@ async def extract_user(
 ) -> Any:
     return (
         await user_and_reason(
-            client, message
+            client,
+            message,
         )
     )[0]
 
 
-def get_chat_ids(ct: Optional[str]):
+def get_chat_ids(
+    ct: Optional[str],
+):
     if ct.startswith(
         "100"
-    ) or ct.startswith("-100"):
+    ) or ct.startswith(
+        "-100"
+    ):
         return ct
     elif (
-        ct.startswith("https://t.me/")
-        or ct.startswith("t.me/")
-        or ct.startswith("@")
+        ct.startswith(
+            "https://t.me/"
+        )
+        or ct.startswith(
+            "t.me/"
+        )
+        or ct.startswith(
+            "@"
+        )
     ):
         if "@" in ct:
-            return str(ct)
+            return str(
+                ct
+            )
         elif "/c/" in ct:
             ct = search(
-                r"/c/(.*)/", ct
-            ) or search(r"/c/(.*)", ct)
-            return "-100" + ct.group(1)
-        elif "t.me/" in ct:
-            ct = search(
-                r"t.me/(.*)/", ct
+                r"/c/(.*)/",
+                ct,
             ) or search(
-                r"t.me/(.*)", ct
+                r"/c/(.*)",
+                ct,
             )
-            return "@" + ct.group(1)
+            return (
+                "-100"
+                + ct.group(
+                    1
+                )
+            )
+        elif (
+            "t.me/" in ct
+        ):
+            ct = search(
+                r"t.me/(.*)/",
+                ct,
+            ) or search(
+                r"t.me/(.*)",
+                ct,
+            )
+            return (
+                "@"
+                + ct.group(
+                    1
+                )
+            )
     else:
         return False
 
@@ -551,18 +732,26 @@ def get_args(
 ) -> Optional[str]:
     msg = message.text
     msg = (
-        msg.replace(" ", "", 1)
+        msg.replace(
+            " ", "", 1
+        )
         if msg[1] == " "
         else msg
     )
     split = (
         msg[1:]
-        .replace("\n", " \n")
+        .replace(
+            "\n", " \n"
+        )
         .split(" ")
     )
     if (
-        " ".join(split[1:]).strip()
+        " ".join(
+            split[1:]
+        ).strip()
         == ""
     ):
         return ""
-    return " ".join(split[1:])
+    return " ".join(
+        split[1:]
+    )

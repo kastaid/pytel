@@ -14,13 +14,18 @@ from typing import (
     Dict,
     Any,
     Optional,)
-from cachetools import cached, LRUCache
-from heroku3 import from_key
-from pymediainfo import MediaInfo
+from cachetools import (
+    cached,
+    LRUCache,)
+from heroku3 import (
+    from_key,)
+from pymediainfo import (
+    MediaInfo,)
 from ...config import (
     HEROKU_NAME,
     HEROKU_API,)
-from ...logger import pylog
+from ...logger import (
+    pylog,)
 
 
 class SaveDict(dict):
@@ -30,19 +35,31 @@ class SaveDict(dict):
         **kwargs,
     ):
         if args:
-            cdict = args[0]
+            cdict = args[
+                0
+            ]
         else:
-            cdict = kwargs
+            cdict = (
+                kwargs
+            )
         for key in cdict:
             if isinstance(
-                cdict[key],
+                cdict[
+                    key
+                ],
                 dict,
             ):
-                cdict[key] = SaveDict(
-                    cdict[key]
+                cdict[
+                    key
+                ] = SaveDict(
+                    cdict[
+                        key
+                    ]
                 )
             elif isinstance(
-                cdict[key],
+                cdict[
+                    key
+                ],
                 (
                     list,
                     tuple,
@@ -52,7 +69,9 @@ class SaveDict(dict):
                 cdict[
                     key
                 ] = self.convert_list(
-                    cdict[key]
+                    cdict[
+                        key
+                    ]
                 )
         super().__init__(
             *args,
@@ -90,34 +109,52 @@ class SaveDict(dict):
                 dict,
             ):
                 new_list.append(
-                    SaveDict(item)
+                    SaveDict(
+                        item
+                    )
                 )
             else:
-                new_list.append(item)
+                new_list.append(
+                    item
+                )
         return new_list
 
     def to_dict(
         self,
     ) -> Dict[str, Any]:
-        _dict = dict(self)
+        _dict = dict(
+            self
+        )
         for key in _dict:
             if isinstance(
-                _dict[key],
+                _dict[
+                    key
+                ],
                 SaveDict,
             ):
-                _dict[key] = _dict[
+                _dict[
+                    key
+                ] = _dict[
                     key
                 ].to_dict()
             elif isinstance(
-                _dict[key],
+                _dict[
+                    key
+                ],
                 (
                     list,
                     tuple,
                     set,
                 ),
             ):
-                new_list = []
-                for i in _dict[key]:
+                new_list = (
+                    []
+                )
+                for (
+                    i
+                ) in _dict[
+                    key
+                ]:
                     if isinstance(
                         i,
                         SaveDict,
@@ -129,7 +166,9 @@ class SaveDict(dict):
                         new_list.append(
                             i
                         )
-                _dict[key] = new_list
+                _dict[
+                    key
+                ] = new_list
         return _dict
 
     def prettify(
@@ -142,9 +181,13 @@ class SaveDict(dict):
             ensure_ascii=False,
         )
 
-    def __getattr__(self, attr) -> Any:
+    def __getattr__(
+        self, attr
+    ) -> Any:
         if attr in self:
-            return self[attr]
+            return self[
+                attr
+            ]
         raise AttributeError(
             f"Attrify has no attribute '{attr}'"
         )
@@ -152,12 +195,18 @@ class SaveDict(dict):
     def __dir__(
         self,
     ) -> List[str]:
-        mx = dict.__dir__(self)
+        mx = (
+            dict.__dir__(
+                self
+            )
+        )
         mx.extend(
             [
                 x
                 for x in self.keys()
-                if str(x).isalpha()
+                if str(
+                    x
+                ).isalpha()
             ]
         )
         return mx
@@ -166,14 +215,26 @@ class SaveDict(dict):
 class PluginsHelp(dict):
     def append(
         self,
-        obj: Optional[dict],
+        obj: Optional[
+            dict
+        ],
     ) -> None:
-        plug = list(obj.keys())[0]
+        plug = list(
+            obj.keys()
+        )[0]
         cmds = {}
-        for _ in obj[plug]:
-            name = list(_.keys())[0]
-            desc = _[name]
-            cmds[name] = desc
+        for _ in obj[
+            plug
+        ]:
+            name = list(
+                _.keys()
+            )[0]
+            desc = _[
+                name
+            ]
+            cmds[
+                name
+            ] = desc
         self[plug] = cmds
 
     @property
@@ -193,7 +254,9 @@ class PluginsHelp(dict):
 
     @property
     def value(
-        self: Optional[dict],
+        self: Optional[
+            dict
+        ],
     ):
         return [*self]
 
@@ -209,14 +272,24 @@ class MediaInformation:
         media_info = MediaInfo.parse(
             media
         )
-        for track in media_info.tracks:
+        for (
+            track
+        ) in (
+            media_info.tracks
+        ):
             if (
                 track.track_type
                 == "Video"
             ):
-                found = True
-                type_ = track.track_type
-                format_ = track.format
+                found = (
+                    True
+                )
+                type_ = (
+                    track.track_type
+                )
+                format_ = (
+                    track.format
+                )
                 duration_1 = (
                     track.duration
                 )
@@ -245,8 +318,12 @@ class MediaInformation:
                     if other_aspect_ratio_
                     else None
                 )
-                fps_ = track.frame_rate
-                fc_ = track.frame_count
+                fps_ = (
+                    track.frame_rate
+                )
+                fc_ = (
+                    track.frame_count
+                )
                 media_size_1 = (
                     track.stream_size
                 )
@@ -291,39 +368,70 @@ class MediaInformation:
 
 
 class Heroku:
-    def __init__(self) -> None:
-        self.name: str = HEROKU_NAME
-        self.api: str = HEROKU_API
+    def __init__(
+        self,
+    ) -> None:
+        self.name: str = (
+            HEROKU_NAME
+        )
+        self.api: str = (
+            HEROKU_API
+        )
 
-    def heroku(self) -> Any:
+    def heroku(
+        self,
+    ) -> Any:
         _conn = None
         try:
-            if self.is_heroku:
+            if (
+                self.is_heroku
+            ):
                 _conn = from_key(
                     self.api
                 )
-        except BaseException as err:
-            pylog.exception(err)
+        except (
+            BaseException
+        ) as err:
+            pylog.exception(
+                err
+            )
         return _conn
 
     @property
-    @cached(LRUCache(maxsize=512))
-    def stack(self) -> str:
+    @cached(
+        LRUCache(
+            maxsize=512
+        )
+    )
+    def stack(
+        self,
+    ) -> str:
         try:
             app = self.heroku().app(
                 self.name
             )
-            stack = app.info.stack.name
-        except BaseException:
-            stack = "none"
+            stack = (
+                app.info.stack.name
+            )
+        except (
+            BaseException
+        ):
+            stack = (
+                "none"
+            )
         return stack
 
     @property
-    def is_heroku(self) -> bool:
+    def is_heroku(
+        self,
+    ) -> bool:
         return bool(
-            self.api and self.name
+            self.api
+            and self.name
         )
 
 
-plugins_helper = PluginsHelp()
+plugins_helper = (
+    PluginsHelp()
+)
 herogay = Heroku()

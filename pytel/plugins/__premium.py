@@ -54,25 +54,36 @@ async def _get_status_user(
         status = (
             "VVIP"
             if from_user
-            in list(_supersu)
+            in list(
+                _supersu
+            )
             or from_user
-            == int(OWNER_ID)
+            == int(
+                OWNER_ID
+            )
             else "Customer"
         )
         (
             expired,
             time_left,
         ) = await get_expired_date(
-            int(from_user)
+            int(
+                from_user
+            )
         )
         pyprem = (
             "🟢 active-"
-            if expired and time_left
+            if expired
+            and time_left
             else "🔴 inactive-"
         )
 
         uptime = time_formatter(
-            (time() - start_time) * 1000
+            (
+                time()
+                - start_time
+            )
+            * 1000
         )
         text = f"""
 <u><b>PYTEL-Premium</b></u> 🇮🇩
@@ -110,13 +121,27 @@ async def _premium_stats(
     client, message
 ):
     if client:
-        users = client.me.id
-    if client not in pytel._client:
-        client.append(client)
-        pytel.append(client)
-        pytl.append(client)
+        users = (
+            client.me.id
+        )
     if (
-        message.command[0] == "expired"
+        client
+        not in pytel._client
+    ):
+        client.append(
+            client
+        )
+        pytel.append(
+            client
+        )
+        pytl.append(
+            client
+        )
+    if (
+        message.command[
+            0
+        ]
+        == "expired"
         or "status"
     ):
         prem_stat = "status_premium"
@@ -125,7 +150,11 @@ async def _premium_stats(
                 pytel_tgb.me.username,
                 prem_stat,
             )
-            for result in _.results:
+            for (
+                result
+            ) in (
+                _.results
+            ):
                 try:
                     await message.reply_inline_bot_result(
                         query_id=_.query_id,
@@ -154,13 +183,17 @@ async def _premium_stats(
 
 
 @pytel_tgb.on_inline_query(
-    filters.regex("status_premium")
+    filters.regex(
+        "status_premium"
+    )
 )
 async def _premstat_inline(
     client,
     cq: CallbackQuery,
 ):
-    from_user = cq.from_user.id
+    from_user = (
+        cq.from_user.id
+    )
     if from_user:
         rpm = ikmarkup(
             [
@@ -185,7 +218,9 @@ async def _premstat_inline(
         text = await _get_status_user(
             from_user
         )
-        with suppress(QueryIdInvalid):
+        with suppress(
+            QueryIdInvalid
+        ):
             await client.answer_inline_query(
                 cq.id,
                 is_personal=True,
@@ -209,8 +244,13 @@ async def _premstat_inline(
     legally_required
     & filters.private
     & filters.command(
-        ["setpremium", "setprem"],
-        prefixes=list(px),
+        [
+            "setpremium",
+            "setprem",
+        ],
+        prefixes=list(
+            px
+        ),
     )
 )
 async def _set_premium_user(
@@ -223,29 +263,43 @@ async def _set_premium_user(
     xy = await message.reply(
         text="Please wait, processing purchase data...",
     )
-    if message.reply_to_message:
+    if (
+        message.reply_to_message
+    ):
         user_id = (
             message.reply_to_message.from_user.id
         )
-        drt = message.command
-        duration = int(drt[1])
+        drt = (
+            message.command
+        )
+        duration = int(
+            drt[1]
+        )
     else:
         try:
-            m = message.command
-            usr = str(m[2])
-            duration = int(m[1])
-            user = (
-                await client.get_users(
-                    usr
-                )
+            m = (
+                message.command
             )
-        except BaseException:
+            usr = str(
+                m[2]
+            )
+            duration = (
+                int(m[1])
+            )
+            user = await client.get_users(
+                usr
+            )
+        except (
+            BaseException
+        ):
             await xy.edit_text(
                 "I can't find that user"
             )
             return
 
-        if (user is None) or (not user):
+        if (
+            user is None
+        ) or (not user):
             await xy.edit_text(
                 f"I can't find that user: {usr} ."
             )
@@ -255,14 +309,16 @@ async def _set_premium_user(
     x = await client.get_users(
         user_id
     )  # try
-    if (duration is None) or (
-        not duration
-    ):
+    if (
+        duration is None
+    ) or (not duration):
         await xy.edit_text(
             "Please fill in the nominal how many months."
         )
         return
-    if user_expired().get(int(x.id)):
+    if user_expired().get(
+        int(x.id)
+    ):
         (
             expired,
             time_left,
@@ -279,25 +335,43 @@ Want to be extended? wait until it expires.
 
 (c) @kastaid #pytel
 """
-        await xy.edit_text(asxc)
+        await xy.edit_text(
+            asxc
+        )
         return
 
     if duration == 1:
-        price = "Rp 35.000"
+        price = (
+            "Rp 35.000"
+        )
     elif duration == 2:
-        price = "Rp 70.000"
+        price = (
+            "Rp 70.000"
+        )
     elif duration == 3:
-        price = "Rp 105.000"
+        price = (
+            "Rp 105.000"
+        )
     elif duration == 4:
-        price = "Rp 140.000"
+        price = (
+            "Rp 140.000"
+        )
     elif duration == 5:
-        price = "Rp 175.000"
+        price = (
+            "Rp 175.000"
+        )
     elif duration == 6:
-        price = "Rp 210.000"
+        price = (
+            "Rp 210.000"
+        )
     elif duration == 7:
-        price = "Rp 245.000"
+        price = (
+            "Rp 245.000"
+        )
     elif duration == 8:
-        price = "Rp 280.000"
+        price = (
+            "Rp 280.000"
+        )
     else:
         await xy.edit_text(
             "Purchase a minimum of 1 month and a maximum of 8 months."
@@ -337,7 +411,9 @@ Lalu aktifkan PYTEL-Premium.
 
 (c) @kastaid #pytel
 """
-    await _try_purged(xy, 1.5)
+    await _try_purged(
+        xy, 1.5
+    )
     rpm = ikmarkup(
         [
             [
@@ -348,7 +424,9 @@ Lalu aktifkan PYTEL-Premium.
             ],
         ]
     )
-    with suppress(Exception):
+    with suppress(
+        Exception
+    ):
         yy = await client.send_animation(
             message.chat.id,
             animation="resources/kastaid/pytel_checkout.gif",
@@ -357,15 +435,22 @@ Lalu aktifkan PYTEL-Premium.
             reply_markup=rpm,
             protect_content=True,
         )
-        await yy.copy(x.id)
+        await yy.copy(
+            x.id
+        )
 
 
 @pytel_tgb.on_message(
     legally_required
     & filters.private
     & filters.command(
-        ["delpremium", "delprem"],
-        prefixes=list(px),
+        [
+            "delpremium",
+            "delprem",
+        ],
+        prefixes=list(
+            px
+        ),
     )
 )
 async def _del_premium_user(
@@ -374,47 +459,65 @@ async def _del_premium_user(
     xy = await message.reply(
         text="Please wait...",
     )
-    if message.reply_to_message:
+    if (
+        message.reply_to_message
+    ):
         user_id = (
             message.reply_to_message.from_user.id
         )
     else:
         try:
-            m = message.command
-            username = str(m[1])
-            user = (
-                await client.get_users(
-                    username
-                )
+            m = (
+                message.command
             )
-        except BaseException:
+            username = (
+                str(m[1])
+            )
+            user = await client.get_users(
+                username
+            )
+        except (
+            BaseException
+        ):
             await xy.edit_text(
                 "I can't find that user"
             )
             return
 
-        if (user is None) or (not user):
+        if (
+            user is None
+        ) or (not user):
             await xy.edit_text(
                 f"I can't find that user {username} ."
             )
             return
         user_id = user.id
 
-    x = await client.get_users(user_id)
-    if user_expired().get(int(x.id)):
-        rem_expired(int(user_id))
+    x = await client.get_users(
+        user_id
+    )
+    if user_expired().get(
+        int(x.id)
+    ):
+        rem_expired(
+            int(user_id)
+        )
         text = f"""
 🗑 <u>Done, buyer data has been removed.</u>
  └ <b>User:</b> {x.mention}
 
 (c) @kastaid #pytel
 """
-        await xy.edit_text(text)
+        await xy.edit_text(
+            text
+        )
         return
 
     else:
         asxc = f"""
 <u>Buyer</u> {x.mention} <u>not already in the database</u>
 """
-        await xy.edit_text(asxc)
+        await xy.edit_text(
+            asxc
+        )
         return

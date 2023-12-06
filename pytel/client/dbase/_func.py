@@ -11,19 +11,34 @@ from typing import (
     TypeVar,)
 
 T = TypeVar(
-    "T", bound=Callable[..., Any]
+    "T",
+    bound=Callable[
+        ..., Any
+    ],
 )
 
 
-def memorize(func: T) -> T:
+def memorize(
+    func: T,
+) -> T:
     cache: dict = {}
 
-    def wrapper(*args: Any) -> Any:
+    def wrapper(
+        *args: Any,
+    ) -> Any:
         if args in cache:
-            return cache[args]
+            return cache[
+                args
+            ]
         else:
-            result = func(*args)
-            cache[args] = result
+            result = (
+                func(
+                    *args
+                )
+            )
+            cache[
+                args
+            ] = result
             return result
 
     wrapper.cache_reset = (

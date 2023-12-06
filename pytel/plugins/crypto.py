@@ -26,11 +26,16 @@ from . import (
 async def _crypto_charts(
     client, message
 ):
-    with suppress(BaseException):
+    with suppress(
+        BaseException
+    ):
         str_crypto = get_text(
-            message, normal=True
+            message,
+            normal=True,
         )
-        if not str_crypto:
+        if (
+            not str_crypto
+        ):
             await eor(
                 message,
                 text="Provide a valid Crypto Coins / BTC.",
@@ -53,9 +58,13 @@ async def _crypto_charts(
             ),
             disable_web_page_preview=True,
         )
-        return await _try_purged(x, 1.5)
+        return await _try_purged(
+            x, 1.5
+        )
 
 
-plugins_helper["crypto"] = {
+plugins_helper[
+    "crypto"
+] = {
     f"{random_prefixies(px)}crypto [reply/text: btc/cryptocurrency]": "To fetching charts for bitcoin or cryptocurrency.",
 }

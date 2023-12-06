@@ -13,24 +13,35 @@ from pyrogram.errors.exceptions.flood_420 import (
     FloodWait,)
 from pyrogram.types import (
     ChatPrivileges,)
-from ..config import LOGCHAT_ID
-from ..logger import pylog as send_log
+from ..config import (
+    LOGCHAT_ID,)
+from ..logger import (
+    pylog as send_log,)
 from .dbase.dbLogger import (
     add_logger,
     already_logger,)
 
 
-async def auto_pilots(_, tgb) -> None:
+async def auto_pilots(
+    _, tgb
+) -> None:
     if tgb.me.is_bot:
-        b_username = tgb.me.username
+        b_username = (
+            tgb.me.username
+        )
     user_id = _.me.id
-    if LOGCHAT_ID or already_logger(
-        user_id
+    if (
+        LOGCHAT_ID
+        or already_logger(
+            user_id
+        )
     ):
         return
 
     if _.me.username:
-        name = _.me.username
+        name = (
+            _.me.username
+        )
     else:
         first_name = (
             _.me.first_name
@@ -42,23 +53,26 @@ async def auto_pilots(_, tgb) -> None:
             if _.me.last_name
             else "ㅤ"
         )
-        name = first_name + last_name
+        name = (
+            first_name
+            + last_name
+        )
     send_log.info(
         f"Creating a channel LOGGER for {name}"
     )
     try:
-        channel_name = (
-            "PYTEL 🇮🇩 ( LOGGER )"
+        channel_name = "PYTEL 🇮🇩 ( LOGGER )"
+        channel = await _.create_channel(
+            channel_name
         )
-        channel = (
-            await _.create_channel(
-                channel_name
-            )
+        logger_id: int = (
+            channel.id
         )
-        logger_id: int = channel.id
         await sleep(2)
         await _.promote_chat_member(
-            int(logger_id),
+            int(
+                logger_id
+            ),
             b_username,
             privileges=(
                 ChatPrivileges(
@@ -75,17 +89,23 @@ async def auto_pilots(_, tgb) -> None:
         )
         description = "⚠️ DON'T DELETE THIS CHANNEL !!⚠️\n\nUser ID : {}\nChannel ID : {}\n\nPYTEL Channel: t.me/PYTELPremium\nPowered by: @kastaid".format(
             user_id,
-            int(logger_id),
+            int(
+                logger_id
+            ),
         )
         await sleep(1)
         await _.set_chat_description(
-            int(logger_id),
+            int(
+                logger_id
+            ),
             description=description,
         )
         pics = "resources/kastaid/pytel_logger.jpg"
         await sleep(1)
         await _.set_chat_photo(
-            int(logger_id),
+            int(
+                logger_id
+            ),
             photo=pics,
         )
         await sleep(0.8)
@@ -93,15 +113,26 @@ async def auto_pilots(_, tgb) -> None:
             user_id=user_id,
             logger_id=logger_id,
         )
-    except FloodWait as flood:
-        await sleep(flood.value + 5)
-    except ConnectionError:
+    except (
+        FloodWait
+    ) as flood:
+        await sleep(
+            flood.value
+            + 5
+        )
+    except (
+        ConnectionError
+    ):
         await _.connect()
-    except BotMethodInvalid:
+    except (
+        BotMethodInvalid
+    ):
         pass
     except KeyError:
         pass
-    except BaseException as excp:
+    except (
+        BaseException
+    ) as excp:
         send_log.error(
             f"USER: {name}\nERROR: {excp}"
         )

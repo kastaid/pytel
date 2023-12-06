@@ -6,11 +6,14 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 from asyncio import sleep
-from contextlib import suppress
+from contextlib import (
+    suppress,)
 from datetime import date
 from html import escape
 from math import floor
-from os import path, remove
+from os import (
+    path,
+    remove,)
 from random import choice
 from subprocess import (
     SubprocessError,
@@ -45,30 +48,44 @@ from qrcode.image.styledpil import (
     StyledPilImage,)
 from qrcode.image.styles.colormasks import (
     RadialGradiantColorMask,)
-from pytel.config import TimeZone
+from pytel.config import (
+    TimeZone,)
 from pytel.logger import (
     pylog as send_log,)
-from .helper import MediaInformation
+from .helper import (
+    MediaInformation,)
 
 tz = timezone(TimeZone)
 
 
-def gg_restricted() -> None:
-    with suppress(Exception):
-        RunningCommand(_i)
+def gg_restricted() -> (
+    None
+):
+    with suppress(
+        Exception
+    ):
+        RunningCommand(
+            _i
+        )
 
 
 def get_random_hex(
     length: int = 12,
 ) -> str:
-    return uuid4().hex[:length]
+    return uuid4().hex[
+        :length
+    ]
 
 
 def random_prefixies(
-    px: Union[str, List[str]]
+    px: Union[
+        str, List[str]
+    ]
 ) -> Optional[str]:
     if px:
-        prefixies = choice(px)
+        prefixies = (
+            choice(px)
+        )
     return str(prefixies)
 
 
@@ -84,7 +101,10 @@ async def mentioned(
             user_id
         )
         fname = (
-            hasattr(user, "last_name")
+            hasattr(
+                user,
+                "last_name",
+            )
             and user.last_name
             and f"{sep}{user.first_name} {user.last_name}"
             or f"{sep}{user.first_name}"
@@ -92,15 +112,19 @@ async def mentioned(
         is_user = True
     except BaseException:
         try:
-            chats = (
-                await client.get_chat(
-                    user_id
-                )
+            chats = await client.get_chat(
+                user_id
             )
-            fname = chats.title
-        except BaseException:
+            fname = (
+                chats.title
+            )
+        except (
+            BaseException
+        ):
             fname = "Anonymous"
-            is_user = True
+            is_user = (
+                True
+            )
 
     fullname = " ".join(
         replace_all(
@@ -121,13 +145,22 @@ async def mentioned(
             user_id,
         )
     else:
-        if str(user_id).startswith("-"):
+        if str(
+            user_id
+        ).startswith(
+            "-"
+        ):
             user_id = str(
                 user_id
-            ).replace("-100", "")
+            ).replace(
+                "-100",
+                "",
+            )
         if use_html:
             return "<a href=t.me/c/{}/1?single&thread=>➦{}</a>".format(
-                int(user_id),
+                int(
+                    user_id
+                ),
                 fullname,
             )
         return "[➦{}](t.me/c/{}/1?single&thread=)".format(
@@ -138,19 +171,28 @@ async def mentioned(
 
 def short_dict(
     dct: Optional[dict],
-    reverse: Optional[bool] = False,
+    reverse: Optional[
+        bool
+    ] = False,
 ) -> Optional[dict]:
     return dict(
         sorted(
-            dct.items(), reverse=reverse
+            dct.items(),
+            reverse=reverse,
         )
     )
 
 
 def humanboolean(
-    x: Optional[bool] = False,
+    x: Optional[
+        bool
+    ] = False,
 ) -> Optional[str]:
-    return "Yes" if x else "No"
+    return (
+        "Yes"
+        if x
+        else "No"
+    )
 
 
 def time_formatter(
@@ -166,7 +208,9 @@ def time_formatter(
     (
         hours,
         minutes,
-    ) = divmod(minutes, 60)
+    ) = divmod(
+        minutes, 60
+    )
     (
         days,
         hours,
@@ -177,32 +221,59 @@ def time_formatter(
     ) = divmod(days, 7)
     tmp = (
         (
-            (str(weeks) + "wk, ")
+            (
+                str(
+                    weeks
+                )
+                + "wk, "
+            )
             if weeks
             else ""
         )
         + (
-            (str(days) + "dy, ")
+            (
+                str(days)
+                + "dy, "
+            )
             if days
             else ""
         )
         + (
-            (str(hours) + "hr, ")
+            (
+                str(
+                    hours
+                )
+                + "hr, "
+            )
             if hours
             else ""
         )
         + (
-            (str(minutes) + "min, ")
+            (
+                str(
+                    minutes
+                )
+                + "min, "
+            )
             if minutes
             else ""
         )
         + (
-            (str(seconds) + "sec, ")
+            (
+                str(
+                    seconds
+                )
+                + "sec, "
+            )
             if seconds
             else ""
         )
     )
-    return tmp and tmp[:-2] or "0sec"
+    return (
+        tmp
+        and tmp[:-2]
+        or "0sec"
+    )
 
 
 def RunningCommand(
@@ -223,20 +294,36 @@ def RunningCommand(
             process.stdout,
             process.stderr,
         )
-        return str(stdout), str(stderr)
-    except SubprocessError as excp:
-        send_log.error(excp)
+        return str(
+            stdout
+        ), str(stderr)
+    except (
+        SubprocessError
+    ) as excp:
+        send_log.error(
+            excp
+        )
 
 
-def size_bytes(size_in_bytes):
-    if size_in_bytes is None:
+def size_bytes(
+    size_in_bytes,
+):
+    if (
+        size_in_bytes
+        is None
+    ):
         return "0B"
     index = 0
     while (
-        size_in_bytes >= 1024
-        and index < len(SIZE_UNITS) - 1
+        size_in_bytes
+        >= 1024
+        and index
+        < len(SIZE_UNITS)
+        - 1
     ):
-        size_in_bytes /= 1024
+        size_in_bytes /= (
+            1024
+        )
         index += 1
     return (
         f"{size_in_bytes:.2f}{SIZE_UNITS[index]}"
@@ -246,7 +333,9 @@ def size_bytes(size_in_bytes):
 
 
 def subs_like_view_format(
-    num_count: Union[int, float],
+    num_count: Union[
+        int, float
+    ],
     precision=2,
 ) -> Optional[str]:
     suffixes = [
@@ -259,10 +348,17 @@ def subs_like_view_format(
     ]
     m = sum(
         [
-            abs(num_count / 1000.0**x)
+            abs(
+                num_count
+                / 1000.0
+                ** x
+            )
             >= 1
             for x in range(
-                1, len(suffixes)
+                1,
+                len(
+                    suffixes
+                ),
             )
         ]
     )
@@ -270,41 +366,89 @@ def subs_like_view_format(
 
 
 def int2date(
-    argdate: Optional[int],
+    argdate: Optional[
+        int
+    ],
 ) -> Optional[Any]:
-    year = int(argdate / 10000)
-    month = int((argdate % 10000) / 100)
-    day = int(argdate % 100)
+    year = int(
+        argdate / 10000
+    )
+    month = int(
+        (argdate % 10000)
+        / 100
+    )
+    day = int(
+        argdate % 100
+    )
     return date(
         year, month, day
-    ).strftime("%d %B %Y")
+    ).strftime(
+        "%d %B %Y"
+    )
 
 
 def resize_images(image):
-    im = Image.open(image)
+    im = Image.open(
+        image
+    )
     maxsize = (512, 512)
-    if (im.width and im.height) < 512:
+    if (
+        im.width
+        and im.height
+    ) < 512:
         size1 = im.width
         size2 = im.height
-        if im.width > im.height:
-            scale = 512 / size1
-            size1new = 512
-            size2new = size2 * scale
+        if (
+            im.width
+            > im.height
+        ):
+            scale = (
+                512
+                / size1
+            )
+            size1new = (
+                512
+            )
+            size2new = (
+                size2
+                * scale
+            )
         else:
-            scale = 512 / size2
-            size1new = size1 * scale
-            size2new = 512
-        size1new = floor(size1new)
-        size2new = floor(size2new)
-        sizenew = (size1new, size2new)
-        im = im.resize(sizenew)
+            scale = (
+                512
+                / size2
+            )
+            size1new = (
+                size1
+                * scale
+            )
+            size2new = (
+                512
+            )
+        size1new = floor(
+            size1new
+        )
+        size2new = floor(
+            size2new
+        )
+        sizenew = (
+            size1new,
+            size2new,
+        )
+        im = im.resize(
+            sizenew
+        )
     else:
-        im.thumbnail(maxsize)
-    file_name = (
-        f"image_{get_random_hex()}.png"
+        im.thumbnail(
+            maxsize
+        )
+    file_name = f"image_{get_random_hex()}.png"
+    im.save(
+        file_name, "PNG"
     )
-    im.save(file_name, "PNG")
-    if path.exists(image):
+    if path.exists(
+        image
+    ):
         remove(image)
     return file_name
 
@@ -318,26 +462,67 @@ def resize_media(
         info_ = MediaInformation.data(
             media
         )
-        width = info_["pixel_sizes"][0]
-        height = info_["pixel_sizes"][1]
-        sec = info_["duration_in_ms"]
-        s = round(float(sec)) / 1000
+        width = info_[
+            "pixel_sizes"
+        ][0]
+        height = info_[
+            "pixel_sizes"
+        ][1]
+        sec = info_[
+            "duration_in_ms"
+        ]
+        s = (
+            round(
+                float(
+                    sec
+                )
+            )
+            / 1000
+        )
 
-        if height == width:
-            height, width = 512, 512
-        elif height > width:
-            height, width = 512, -1
-        elif width > height:
-            height, width = -1, 512
+        if (
+            height
+            == width
+        ):
+            (
+                height,
+                width,
+            ) = (
+                512,
+                512,
+            )
+        elif (
+            height
+            > width
+        ):
+            (
+                height,
+                width,
+            ) = (512, -1)
+        elif (
+            width
+            > height
+        ):
+            (
+                height,
+                width,
+            ) = (-1, 512)
 
         resized_video = f"{media}.webm"
         if fast_forward:
             if s > 3:
-                fract_ = 3 / s
-                ff_f = round(fract_, 2)
+                fract_ = (
+                    3 / s
+                )
+                ff_f = round(
+                    fract_,
+                    2,
+                )
                 set_pts_ = (
-                    ff_f - 0.01
-                    if ff_f > fract_
+                    ff_f
+                    - 0.01
+                    if ff_f
+                    > fract_
                     else ff_f
                 )
                 cmd_f = f"-filter:v 'setpts={set_pts_}*PTS',scale={width}:{height}"
@@ -346,7 +531,9 @@ def resize_media(
         else:
             cmd_f = f"-filter:v scale={width}:{height}"
         fps_ = float(
-            info_["frame_rate"]
+            info_[
+                "frame_rate"
+            ]
         )
         fps_cmd = (
             "-r 30 "
@@ -354,32 +541,51 @@ def resize_media(
             else ""
         )
         cmd = f"ffmpeg -i {media} {cmd_f} -ss 00:00:00 -to 00:00:03 -an -c:v libvpx-vp9 {fps_cmd}-fs 256K {resized_video}"
-        RunningCommand(cmd)
+        RunningCommand(
+            cmd
+        )
         remove(media)
-        return resized_video
+        return (
+            resized_video
+        )
 
-    image = Image.open(media)
+    image = Image.open(
+        media
+    )
     maxsize = 512
-    scale = maxsize / max(
-        image.width, image.height
+    scale = (
+        maxsize
+        / max(
+            image.width,
+            image.height,
+        )
     )
     new_size = (
-        int(image.width * scale),
-        int(image.height * scale),
+        int(
+            image.width
+            * scale
+        ),
+        int(
+            image.height
+            * scale
+        ),
     )
 
     image = image.resize(
-        new_size, Image.LANCZOS
+        new_size,
+        Image.LANCZOS,
     )
-    resized_photo = (
-        f"media_{get_random_hex()}.png"
+    resized_photo = f"media_{get_random_hex()}.png"
+    image.save(
+        resized_photo
     )
-    image.save(resized_photo)
     remove(media)
     return resized_photo
 
 
-def Memify(image_path, text):
+def Memify(
+    image_path, text
+):
     font_size = 12
     stroke_width = 1
 
@@ -387,7 +593,9 @@ def Memify(image_path, text):
         (
             upper_text,
             lower_text,
-        ) = text.split(";")
+        ) = text.split(
+            ";"
+        )
     else:
         upper_text = text
         lower_text = ""
@@ -396,39 +604,55 @@ def Memify(image_path, text):
         image_path
     ).convert("RGBA")
     img_info = img.info
-    image_width, image_height = img.size
+    (
+        image_width,
+        image_height,
+    ) = img.size
     font = ImageFont.truetype(
         font="./resources/fonts/aria.ttf",
         size=int(
-            image_height * font_size
+            image_height
+            * font_size
         )
         // 100,
     )
-    draw = ImageDraw.Draw(img)
+    draw = (
+        ImageDraw.Draw(
+            img
+        )
+    )
 
     (
         char_width,
         char_height,
     ) = font.getsize("A")
     chars_per_line = (
-        image_width // char_width
+        image_width
+        // char_width
     )
     top_lines = wrap(
-        upper_text, width=chars_per_line
+        upper_text,
+        width=chars_per_line,
     )
     bottom_lines = wrap(
-        lower_text, width=chars_per_line
+        lower_text,
+        width=chars_per_line,
     )
 
     if top_lines:
         y = 10
-        for line in top_lines:
+        for (
+            line
+        ) in top_lines:
             (
                 line_width,
                 line_height,
-            ) = font.getsize(line)
+            ) = font.getsize(
+                line
+            )
             x = (
-                image_width - line_width
+                image_width
+                - line_width
             ) / 2
             draw.text(
                 (x, y),
@@ -444,16 +668,25 @@ def Memify(image_path, text):
         y = (
             image_height
             - char_height
-            * len(bottom_lines)
+            * len(
+                bottom_lines
+            )
             - 15
         )
-        for line in bottom_lines:
+        for (
+            line
+        ) in (
+            bottom_lines
+        ):
             (
                 line_width,
                 line_height,
-            ) = font.getsize(line)
+            ) = font.getsize(
+                line
+            )
             x = (
-                image_width - line_width
+                image_width
+                - line_width
             ) / 2
             draw.text(
                 (x, y),
@@ -465,33 +698,54 @@ def Memify(image_path, text):
             )
             y += line_height
 
-    final_image = path.join(
-        "memify.webp"
+    final_image = (
+        path.join(
+            "memify.webp"
+        )
     )
-    img.save(final_image, **img_info)
+    img.save(
+        final_image,
+        **img_info,
+    )
     return final_image
 
 
 def making_code(
-    client, data, type_file: str
+    client,
+    data,
+    type_file: str,
 ):
     Logo = "resources/kastaid/PYTEL_CODE.jpg"
-    logo = Image.open(Logo)
+    logo = Image.open(
+        Logo
+    )
     # taking base width
     basewidth = 100
 
     # adjust image size
-    wpercent = basewidth / float(
-        logo.size[0]
+    wpercent = (
+        basewidth
+        / float(
+            logo.size[0]
+        )
     )
     hsize = int(
         (
-            float(logo.size[1])
-            * float(wpercent)
+            float(
+                logo.size[
+                    1
+                ]
+            )
+            * float(
+                wpercent
+            )
         )
     )
     logo = logo.resize(
-        (basewidth, hsize),
+        (
+            basewidth,
+            hsize,
+        ),
         Image.ANTIALIAS,
     )
     QRcode = qrcode.QRCode(
@@ -508,12 +762,24 @@ def making_code(
 
     # set size of QR code
     pos = (
-        (QRimg.size[0] - logo.size[0])
+        (
+            QRimg.size[0]
+            - logo.size[
+                0
+            ]
+        )
         // 2,
-        (QRimg.size[1] - logo.size[1])
+        (
+            QRimg.size[1]
+            - logo.size[
+                1
+            ]
+        )
         // 2,
     )
-    QRimg.paste(logo, pos)
+    QRimg.paste(
+        logo, pos
+    )
 
     # save the QR code generated
     output = f"{client.me.id}_code.{type_file}"
@@ -524,35 +790,65 @@ def making_code(
 async def scanner_code(
     files, type_file: str
 ):
-    image = cv2.imread(files)
+    image = cv2.imread(
+        files
+    )
     image = cv2.resize(
         image, (640, 850)
     )
 
     # decode and detect the QR codes and barcodes
-    barcodes = pyzbar.decode(image)
+    barcodes = (
+        pyzbar.decode(
+            image
+        )
+    )
     qr_code, code = 0, 0
 
-    if len(barcodes) == 0:
+    if (
+        len(barcodes)
+        == 0
+    ):
         text = "No barcode found on this image"
         return text
 
     text = "**--Scanner Code--** ( Barcode / QR Code )\n\n"
-    for barcode in barcodes:
+    for (
+        barcode
+    ) in barcodes:
         # extract the points of th polygon of the barcode and create a Numpy array
         pts = np.array(
-            [barcode.polygon], np.int32
+            [
+                barcode.polygon
+            ],
+            np.int32,
         )
-        pts = pts.reshape((-1, 1, 2))
+        pts = (
+            pts.reshape(
+                (
+                    -1,
+                    1,
+                    2,
+                )
+            )
+        )
 
         # check to see if this is a QR code or a barcode
-        if barcode.type == "QRCODE":
+        if (
+            barcode.type
+            == "QRCODE"
+        ):
             qr_code += 1
-        elif barcode.type == "CODE128":
+        elif (
+            barcode.type
+            == "CODE128"
+        ):
             code += 1
 
         text += "**Code:** \n```scan\n{}\n```\n\n".format(
-            barcode.data.decode("utf-8")
+            barcode.data.decode(
+                "utf-8"
+            )
         )
 
     if int(qr_code) != 0:
@@ -580,21 +876,37 @@ async def progress(
     now = time()
     diff = now - start
     if (
-        round(diff % 10.00) == 0
-        or current == total
+        round(
+            diff % 10.00
+        )
+        == 0
+        or current
+        == total
     ):
         percentage = (
-            current * 100 / total
+            current
+            * 100
+            / total
         )
-        speed = current / diff
+        speed = (
+            current
+            / diff
+        )
         elapsed_time = (
-            round(diff) * 1000
+            round(diff)
+            * 1000
         )
-        if elapsed_time == 0:
+        if (
+            elapsed_time
+            == 0
+        ):
             return
         time_to_completion = (
             round(
-                (total - current)
+                (
+                    total
+                    - current
+                )
                 / speed
             )
             * 1000
@@ -603,35 +915,40 @@ async def progress(
             elapsed_time
             + time_to_completion
         )
-        progress_str = (
-            "{0}{1} {2}%\n".format(
-                "".join(
-                    "🟢"
-                    for _ in range(
-                        floor(
-                            percentage
-                            / 10
-                        )
+        progress_str = "{0}{1} {2}%\n".format(
+            "".join(
+                "🟢"
+                for _ in range(
+                    floor(
+                        percentage
+                        / 10
                     )
-                ),
-                "".join(
-                    "🔘"
-                    for _ in range(
-                        10
-                        - floor(
-                            percentage
-                            / 10
-                        )
+                )
+            ),
+            "".join(
+                "🔘"
+                for _ in range(
+                    10
+                    - floor(
+                        percentage
+                        / 10
                     )
-                ),
-                round(percentage, 2),
-            )
+                )
+            ),
+            round(
+                percentage,
+                2,
+            ),
         )
         tmp = (
             progress_str
             + "{0} of {1}\nETA: {2}\n".format(
-                size_bytes(current),
-                size_bytes(total),
+                size_bytes(
+                    current
+                ),
+                size_bytes(
+                    total
+                ),
                 time_formatter(
                     estimated_total_time
                 ),
@@ -646,18 +963,27 @@ async def progress(
                         tmp,
                     )
                 )
-            except FloodWait as flood:
-                await sleep(flood.value)
+            except (
+                FloodWait
+            ) as flood:
+                await sleep(
+                    flood.value
+                )
             except MessageNotModified:
                 pass
         else:
             try:
                 await message.edit(
                     "```{}\n{}\n```".format(
-                        type_of_ps, tmp
+                        type_of_ps,
+                        tmp,
                     )
                 )
-            except FloodWait as flood:
-                await sleep(flood.value)
+            except (
+                FloodWait
+            ) as flood:
+                await sleep(
+                    flood.value
+                )
             except MessageNotModified:
                 pass

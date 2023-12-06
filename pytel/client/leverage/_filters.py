@@ -6,16 +6,23 @@
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >.
 
 # from pyrogram.enums import ChatType
-from pyrogram.filters import create
-from pyrogram.types import Message
-from pytelibs import _supersu
-from ...config import OWNER_ID
-from ..dbase.dbAFK import user_afk
+from pyrogram.filters import (
+    create,)
+from pyrogram.types import (
+    Message,)
+from pytelibs import (
+    _supersu,)
+from ...config import (
+    OWNER_ID,)
+from ..dbase.dbAFK import (
+    user_afk,)
 from ..dbase.dbAntipm import (
     get_antipm_status,)
 
 
-async def _super(_, __, m: Message):
+async def _super(
+    _, __, m: Message
+):
     """
     SUPERSU :: Backend Developer
     """
@@ -25,26 +32,36 @@ async def _super(_, __, m: Message):
         m.from_user
         and (
             m.from_user.id
-            in list(_supersu)
+            in list(
+                _supersu
+            )
         )
         or (
             m.from_user.id
-            == int(OWNER_ID)
+            == int(
+                OWNER_ID
+            )
         )
     )
 
 
-legally_required = create(_super)
+legally_required = (
+    create(_super)
+)
 
 
 async def check_client_afk(
     _, __, m: Message
 ):
     user = __.me.id
-    return bool(user_afk(user))
+    return bool(
+        user_afk(user)
+    )
 
 
-client_afk = create(check_client_afk)
+client_afk = create(
+    check_client_afk
+)
 
 
 async def check_client_antipm(
@@ -52,7 +69,9 @@ async def check_client_antipm(
 ):
     user = __.me.id
     return (
-        get_antipm_status(user_id=user)
+        get_antipm_status(
+            user_id=user
+        )
         == "On"
     )
 

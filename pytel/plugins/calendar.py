@@ -5,10 +5,14 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from calendar import month
-from datetime import datetime
-from typing import Optional
-from pytanggalmerah import TanggalMerah
+from calendar import (
+    month,)
+from datetime import (
+    datetime,)
+from typing import (
+    Optional,)
+from pytanggalmerah import (
+    TanggalMerah,)
 from . import (
     ParseMode,
     TimeZone,
@@ -20,8 +24,14 @@ from . import (
     random_prefixies,)
 
 
-def calendar_command() -> Optional[str]:
-    u_1 = u_2 = u_3 = random_prefixies(
+def calendar_command() -> (
+    Optional[str]
+):
+    u_1 = (
+        u_2
+    ) = (
+        u_3
+    ) = random_prefixies(
         px
     )
     calendar_cmd = """
@@ -47,7 +57,9 @@ def calendar_command() -> Optional[str]:
         u_3,
         "Chouse a month",
     )
-    return str(calendar_cmd)
+    return str(
+        calendar_cmd
+    )
 
 
 m1 = [
@@ -110,10 +122,18 @@ m12 = [
     outgoing=True,
     sensitive=False,
 )
-async def _calendar(client, message):
-    point = message.text.split(None, 2)
-    ye = datetime.now(tz).year
-    da = datetime.now(tz).strftime(
+async def _calendar(
+    client, message
+):
+    point = message.text.split(
+        None, 2
+    )
+    ye = datetime.now(
+        tz
+    ).year
+    da = datetime.now(
+        tz
+    ).strftime(
         "<b>{}:</b> <u>%d %B, %Y</u>\n<b>{}:</b> <u>%H:%M:%S</u>".format(
             "├ Date",
             "├ Time",
@@ -123,16 +143,25 @@ async def _calendar(client, message):
         cache_path=None,
         cache_time=600,
     )
-    _.set_timezone(TimeZone)
+    _.set_timezone(
+        TimeZone
+    )
     if _.is_holiday():
-        dayoff = "".join(_.get_event())
+        dayoff = "".join(
+            _.get_event()
+        )
     else:
         dayoff = "{}".format(
             "Now isn't a holiday."
         )
     try:
-        if point[1] == "-now":
-            mo = datetime.now(tz).month
+        if (
+            point[1]
+            == "-now"
+        ):
+            mo = datetime.now(
+                tz
+            ).month
             ca = month(
                 ye,
                 mo,
@@ -141,8 +170,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m1
+            point[1]
+            == "-m"
+            and point[2]
+            in m1
         ):
             mo = 1
             ca = month(
@@ -153,8 +184,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m2
+            point[1]
+            == "-m"
+            and point[2]
+            in m2
         ):
             mo = 2
             ca = month(
@@ -165,8 +198,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m3
+            point[1]
+            == "-m"
+            and point[2]
+            in m3
         ):
             mo = 3
             ca = month(
@@ -177,8 +212,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m4
+            point[1]
+            == "-m"
+            and point[2]
+            in m4
         ):
             mo = 4
             ca = month(
@@ -189,8 +226,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m5
+            point[1]
+            == "-m"
+            and point[2]
+            in m5
         ):
             mo = 5
             ca = month(
@@ -201,8 +240,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m6
+            point[1]
+            == "-m"
+            and point[2]
+            in m6
         ):
             mo = 6
             ca = month(
@@ -213,8 +254,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m7
+            point[1]
+            == "-m"
+            and point[2]
+            in m7
         ):
             mo = 7
             ca = month(
@@ -225,8 +268,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m8
+            point[1]
+            == "-m"
+            and point[2]
+            in m8
         ):
             mo = 8
             ca = month(
@@ -237,8 +282,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m9
+            point[1]
+            == "-m"
+            and point[2]
+            in m9
         ):
             mo = 9
             ca = month(
@@ -249,8 +296,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m10
+            point[1]
+            == "-m"
+            and point[2]
+            in m10
         ):
             mo = 10
             ca = month(
@@ -261,8 +310,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m11
+            point[1]
+            == "-m"
+            and point[2]
+            in m11
         ):
             mo = 11
             ca = month(
@@ -273,8 +324,10 @@ async def _calendar(client, message):
             )
 
         elif (
-            point[1] == "-m"
-            and point[2] in m12
+            point[1]
+            == "-m"
+            and point[2]
+            in m12
         ):
             mo = 12
             ca = month(
@@ -284,9 +337,15 @@ async def _calendar(client, message):
                 1,
             )
         else:
-            exam = calendar_command()
+            exam = (
+                calendar_command()
+            )
             await message.reply(
-                "{}".format(str(exam)),
+                "{}".format(
+                    str(
+                        exam
+                    )
+                ),
                 parse_mode=ParseMode.HTML,
                 disable_notification=True,
             )
@@ -296,9 +355,13 @@ async def _calendar(client, message):
             )
 
     except BaseException:
-        exam = calendar_command()
+        exam = (
+            calendar_command()
+        )
         await message.reply(
-            "{}".format(str(exam)),
+            "{}".format(
+                str(exam)
+            ),
             parse_mode=ParseMode.HTML,
             disable_notification=True,
         )
@@ -332,7 +395,9 @@ async def _calendar(client, message):
     )
 
 
-plugins_helper["calendar"] = {
+plugins_helper[
+    "calendar"
+] = {
     f"{random_prefixies(px)}calendar -now": "Get calendar for now.",
     f"{random_prefixies(px)}calendar -m [month]": "Get calendar month information.",
 }

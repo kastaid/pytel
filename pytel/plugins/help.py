@@ -5,7 +5,9 @@
 # Please read the GNU Affero General Public License in
 # < https://github.com/kastaid/pytel/blob/main/LICENSE/ >
 
-from asyncio import sleep, gather
+from asyncio import (
+    sleep,
+    gather,)
 from re import match
 from pyrogram.types import (
     InlineQueryResultArticle,
@@ -42,25 +44,49 @@ from . import (
     force_edit=False,
     disable_errors=True,
 )
-async def _help(client, message):
+async def _help(
+    client, message
+):
     if client:
-        users = client.me.id
-    if client not in pytel._client:
-        client.append(client)
-        pytel.append(client)
-        pytl.append(client)
-    if message.command[0] == "ihelp":
+        users = (
+            client.me.id
+        )
+    if (
+        client
+        not in pytel._client
+    ):
+        client.append(
+            client
+        )
+        pytel.append(
+            client
+        )
+        pytl.append(
+            client
+        )
+    if (
+        message.command[
+            0
+        ]
+        == "ihelp"
+    ):
         xy = await eor(
             message,
             text="Processing...",
         )
-        plugins_n = "xdbnafghjrt"
+        plugins_n = (
+            "xdbnafghjrt"
+        )
         try:
             _ = await client.get_inline_bot_results(
                 pytel_tgb.me.username,
                 plugins_n,
             )
-            for name in _.results:
+            for (
+                name
+            ) in (
+                _.results
+            ):
                 try:
                     await message.reply_inline_bot_result(
                         _.query_id,
@@ -82,11 +108,22 @@ async def _help(client, message):
             xy, 1.5
         )
 
-    if message.command[0] == "help":
-        plugins_name = get_text(message)
+    if (
+        message.command[
+            0
+        ]
+        == "help"
+    ):
+        plugins_name = (
+            get_text(
+                message
+            )
+        )
         name = None
 
-        if not plugins_name:
+        if (
+            not plugins_name
+        ):
             text = f"<b>Command Guide</b>\n\n<b><u>Example</u></b>\n</b>❯</b> <code>{random_prefixies(px)}help webtools</code>\n    └ <u>To get plugins webtools.</u>\n</b>❯</b> <code>{random_prefixies(px)}ihelp</code>\n    └ <u>To get Inline helper.</u>"
             await eor(
                 message,
@@ -102,24 +139,33 @@ async def _help(client, message):
         else:
             for (
                 x
-            ) in plugins_name.split():
-                if x in plugins_helper:
-                    name = x
+            ) in (
+                plugins_name.split()
+            ):
+                if (
+                    x
+                    in plugins_helper
+                ):
+                    name = (
+                        x
+                    )
                     break
         if name:
-            cmds = plugins_helper[name]
+            cmds = plugins_helper[
+                name
+            ]
             text = f"<b>{len(cmds)} Commands For <u>{name.upper()}</u></b>\n\n"
             for (
                 cmd,
                 desc,
-            ) in cmds.items():
+            ) in (
+                cmds.items()
+            ):
                 text += "</b>❯</b> <code>{}</code>\n<b>Description:</b> <i>{}</i>\n\n".format(
                     cmd,
                     desc,
                 )
-            text += (
-                "(c) @kastaid #pytel"
-            )
+            text += "(c) @kastaid #pytel"
             await eor(
                 message,
                 text=text,
@@ -133,7 +179,9 @@ async def _help(client, message):
 
 
 @pytel_tgb.on_inline_query(
-    filters.regex("^xdbnafghjrt")
+    filters.regex(
+        "^xdbnafghjrt"
+    )
 )
 async def _helper_inline(
     client,
@@ -142,11 +190,15 @@ async def _helper_inline(
     content = "<b>❏ <u>Menu Help</u>\n├ Plugins : {}\n├ Commands : {}\n└  Prefixies : <code>{}</code></b>\n\n".format(
         plugins_helper.count,
         plugins_helper.total,
-        random_prefixies(px),
+        random_prefixies(
+            px
+        ),
     )
     content += "(c) @kastaid #pytel"
     await sleep(0.2)
-    with suppress(QueryIdInvalid):
+    with suppress(
+        QueryIdInvalid
+    ):
         await client.answer_inline_query(
             cq.id,
             is_personal=True,
@@ -171,17 +223,22 @@ async def _helper_inline(
 
 
 @pytel_tgb.on_callback_query(
-    filters.regex(r"help_(.*?)")
+    filters.regex(
+        r"help_(.*?)"
+    )
 )
 async def _helper(
     client,
     cq: CallbackQuery,
 ):
-    users = cq.from_user.id
-    if users not in _HELP_ACCEPT:
-        text = (
-            "You can't using this menu."
-        )
+    users = (
+        cq.from_user.id
+    )
+    if (
+        users
+        not in _HELP_ACCEPT
+    ):
+        text = "You can't using this menu."
         return await client.answer_callback_query(
             cq.id,
             text,
@@ -191,11 +248,11 @@ async def _helper(
     plugins_text = "<b>❏ <u>Menu Help</u>\n├ Plugins : {}\n├ Commands : {}\n└ Prefixies : <code>{}</code></b>\n\n".format(
         plugins_helper.count,
         plugins_helper.total,
-        random_prefixies(px),
+        random_prefixies(
+            px
+        ),
     )
-    plugins_text += (
-        "(c) @kastaid #pytel"
-    )
+    plugins_text += "(c) @kastaid #pytel"
     plugins_match = match(
         r"help_plug\((.+?)\)",
         cq.data,
@@ -218,7 +275,9 @@ async def _helper(
     )
     async with _HELP_LOCK:
         if plugins_match:
-            nm = plugins_match[1]
+            nm = plugins_match[
+                1
+            ]
             for _ in nm:
                 name = (
                     _
@@ -233,7 +292,9 @@ async def _helper(
                 for (
                     cmd,
                     desc,
-                ) in cmds.items():
+                ) in (
+                    cmds.items()
+                ):
                     text += "<b>❯</b><code>{}</code>\n<b>Description:</b> <i>{}</i>\n\n".format(
                         cmd,
                         desc,
@@ -274,11 +335,15 @@ async def _helper(
                         excp.ID
                         == "MESSAGE_NOT_MODIFIED"
                     ):
-                        await sleep(0.1)
+                        await sleep(
+                            0.1
+                        )
 
         elif prev_page:
             curr_page = int(
-                prev_page[1]
+                prev_page[
+                    1
+                ]
             )
             try:
                 return await cq.edit_message_text(
@@ -301,22 +366,30 @@ async def _helper(
                     == "FLOOD_WAIT_X"
                 ):
                     await sleep(
-                        excp.value + 3
+                        excp.value
+                        + 3
                     )
                 elif (
                     excp.ID
                     == "MESSAGE_NOT_MODIFIED"
                 ):
-                    await sleep(0.1)
+                    await sleep(
+                        0.1
+                    )
 
         elif next_page:
-            nx_page = int(next_page[1])
+            nx_page = int(
+                next_page[
+                    1
+                ]
+            )
             try:
                 return await cq.edit_message_text(
                     text=plugins_text,
                     reply_markup=ikmarkup(
                         plugins_button(
-                            nx_page + 1,
+                            nx_page
+                            + 1,
                             plugins_helper,
                             "help",
                         )
@@ -331,16 +404,21 @@ async def _helper(
                     == "FLOOD_WAIT_X"
                 ):
                     await sleep(
-                        excp.value + 3
+                        excp.value
+                        + 3
                     )
                 elif (
                     excp.ID
                     == "MESSAGE_NOT_MODIFIED"
                 ):
-                    await sleep(0.1)
+                    await sleep(
+                        0.1
+                    )
 
         elif back_page:
-            with suppress(FloodWait):
+            with suppress(
+                FloodWait
+            ):
                 return await cq.edit_message_text(
                     text=plugins_text,
                     reply_markup=ikmarkup(
@@ -360,11 +438,15 @@ async def _helper(
             un = unpack_inline(
                 inline_id
             )
-            chat_id: int = un["chat_id"]
+            chat_id: int = un[
+                "chat_id"
+            ]
             message_id: int = un[
                 "message_id"
             ]
-            for _ in pytl:
+            for (
+                _
+            ) in pytl:
                 with suppress(
                     BaseException
                 ):
@@ -381,17 +463,22 @@ async def _helper(
 
 
 @pytel_tgb.on_callback_query(
-    filters.regex(r"menu_(.*?)")
+    filters.regex(
+        r"menu_(.*?)"
+    )
 )
 async def _menu_opened(
     client,
     cq: CallbackQuery,
 ):
-    users = cq.from_user.id
-    if users not in _HELP_ACCEPT:
-        text = (
-            "You can't using this menu."
-        )
+    users = (
+        cq.from_user.id
+    )
+    if (
+        users
+        not in _HELP_ACCEPT
+    ):
+        text = "You can't using this menu."
         return await client.answer_callback_query(
             cq.id,
             text,
@@ -401,7 +488,9 @@ async def _menu_opened(
     helper_text = "<b>❏ <u>Menu Help</u>\n├ Plugins : {}\n├ Commands : {}\n└ Prefixies : <code>{}</code></b>\n\n".format(
         plugins_helper.count,
         plugins_helper.total,
-        random_prefixies(px),
+        random_prefixies(
+            px
+        ),
     )
     helper_text += "(c) @kastaid #pytel"
     menu_tclose = "<b>Menu helper has been <u>Closed</b></u>."
@@ -430,14 +519,18 @@ async def _menu_opened(
         ]
     )
     if menu_close:
-        with suppress(FloodWait):
+        with suppress(
+            FloodWait
+        ):
             return await cq.edit_message_text(
                 text=menu_tclose,
                 reply_markup=close_buttons,
             )
 
     elif menu_open:
-        with suppress(FloodWait):
+        with suppress(
+            FloodWait
+        ):
             return await cq.edit_message_text(
                 text=helper_text,
                 reply_markup=ikmarkup(
@@ -450,7 +543,9 @@ async def _menu_opened(
             )
 
 
-plugins_helper["help"] = {
+plugins_helper[
+    "help"
+] = {
     f"{random_prefixies(px)}help [plugin_name]/[reply]": "Get common/plugin/command help by filling the plugin name or reply single word or message that contains plugin name.",
     f"{random_prefixies(px)}ihelp": "Get inline helper.",
 }
