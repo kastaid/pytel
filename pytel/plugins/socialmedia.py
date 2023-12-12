@@ -149,6 +149,7 @@ async def _youtube_video_dl(
                 "writesubtitles": True,
                 "subtitleslangs": "id",
                 "nocheckcertificate": True,
+                "noplaylist": True,
                 "postprocessors": [
                     {
                         "key": "FFmpegVideoConvertor",
@@ -208,11 +209,15 @@ async def _youtube_video_dl(
         )
         return
 
-    a_like = subs_like_view_format(
-        num_count=download_data[
-            "like_count"
-        ]
-    )
+    try:
+        a_like = subs_like_view_format(
+            num_count=download_data[
+                "like_count"
+            ]
+        )
+    except Exception:
+        a_like = "N/A"
+
     a_view = subs_like_view_format(
         num_count=download_data[
             "view_count"
@@ -418,6 +423,7 @@ async def _youtube_audio_dl(
                 "prefer_ffmpeg": True,
                 "geo_bypass": True,
                 "nocheckcertificate": True,
+                "noplaylist": True,
                 "postprocessors": [
                     {
                         "key": "FFmpegExtractAudio",
@@ -473,11 +479,17 @@ async def _youtube_audio_dl(
             text=f"YTDL Error: <pre>{excp}</pre>",
         )
         return
-    a_like = subs_like_view_format(
-        num_count=download_data[
-            "like_count"
-        ]
-    )
+
+    print(download_data)
+    try:
+        a_like = subs_like_view_format(
+            num_count=download_data[
+                "like_count"
+            ]
+        )
+    except Exception:
+        a_like = "N/A"
+
     a_view = subs_like_view_format(
         num_count=download_data[
             "view_count"

@@ -343,7 +343,7 @@ async def _unshortens(
     ["ipinfo"],
     outgoing=True,
 )
-async def _ip_info(
+async def _ip_information(
     client, message
 ):
     ipv = get_text(
@@ -478,7 +478,7 @@ plugins_helper[
     f"{random_prefixies(px)}webss [url]/[reply link]": "To capture the screen on the link.",
     f"{random_prefixies(px)}short_[isgd/tiny/clck] [url]/[reply link]": "To shorten your link/url.",
     f"{random_prefixies(px)}unshort [url]/[reply link]": "To un-shorten your link/url.",
-    f"{random_prefixies(px)}dns / {random_prefixies(px)}domain [url]/[reply link]": "To get DNS ( Domain Name Server )",
+    f"{random_prefixies(px)}dns / domain [url]/[reply link]": "To get DNS ( Domain Name Server )",
     f"{random_prefixies(px)}ipinfo [ip address]": "To get Information IP Address.",
     f"{random_prefixies(px)}inb / infonumber [numbers/reply to numbers]": "To get Information Phone Numbers. ( Tracker by Google-libphonenumber )",
 }

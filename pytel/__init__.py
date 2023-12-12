@@ -268,7 +268,9 @@ else:
                 missing_ok=True
             )
 
-APP_VERSION = f"PYTEL-v.{pyver}"
+APP_VERSION = (
+    f"PYTEL-v.{pyver}"
+)
 WORKERS = min(
     64,
     (cpu_count() or 1)

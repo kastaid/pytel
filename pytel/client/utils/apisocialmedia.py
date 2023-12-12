@@ -9,6 +9,7 @@ from contextlib import (
     suppress,)
 from mimetypes import (
     guess_type,)
+from os import path
 from re import (
     findall,
     search,)
@@ -380,14 +381,32 @@ class MetaAPI:
         auth = pyotp.TOTP(
             self.get_secret
         )
-        with suppress(
-            exp.TwoFactorRequired
+        if path.exists(
+            "ig_settings.json"
         ):
-            self.client.login(
-                self.ig_usn,
-                self.ig_pass,
-                auth.now(),
+            self.client.load_settings(
+                "ig_settings.json"
             )
+            with suppress(
+                exp.TwoFactorRequired
+            ):
+                self.client.login(
+                    self.ig_usn,
+                    self.ig_pass,
+                    auth.now(),
+                )
+        else:
+            with suppress(
+                exp.TwoFactorRequired
+            ):
+                self.client.login(
+                    self.ig_usn,
+                    self.ig_pass,
+                    auth.now(),
+                )
+                self.client.dump_settings(
+                    "ig_settings.json"
+                )
 
     def ig_download(
         self,
@@ -527,7 +546,7 @@ class MetaAPI:
 
 Instagram = MetaAPI(
     client=InstagramClient(
-        logger=pylog
+        logger=pylog,
     ),
     ig_usn=IG_USN,
     ig_pass=IG_PASS,
