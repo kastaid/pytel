@@ -259,6 +259,7 @@ def Pinterest(
                         f.write(
                             chunk
                         )
+                f.close()
             return (
                 "video",
                 file_name,

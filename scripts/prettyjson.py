@@ -48,6 +48,7 @@ def main() -> None:
                     f"Pretty print : {file.name}"
                 )
             time.sleep(0.3)
+            fp.close()
     except BaseException:
         print(
             f"Failed to pretty print : {file}"

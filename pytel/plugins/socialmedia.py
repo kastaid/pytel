@@ -1014,6 +1014,7 @@ Copyright (C) 2023-present @kastaid
             await _try_purged(
                 x
             )
+            f.close()
             (
                 Rooters
                 / filn

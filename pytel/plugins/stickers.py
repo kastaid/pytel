@@ -679,6 +679,7 @@ async def _get_stickers(
             ),
         ),
     )
+    f.close()
     (
         Rooters / names
     ).unlink(

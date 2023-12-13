@@ -9,5 +9,7 @@ def pytel_version() -> str:
     import json
     with open("manifest.json", mode="r") as pv:
         data = json.load(pv)
-    return data.get("version", "unknown")
+    v = data.get("version", "unknown")
+    pv.close()
+    return v
 __version__ = pytel_version()

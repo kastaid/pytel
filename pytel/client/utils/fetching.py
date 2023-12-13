@@ -333,6 +333,7 @@ async def screenshots(
             await f.write(
                 response
             )
+            await f.close()
 
     return file
 

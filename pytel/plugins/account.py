@@ -519,6 +519,7 @@ async def _set_pfp(
                     text=text,
                 ),
             )
+            f.close()
             (
                 Rooters
                 / file
@@ -568,6 +569,7 @@ async def _set_pfp(
                     text=text,
                 ),
             )
+            f.close()
             (
                 Rooters
                 / file
@@ -578,6 +580,7 @@ async def _set_pfp(
         except (
             BaseException
         ) as excp:
+            f.close()
             (
                 Rooters
                 / file
