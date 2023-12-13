@@ -480,7 +480,6 @@ async def _youtube_audio_dl(
         )
         return
 
-    print(download_data)
     try:
         a_like = subs_like_view_format(
             num_count=download_data[
